@@ -1,0 +1,8 @@
+*.iml
+*.class
+*.mvn
+.idea/
+target/
+spring-shell.log
+!**/src/main/**/target/
+!**/src/test/**/target/
