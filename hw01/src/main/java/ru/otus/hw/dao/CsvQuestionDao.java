@@ -7,11 +7,8 @@ import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,25 +18,28 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            URL resource = classLoader.getResource(fileNameProvider.getTestFileName());
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream resource = classLoader.getResourceAsStream(fileNameProvider.getTestFileName());
 
-            List<QuestionDto> questionsDto = new CsvToBeanBuilder(
-                    new FileReader(new File(resource.toURI())))
+        if (resource == null) {
+            throw new QuestionReadException(
+                    String.format("File access error - \"%s\"", fileNameProvider.getTestFileName()));
+        }
+
+        try {
+            List<QuestionDto> questionsDto = new CsvToBeanBuilder<QuestionDto>(
+                    new InputStreamReader(resource))
                     .withSkipLines(1)
                     .withSeparator(';')
                     .withType(QuestionDto.class)
-                    .build().parse();
+                    .build()
+                    .parse();
 
             return questionsDto.stream()
                     .map(QuestionDto::toDomainObject)
                     .collect(Collectors.toList());
-
-        } catch (FileNotFoundException e) {
-            throw new QuestionReadException("Ошибка чтения файла", e);
-        } catch (URISyntaxException e) {
-            throw new QuestionReadException("Некорректный URI", e);
+        } catch (RuntimeException e) {
+            throw new QuestionReadException("Error reading file", e);
         }
     }
 }
