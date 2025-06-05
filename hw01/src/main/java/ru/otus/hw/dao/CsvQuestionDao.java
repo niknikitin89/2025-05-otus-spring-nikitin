@@ -12,8 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +21,7 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        // Использовать CsvToBean
-        // https://opencsv.sourceforge.net/#collection_based_bean_fields_one_to_many_mappings
         try {
-
             ClassLoader classLoader = getClass().getClassLoader();
             URL resource = classLoader.getResource(fileNameProvider.getTestFileName());
 
@@ -46,9 +41,5 @@ public class CsvQuestionDao implements QuestionDao {
         } catch (URISyntaxException e) {
             throw new QuestionReadException("Некорректный URI", e);
         }
-        // Использовать QuestionReadException
-        // Про ресурсы: https://mkyong.com/java/java-read-a-file-from-resources-folder/
-
-//        return new ArrayList<>();
     }
 }
