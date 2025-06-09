@@ -12,9 +12,10 @@ public class AnswerCsvConverterTest {
 
     @ParameterizedTest(name = "Process answer \"{0}\" and correction \"{1}\"")
     @CsvSource({"Answer,true", "TEXT,false"})
-    public void convert(String answerText, boolean correction) {
+    public void testConvertToReadShouldCorrectResult(String answerText, boolean correction) {
         Answer answer = new Answer(answerText, correction);
         String textLine = answerText + "%" + correction;
+
         Object result = converter.convertToRead(textLine);
         assertThat((Answer) result).isEqualTo(answer);
     }

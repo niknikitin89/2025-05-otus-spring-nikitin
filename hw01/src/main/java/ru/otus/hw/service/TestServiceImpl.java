@@ -10,15 +10,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
-    private static final String NO_QUESTIONS_FOUND = "No questions found";
+    public static final String NO_QUESTIONS_FOUND = "No questions found";
 
-    private static final String NO_ANSWERS_FOUND = "No answers found";
+    public static final String NO_ANSWERS_FOUND = "No answers found";
 
-    private static final char FIRST_SYMBOL = 'a';
+    public static final char FIRST_SYMBOL = 'a';
 
-    private static final String QUESTION_PRINT_FORMAT = "%d. %s";
+    public static final String QUESTION_PRINT_FORMAT = "%d. %s";
 
-    private static final String ANSWER_PRINT_FORMAT = " %c - %s";
+    public static final String ANSWER_PRINT_FORMAT = " %c - %s";
 
     private final IOService ioService;
 
