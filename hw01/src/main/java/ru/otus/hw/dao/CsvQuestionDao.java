@@ -1,6 +1,7 @@
 package ru.otus.hw.dao;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 import lombok.RequiredArgsConstructor;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
@@ -28,6 +29,8 @@ public class CsvQuestionDao implements QuestionDao {
 
     private static final String NO_QUESTION_READ = "No question read";
 
+    private static final String ERROR_CSV_READ = "Error reading csv file";
+
     private final TestFileNameProvider fileNameProvider;
 
     @Override
@@ -52,6 +55,8 @@ public class CsvQuestionDao implements QuestionDao {
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new QuestionReadException(ERROR_FILE_READING, e);
+        } catch (RuntimeException e) {
+            throw new QuestionReadException(ERROR_CSV_READ, e);
         }
     }
 
