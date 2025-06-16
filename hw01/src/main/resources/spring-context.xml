@@ -20,11 +20,19 @@
     <bean id="testService" class="ru.otus.hw.service.TestServiceImpl">
         <constructor-arg name="ioService" ref="ioService"/>
         <constructor-arg name="questionDao" ref="questionDao"/>
+        <constructor-arg name="questionForPrintConvertor" ref="questionForPrintConvertor"/>
+        <constructor-arg name="printTestService" ref="printTestService"/>
     </bean>
 
     <bean id="questionDao" class="ru.otus.hw.dao.CsvQuestionDao">
         <constructor-arg ref="appProperty"/>
     </bean>
+
+    <bean id="printTestService" class="ru.otus.hw.service.PrintTestServiceImpl">
+        <constructor-arg name="ioService" ref="ioService"/>
+    </bean>
+
+    <bean id="questionForPrintConvertor" class="ru.otus.hw.service.QuestionForPrintConvertorImpl"/>
 
     <bean id="appProperty" class="ru.otus.hw.config.AppProperties">
         <constructor-arg name="testFileName" value="questions.csv"/>

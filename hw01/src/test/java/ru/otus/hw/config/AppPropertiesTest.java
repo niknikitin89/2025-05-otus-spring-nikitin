@@ -9,9 +9,9 @@ public class AppPropertiesTest {
 
     private AppProperties appProperties;
 
-    @DisplayName("Returning value")
+    @DisplayName("Корректное чтение имени файла")
     @Test
-    public void testAppProperties() {
+    public void testGetTestFilenameShouldGetCorrectFilename() {
         String filePath = "path.txt";
         appProperties = new AppProperties(filePath);
         assertThat(appProperties.getTestFileName()).isEqualTo(filePath);

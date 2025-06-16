@@ -17,19 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
 
-    private static final int SKIP_LINES_NUMBER = 1;
-
-    private static final char SEPARATOR = ';';
-
-    private static final String NO_FILE_NAME = "Empty filename";
-
-    private static final String NO_FILE_IN_RESOURCE_FOLDER = "No file with questions in application resource";
-
-    private static final String ERROR_FILE_READING = "Error reading file";
-
-    private static final String NO_QUESTION_READ = "No question read";
-
-    private static final String ERROR_CSV_READ = "Error reading csv file";
 
     private final TestFileNameProvider fileNameProvider;
 
@@ -40,23 +27,23 @@ public class CsvQuestionDao implements QuestionDao {
              InputStreamReader reader = new InputStreamReader(resource)) {
 
             List<QuestionDto> questionsDto = new CsvToBeanBuilder<QuestionDto>(reader)
-                    .withSkipLines(SKIP_LINES_NUMBER)
-                    .withSeparator(SEPARATOR)
+                    .withSkipLines(1)
+                    .withSeparator(';')
                     .withType(QuestionDto.class)
                     .build()
                     .parse();
 
             if (questionsDto == null || questionsDto.isEmpty()) {
-                throw new QuestionReadException(NO_QUESTION_READ);
+                throw new QuestionReadException("No question read");
             }
 
             return questionsDto.stream()
                     .map(QuestionDto::toDomainObject)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new QuestionReadException(ERROR_FILE_READING, e);
+            throw new QuestionReadException("Error reading file", e);
         } catch (RuntimeException e) {
-            throw new QuestionReadException(ERROR_CSV_READ, e);
+            throw new QuestionReadException("Error reading csv file", e);
         }
     }
 
@@ -64,14 +51,14 @@ public class CsvQuestionDao implements QuestionDao {
         String filename = fileNameProvider.getTestFileName();
 
         if (filename == null || filename.isEmpty()) {
-            throw new IOException(NO_FILE_NAME);
+            throw new IOException("Empty filename");
         }
 
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream resource = classLoader.getResourceAsStream(fileNameProvider.getTestFileName());
 
         if (resource == null) {
-            throw new IOException(NO_FILE_IN_RESOURCE_FOLDER);
+            throw new IOException("No file with questions in application resource");
         }
 
         return resource;
