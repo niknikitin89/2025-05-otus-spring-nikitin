@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Question;
-import ru.otus.hw.domain.QuestionForPrint;
+import ru.otus.hw.exceptions.PrintTestException;
+import ru.otus.hw.exceptions.QuestionReadException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +24,19 @@ public class TestServiceImplTest {
     @Mock
     private QuestionForPrintConvertor questionForPrintConvertorMock = mock(QuestionForPrintConvertor.class);
 
-    @Mock
-    private PrintTestService printTestServiceMock = mock(PrintTestService.class);
-
     @DisplayName("Корректная работа сервиса")
     @Test
     public void testExecuteTestShouldCorrectServiceWork() {
 
         TestServiceImpl service = new TestServiceImpl(
                 ioServiceMock, questionDaoMock,
-                questionForPrintConvertorMock, printTestServiceMock);
+                questionForPrintConvertorMock);
 
         List<Question> questionList = new ArrayList<>();
-        List<QuestionForPrint> convertedQuestionList = new ArrayList<>();
+        String testText = "Test text";
+
+        when(questionForPrintConvertorMock.convertForPrint(questionList))
+                .thenReturn(testText);
 
         service.executeTest();
 
@@ -52,9 +53,46 @@ public class TestServiceImplTest {
         //Конвертация
         verify(questionForPrintConvertorMock, times(1))
                 .convertForPrint(questionList);
-        //Печать теста
-        verify(printTestServiceMock, times(1))
-                .printTest(convertedQuestionList);
 
+        //Печать
+        verify(ioServiceMock, times(1))
+                .printLine(testText);
+    }
+
+    @DisplayName("В методе перехватывается исключение QuestionReadException. " +
+            "Выводится сообщение об ошибке на экран")
+    @Test
+    public void testExecuteTestWithQuestionReadExceptionShouldPrintErrorMessage() {
+        TestServiceImpl service = new TestServiceImpl(
+                ioServiceMock, questionDaoMock,
+                questionForPrintConvertorMock);
+
+        String errorMessage = "Error message";
+
+        when(questionDaoMock.findAll()).thenThrow(new QuestionReadException(errorMessage));
+
+        service.executeTest();
+
+        verify(ioServiceMock, times(1))
+                .printLine("(!)Error reading file: " + errorMessage);
+    }
+
+    @DisplayName("В методе перехватывается исключение PrintTestException. " +
+            "Выводится сообщение об ошибке на экран")
+    @Test
+    public void testExecuteTestWithPrintTestExceptionShouldPrintErrorMessage() {
+        TestServiceImpl service = new TestServiceImpl(
+                ioServiceMock, questionDaoMock,
+                questionForPrintConvertorMock);
+
+        String errorMessage = "Error message";
+
+        when(questionForPrintConvertorMock.convertForPrint(anyList()))
+                .thenThrow(new PrintTestException(errorMessage));
+
+        service.executeTest();
+
+        verify(ioServiceMock, times(1))
+                .printLine("(!)Text printing error: " + errorMessage);
     }
 }
