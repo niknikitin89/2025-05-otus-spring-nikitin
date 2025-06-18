@@ -3,36 +3,36 @@ package ru.otus.hw.service;
 import lombok.NoArgsConstructor;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
-import ru.otus.hw.exceptions.PrintTestException;
+import ru.otus.hw.exceptions.QuestionConvertException;
 
 import java.util.List;
 
 @NoArgsConstructor
-public class QuestionForPrintConvertorImpl implements QuestionForPrintConvertor {
+public class QuestionConvertorImpl implements QuestionConvertor {
     @Override
-    public String convertForPrint(List<Question> questionList) throws PrintTestException {
+    public String convertToString(List<Question> questionList) throws QuestionConvertException {
         if (questionList == null || questionList.isEmpty()) {
-            throw new PrintTestException("No questions found");
+            throw new QuestionConvertException("No questions found");
         }
 
         StringBuilder sb = new StringBuilder();
         for (int questionIndex = 0; questionIndex < questionList.size(); questionIndex++) {
             var question = questionList.get(questionIndex);
-            printQuestion(sb, questionIndex, question);
-            printAnswers(sb, question.answers());
+            convertQuestion(sb, questionIndex, question);
+            convertAnswers(sb, question.answers());
         }
 
         return sb.toString();
     }
 
 
-    private void printQuestion(StringBuilder sb, int questionIndex, Question question) {
+    private void convertQuestion(StringBuilder sb, int questionIndex, Question question) {
         sb.append(String.format("%d. %s%n", questionIndex + 1, question.text()));
     }
 
-    private void printAnswers(StringBuilder sb, List<Answer> answers) {
+    private void convertAnswers(StringBuilder sb, List<Answer> answers) {
         if (answers == null || answers.isEmpty()) {
-            throw new PrintTestException("No answers found");
+            throw new QuestionConvertException("No answers found");
         }
 
         char answerPointer = 'a';

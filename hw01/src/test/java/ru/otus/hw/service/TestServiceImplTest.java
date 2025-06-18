@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Question;
-import ru.otus.hw.exceptions.PrintTestException;
+import ru.otus.hw.exceptions.QuestionConvertException;
 import ru.otus.hw.exceptions.QuestionReadException;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class TestServiceImplTest {
     private IOService ioServiceMock = mock(IOService.class);
 
     @Mock
-    private QuestionForPrintConvertor questionForPrintConvertorMock = mock(QuestionForPrintConvertor.class);
+    private QuestionConvertor questionConvertorMock = mock(QuestionConvertor.class);
 
     @DisplayName("Корректная работа сервиса")
     @Test
@@ -30,12 +30,12 @@ public class TestServiceImplTest {
 
         TestServiceImpl service = new TestServiceImpl(
                 ioServiceMock, questionDaoMock,
-                questionForPrintConvertorMock);
+                questionConvertorMock);
 
         List<Question> questionList = new ArrayList<>();
         String testText = "Test text";
 
-        when(questionForPrintConvertorMock.convertForPrint(questionList))
+        when(questionConvertorMock.convertToString(questionList))
                 .thenReturn(testText);
 
         service.executeTest();
@@ -51,8 +51,8 @@ public class TestServiceImplTest {
                 .findAll();
 
         //Конвертация
-        verify(questionForPrintConvertorMock, times(1))
-                .convertForPrint(questionList);
+        verify(questionConvertorMock, times(1))
+                .convertToString(questionList);
 
         //Печать
         verify(ioServiceMock, times(1))
@@ -65,7 +65,7 @@ public class TestServiceImplTest {
     public void testExecuteTestWithQuestionReadExceptionShouldPrintErrorMessage() {
         TestServiceImpl service = new TestServiceImpl(
                 ioServiceMock, questionDaoMock,
-                questionForPrintConvertorMock);
+                questionConvertorMock);
 
         String errorMessage = "Error message";
 
@@ -74,25 +74,25 @@ public class TestServiceImplTest {
         service.executeTest();
 
         verify(ioServiceMock, times(1))
-                .printLine("(!)Error reading file: " + errorMessage);
+                .printLine("(!)Error reading questions");
     }
 
-    @DisplayName("В методе перехватывается исключение PrintTestException. " +
+    @DisplayName("В методе перехватывается исключение QuestionConvertException. " +
             "Выводится сообщение об ошибке на экран")
     @Test
-    public void testExecuteTestWithPrintTestExceptionShouldPrintErrorMessage() {
+    public void testExecuteTestWithQuestionConvertExceptionShouldPrintErrorMessage() {
         TestServiceImpl service = new TestServiceImpl(
                 ioServiceMock, questionDaoMock,
-                questionForPrintConvertorMock);
+                questionConvertorMock);
 
         String errorMessage = "Error message";
 
-        when(questionForPrintConvertorMock.convertForPrint(anyList()))
-                .thenThrow(new PrintTestException(errorMessage));
+        when(questionConvertorMock.convertToString(anyList()))
+                .thenThrow(new QuestionConvertException(errorMessage));
 
         service.executeTest();
 
         verify(ioServiceMock, times(1))
-                .printLine("(!)Text printing error: " + errorMessage);
+                .printLine("(!)Test conversion error");
     }
 }

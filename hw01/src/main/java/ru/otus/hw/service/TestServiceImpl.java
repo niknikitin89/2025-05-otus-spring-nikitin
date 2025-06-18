@@ -2,7 +2,7 @@ package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
 import ru.otus.hw.dao.QuestionDao;
-import ru.otus.hw.exceptions.PrintTestException;
+import ru.otus.hw.exceptions.QuestionConvertException;
 import ru.otus.hw.exceptions.QuestionReadException;
 
 @RequiredArgsConstructor
@@ -12,7 +12,7 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
-    private final QuestionForPrintConvertor questionForPrintConvertor;
+    private final QuestionConvertor questionConvertor;
 
     @Override
     public void executeTest() {
@@ -21,13 +21,11 @@ public class TestServiceImpl implements TestService {
             ioService.printFormattedLine("Please answer the questions below%n");
 
             var questionList = questionDao.findAll();
-            ioService.printLine(questionForPrintConvertor.convertForPrint(questionList));
+            ioService.printLine(questionConvertor.convertToString(questionList));
         } catch (QuestionReadException e) {
-            ioService.printLine("(!)Error reading file: " + e.getMessage());
-            e.printStackTrace();
-        } catch (PrintTestException e) {
-            ioService.printLine("(!)Text printing error: " + e.getMessage());
-            e.printStackTrace();
+            ioService.printLine("(!)Error reading questions");
+        } catch (QuestionConvertException e) {
+            ioService.printLine("(!)Test conversion error");
         }
     }
 
