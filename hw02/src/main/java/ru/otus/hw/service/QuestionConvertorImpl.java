@@ -45,7 +45,7 @@ public class QuestionConvertorImpl implements QuestionConvertor {
     }
 
     private void convertQuestion(StringBuilder sb, Question question) {
-        sb.append(String.format("Question.%n %s%n", question.text()));
+        sb.append(String.format("Question:%n %s%n", question.text()));
     }
 
     private void convertAnswers(StringBuilder sb, List<Answer> answers) {
