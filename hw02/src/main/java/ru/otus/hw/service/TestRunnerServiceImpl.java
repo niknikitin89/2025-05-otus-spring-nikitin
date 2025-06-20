@@ -26,14 +26,17 @@ public class TestRunnerServiceImpl implements TestRunnerService {
             resultService.showResult(testResult);
 
         } catch (TestServiceException e) {
-            var exc = e.getCause();
-            if (exc instanceof QuestionConvertException) {
-                ioService.printLine("(!)Test conversion error");
-            } else if (exc instanceof QuestionReadException) {
-                ioService.printLine("(!)Error reading questions");
-            } else {
-                ioService.printLine("(!)Error during testing process");
-            }
+            processExceptions(e);
+        }
+    }
+
+    private void processExceptions(TestServiceException e) {
+        var exc = e.getCause();
+        if (exc instanceof QuestionConvertException ||
+                exc instanceof QuestionReadException) {
+            ioService.printLine("(!)Error reading questions");
+        } else {
+            ioService.printLine("(!)Error during testing process");
         }
     }
 }
