@@ -3,7 +3,9 @@ package ru.otus.hw.service;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -19,22 +21,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class TestServiceImplTest {
 
     private static final String ENTER_ANSWER_TEXT = "Enter number of correct answer:";
     private static final String ERROR_ANSWER_OUT_OF_RANGE = "Answer out of range";
 
     @Mock
-    private QuestionDao questionDaoMock = mock(QuestionDao.class);
+    private QuestionDao questionDaoMock;
 
     @Mock
-    private IOService ioServiceMock = mock(IOService.class);
+    private IOService ioServiceMock;
 
     @Mock
-    private QuestionConvertor questionConvertorMock = mock(QuestionConvertor.class);
+    private QuestionConvertor questionConvertorMock;
 
     @Mock
-    private Student studentMock = mock(Student.class);
+    private Student studentMock;
 
     private static List<Question> questionList;
 

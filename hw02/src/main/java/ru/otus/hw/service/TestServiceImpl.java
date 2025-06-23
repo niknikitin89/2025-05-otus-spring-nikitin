@@ -21,15 +21,13 @@ public class TestServiceImpl implements TestService {
     private final QuestionConvertor questionConvertor;
 
     @Override
-    public TestResult executeTestFor(Student student)
-            throws TestServiceException {
+    public TestResult executeTestFor(Student student) {
 
         try {
-            TestResult testResult = null;
             ioService.printLine("");
             ioService.printFormattedLine("Please answer the questions below%n");
             var questions = questionDao.findAll();
-            testResult = new TestResult(student);
+            TestResult testResult = new TestResult(student);
 
             for (var question : questions) {
                 var isAnswerValid = askQuestionAndGetResult(question);
@@ -41,8 +39,7 @@ public class TestServiceImpl implements TestService {
         }
     }
 
-    private boolean askQuestionAndGetResult(Question question)
-            throws TestServiceException {
+    private boolean askQuestionAndGetResult(Question question) {
         try {
             ioService.printLine("");
             ioService.printLine(questionConvertor.convertToString(question));

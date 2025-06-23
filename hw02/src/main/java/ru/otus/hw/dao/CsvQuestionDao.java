@@ -21,8 +21,7 @@ public class CsvQuestionDao implements QuestionDao {
     private final TestFileNameProvider fileNameProvider;
 
     @Override
-    public List<Question> findAll()
-        throws QuestionReadException {
+    public List<Question> findAll() {
 
         try (InputStream resource = getFileAsStream();
              InputStreamReader reader = new InputStreamReader(resource)) {

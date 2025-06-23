@@ -1,6 +1,5 @@
 package ru.otus.hw.service;
 
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -9,10 +8,9 @@ import ru.otus.hw.exceptions.QuestionConvertException;
 import java.util.List;
 
 @Service
-@NoArgsConstructor
 public class QuestionConvertorImpl implements QuestionConvertor {
     @Override
-    public String convertToString(List<Question> questionList) throws QuestionConvertException {
+    public String convertToString(List<Question> questionList) {
         if (questionList == null || questionList.isEmpty()) {
             throw new QuestionConvertException("No questions found");
         }
@@ -28,7 +26,7 @@ public class QuestionConvertorImpl implements QuestionConvertor {
     }
 
     @Override
-    public String convertToString(Question question) throws QuestionConvertException {
+    public String convertToString(Question question) {
         if (question == null) {
             throw new QuestionConvertException("No question found");
         }
