@@ -1,0 +1,66 @@
+package ru.otus.hw.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.otus.hw.domain.Answer;
+import ru.otus.hw.domain.Question;
+import ru.otus.hw.exceptions.QuestionConvertException;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class QuestionConvertorImpl implements QuestionConvertor {
+
+    private final LocalizedMessagesService localizedMessagesService;
+
+    @Override
+    public String convertToString(List<Question> questionList) {
+        if (questionList == null || questionList.isEmpty()) {
+            throw new QuestionConvertException("No questions found");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int questionIndex = 0; questionIndex < questionList.size(); questionIndex++) {
+            var question = questionList.get(questionIndex);
+            convertQuestion(sb, questionIndex, question);
+            convertAnswers(sb, question.answers());
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public String convertToString(Question question) {
+        if (question == null) {
+            throw new QuestionConvertException("No question found");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        convertQuestion(sb, question);
+        convertAnswers(sb, question.answers());
+
+        return sb.toString();
+    }
+
+    private void convertQuestion(StringBuilder sb, int questionIndex, Question question) {
+        sb.append(String.format("%d. %s%n", questionIndex + 1, question.text()));
+    }
+
+    private void convertQuestion(StringBuilder sb, Question question) {
+        sb.append(String.format("%s%n %s%n",
+                localizedMessagesService.getMessage("QuestionConvertor.question"),
+                question.text()));
+    }
+
+    private void convertAnswers(StringBuilder sb, List<Answer> answers) {
+        if (answers == null || answers.isEmpty()) {
+            throw new QuestionConvertException("No answers found");
+        }
+
+        for (int i = 0; i < answers.size(); i++) {
+            Answer answer = answers.get(i);
+            sb.append(String.format(" %d - %s%n", i + 1, answer.text()));
+        }
+    }
+}
