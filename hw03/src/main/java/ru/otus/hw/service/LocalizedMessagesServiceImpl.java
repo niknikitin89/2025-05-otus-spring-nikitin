@@ -15,7 +15,6 @@ public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
 
     private final MessageSource messageSource;
 
-    // Доделать
     @Override
     public String getMessage(String code, Object... args) {
 
