@@ -3,9 +3,9 @@ package ru.otus.hw.service;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -21,28 +21,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = TestServiceImpl.class)
 class TestServiceImplTest {
 
     private static final String ENTER_ANSWER_TEXT = "TestService.enter.the.answer";
     private static final String ERROR_ANSWER_OUT_OF_RANGE = "TestService.answer.out.of.range";
 
-    @Mock
+    @MockitoBean
     private QuestionDao questionDaoMock;
 
-    @Mock
-    private LocalizedIOService localizedIOService;
+    @MockitoBean
+    private LocalizedIOService localizedIOServiceMock;
 
-    @Mock
+    @MockitoBean
     private QuestionConvertor questionConvertorMock;
 
-    @Mock
-    private Student studentMock;
+    @Autowired
+    private TestService testService;
+
+    private static Student student;
 
     private static List<Question> questionList;
 
+
+
     @BeforeAll
     static void init() {
+
+        student = new Student("Ivan", "Ivanov");
+
         final String question1 = "Question 1?";
         final String answer11 = "Answer 11";
         final String answer12 = "Answer 12";
@@ -67,34 +74,28 @@ class TestServiceImplTest {
 
     @DisplayName("Получен корректный результат работы сервиса")
     @Test
-    void testExecuteTestShouldGetCorrectTEstResult() {
+    void testExecuteTestShouldGetCorrectTestResult() {
 
-        TestResult expectedTestResult = new TestResult(studentMock);
+        TestResult expectedTestResult = new TestResult(student);
         expectedTestResult.applyAnswer(questionList.get(0), true);
         expectedTestResult.applyAnswer(questionList.get(1), false);
 
-        TestServiceImpl service = new TestServiceImpl(
-                localizedIOService,
-                questionDaoMock,
-                questionConvertorMock);
-
-
         when(questionDaoMock.findAll()).thenReturn(questionList);
-        when(localizedIOService.readIntForRangeWithPromptLocalized(
+        when(localizedIOServiceMock.readIntForRangeWithPromptLocalized(
                 1, 2, ENTER_ANSWER_TEXT, ERROR_ANSWER_OUT_OF_RANGE))
                 .thenReturn(1);
-        when(localizedIOService.readIntForRangeWithPromptLocalized(
+        when(localizedIOServiceMock.readIntForRangeWithPromptLocalized(
                 1, 3, ENTER_ANSWER_TEXT, ERROR_ANSWER_OUT_OF_RANGE))
                 .thenReturn(2);
 
-        var testResult = service.executeTestFor(studentMock);
+        var testResult = testService.executeTestFor(student);
 
         //Шапка
-        verify(localizedIOService, times(1))
+        verify(localizedIOServiceMock, times(1))
                 .printLineLocalized("TestService.answer.the.questions");
 
         //Пустая строка
-        verify(localizedIOService, times(4))
+        verify(localizedIOServiceMock, times(4))
                 .printLine("");
 
         assertThat(testResult).isEqualTo(expectedTestResult);
@@ -105,15 +106,10 @@ class TestServiceImplTest {
     @Test
     void testExecuteTestShouldThrowTestServiceExceptionWhenDaoThrowQuestionReadException() {
 
-        TestServiceImpl service = new TestServiceImpl(
-                localizedIOService,
-                questionDaoMock,
-                questionConvertorMock);
-
         when(questionDaoMock.findAll()).thenThrow(QuestionReadException.class);
 
         assertThatExceptionOfType(TestServiceException.class)
-                .isThrownBy(() -> service.executeTestFor(studentMock))
+                .isThrownBy(() -> testService.executeTestFor(student))
                 .withMessage("Error reading question");
     }
 
@@ -122,17 +118,12 @@ class TestServiceImplTest {
     @Test
     void testExecuteTestShouldThrowTestServiceExceptionWhenConverterThrowQuestionConvertException() {
 
-        TestServiceImpl service = new TestServiceImpl(
-                localizedIOService,
-                questionDaoMock,
-                questionConvertorMock);
-
         when(questionDaoMock.findAll()).thenReturn(questionList);
         when(questionConvertorMock.convertToString(questionList.get(0)))
                 .thenThrow(QuestionConvertException.class);
 
         assertThatExceptionOfType(TestServiceException.class)
-                .isThrownBy(() -> service.executeTestFor(studentMock))
+                .isThrownBy(() -> testService.executeTestFor(student))
                 .withMessage("Error converting question");
     }
 
@@ -141,18 +132,13 @@ class TestServiceImplTest {
     @Test
     void testExecuteTestShouldThrowTestServiceExceptionWhenConverterThrowIllegalArgumentException() {
 
-        TestServiceImpl service = new TestServiceImpl(
-                localizedIOService,
-                questionDaoMock,
-                questionConvertorMock);
-
         when(questionDaoMock.findAll()).thenReturn(questionList);
-        when(localizedIOService.readIntForRangeWithPromptLocalized(
+        when(localizedIOServiceMock.readIntForRangeWithPromptLocalized(
                 1, 2, ENTER_ANSWER_TEXT, ERROR_ANSWER_OUT_OF_RANGE))
                 .thenThrow(IllegalArgumentException.class);
 
         assertThatExceptionOfType(TestServiceException.class)
-                .isThrownBy(() -> service.executeTestFor(studentMock))
+                .isThrownBy(() -> testService.executeTestFor(student))
                 .withMessage("Error during testing process");
     }
 

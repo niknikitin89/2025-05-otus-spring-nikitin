@@ -11,7 +11,7 @@ public class ApplicationCommands {
 
     private final TestRunnerService testRunnerService;
 
-    @ShellMethod(key = "start_test",
+    @ShellMethod(key = {"start_test","s"},
             value = "Start Application")
     public void runTest() {
         testRunnerService.run();
