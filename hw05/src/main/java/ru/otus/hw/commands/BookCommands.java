@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.BookConverter;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.BookService;
 
 import java.util.Set;
@@ -42,8 +43,12 @@ public class BookCommands {
     // bupd 4 editedBook 3 2,5
     @ShellMethod(value = "Update book", key = "bupd")
     public String updateBook(long id, String title, long authorId, Set<Long> genresIds) {
-        var savedBook = bookService.update(id, title, authorId, genresIds);
-        return bookConverter.bookToString(savedBook);
+        try {
+            var savedBook = bookService.update(id, title, authorId, genresIds);
+            return bookConverter.bookToString(savedBook);
+        } catch (EntityNotFoundException e) {
+            return "Book with id %d not found".formatted(id);
+        }
     }
 
     // bdel 4
