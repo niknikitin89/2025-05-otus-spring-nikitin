@@ -88,26 +88,26 @@ public class JdbcBookRepository implements BookRepository {
                         rs.getLong("book_id"), rs.getLong("genre_id")));
     }
 
-    private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres, List<BookGenreRelation> relations) {
+    private void mergeBooksInfo(List<Book> booksWithoutGenres,
+                                List<Genre> genres, List<BookGenreRelation> relations) {
 
         Map<Long, Genre> genresMap = genres.stream()
                 .collect(Collectors.toMap(Genre::getId, g -> g));
 
-        Map<Long, List<Genre>> bookAndGenresMap = new HashMap<>();
+        Map<Long, Book> booksMap = booksWithoutGenres.stream()
+                .collect(Collectors.toMap(Book::getId, b -> b));
+
         for (BookGenreRelation relation : relations) {
-            Genre genreForBook = genresMap.get(relation.genreId);
+            Book book = booksMap.get(relation.bookId);
 
-            if (bookAndGenresMap.containsKey(relation.bookId)) {
-                List<Genre> genreList = bookAndGenresMap.get(relation.bookId);
-                genreList.add(genreForBook);
-            } else {
-                bookAndGenresMap
-                        .put(relation.bookId, new ArrayList<>(Arrays.asList(genreForBook)));
+            List<Genre> genresOfBook = book.getGenres();
+            if (genresOfBook == null) {
+                genresOfBook = new ArrayList<>();
+                book.setGenres(genresOfBook);
             }
-        }
 
-        for (Book book : booksWithoutGenres) {
-            book.setGenres(bookAndGenresMap.get(book.getId()));
+            Genre genre = genresMap.get(relation.genreId);
+            genresOfBook.add(genre);
         }
     }
 
