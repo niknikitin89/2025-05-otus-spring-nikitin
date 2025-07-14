@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface BookRepository {
     Optional<Book> findById(long id);
 
+    Optional<Book> findByIdLazy(long id);
+
     List<Book> findAll();
 
     Book save(Book book);
