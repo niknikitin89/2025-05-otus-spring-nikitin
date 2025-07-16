@@ -20,6 +20,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -30,10 +32,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "books")
-@NamedEntityGraph(name = "genres-entity-graph",
-        attributeNodes = {@NamedAttributeNode("genres")})
-@NamedEntityGraph(name = "authors-entity-graph",
-        attributeNodes = {@NamedAttributeNode("author")})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
