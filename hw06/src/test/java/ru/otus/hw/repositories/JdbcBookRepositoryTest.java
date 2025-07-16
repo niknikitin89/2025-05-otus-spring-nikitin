@@ -1,5 +1,6 @@
 package ru.otus.hw.repositories;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,18 @@ class JdbcBookRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
+    private Author dbAuthor;
+
+    private List<Genre> dbGenresList;
+
+    @BeforeEach
+    void setup() {
+        dbAuthor = em.find(Author.class, 1);
+        dbGenresList = new ArrayList<>();
+        dbGenresList.add(em.find(Genre.class, 1));
+        dbGenresList.add(em.find(Genre.class, 2));
+    }
+
     @DisplayName("должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
@@ -54,12 +67,7 @@ class JdbcBookRepositoryTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        var author = em.find(Author.class, 1);
-        List<Genre> genresList = new ArrayList<>();
-        genresList.add(em.find(Genre.class, 1));
-        genresList.add(em.find(Genre.class, 2));
-
-        var expectedBook = new Book(0, "BookTitle_10500", author, genresList);
+        var expectedBook = new Book(0, "BookTitle_10500", dbAuthor, dbGenresList);
 
         var actualBook = repositoryJdbc.save(expectedBook);
 
@@ -76,18 +84,14 @@ class JdbcBookRepositoryTest {
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var author = em.find(Author.class, 1);
-        List<Genre> genresList = new ArrayList<>();
-        genresList.add(em.find(Genre.class, 1));
-        genresList.add(em.find(Genre.class, 2));
-
-        var expectedBook = new Book(1L, "BookTitle_10500", author, genresList);
+        var expectedBook = new Book(1L, "BookTitle_10500", dbAuthor, dbGenresList);
 
         assertThat(em.find(Book.class, expectedBook.getId()))
                 .isNotNull()
                 .isNotEqualTo(expectedBook);
 
         var returnedBook = repositoryJdbc.save(expectedBook);
+
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().isEqualTo(expectedBook);
