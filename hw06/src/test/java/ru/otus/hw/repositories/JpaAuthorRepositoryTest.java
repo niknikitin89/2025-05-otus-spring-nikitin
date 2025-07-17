@@ -12,13 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с авторами ")
 @DataJpaTest
-@Import({JdbcAuthorRepository.class})
-class JdbcAuthorRepositoryTest {
+@Import({JpaAuthorRepository.class})
+class JpaAuthorRepositoryTest {
 
-    private final int EXPECTED_NUMBER_OF_AUTHORS = 3;
+    private static final int EXPECTED_NUMBER_OF_AUTHORS = 3;
 
     @Autowired
-    private JdbcAuthorRepository repositoryJdbc;
+    private AuthorRepository repositoryJdbc;
 
     @Autowired
     private TestEntityManager em;

@@ -11,8 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -20,8 +18,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -54,7 +50,7 @@ public class Book {
     private List<Genre> genres;
 
     @OneToMany(targetEntity = Commentary.class, mappedBy = "book", fetch = FetchType.LAZY,
-    cascade = CascadeType.REMOVE)
+            cascade = CascadeType.REMOVE)
     private List<Commentary> commentaries;
 
     public Book(long id, String title, Author author, List<Genre> genres) {

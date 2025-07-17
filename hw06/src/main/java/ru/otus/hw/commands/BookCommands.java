@@ -3,7 +3,6 @@ package ru.otus.hw.commands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.BookService;
@@ -25,6 +24,7 @@ public class BookCommands {
         return bookService.findAll().stream()
                 .map(bookConverter::bookToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
+
     }
 
     @ShellMethod(value = "Find book by id", key = "bbid")

@@ -18,15 +18,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий для работы с книгами ")
 @DataJpaTest
-@Import({JdbcBookRepository.class})
-class JdbcBookRepositoryTest {
+@Import({JpaBookRepository.class})
+class JpaBookRepositoryTest {
 
-    private final long FIRST_BOOK_ID = 1L;
+    private static final long FIRST_BOOK_ID = 1L;
 
-    private final int EXPECTED_NUMBER_OF_BOOKS = 3;
+    private static final int EXPECTED_NUMBER_OF_BOOKS = 3;
 
     @Autowired
-    private JdbcBookRepository repositoryJdbc;
+    private BookRepository repositoryJdbc;
 
     @Autowired
     private TestEntityManager em;
@@ -77,8 +77,6 @@ class JdbcBookRepositoryTest {
 
         assertThat(em.find(Book.class, actualBook.getId()))
                 .isEqualTo(actualBook);
-
-        System.out.println(actualBook.getId());
     }
 
     @DisplayName("должен сохранять измененную книгу")

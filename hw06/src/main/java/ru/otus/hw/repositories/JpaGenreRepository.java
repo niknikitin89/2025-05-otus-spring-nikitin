@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcGenreRepository implements GenreRepository {
+public class JpaGenreRepository implements GenreRepository {
 
     private final EntityManager em;
 

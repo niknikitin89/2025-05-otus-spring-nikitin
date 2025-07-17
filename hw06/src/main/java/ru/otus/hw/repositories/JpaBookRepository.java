@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcBookRepository implements BookRepository {
+public class JpaBookRepository implements BookRepository {
 
     private final EntityManager em;
 
@@ -27,7 +27,10 @@ public class JdbcBookRepository implements BookRepository {
                 Book.class);
         query.setParameter("id", id);
 
-        return Optional.ofNullable(query.getSingleResult());
+        var result = query.getResultList();
+
+        return !result.isEmpty() ?
+                Optional.of(result.get(0)) : Optional.empty();
     }
 
     @Override

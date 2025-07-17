@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcCommentaryRepository implements CommentaryRepository {
+public class JpaCommentaryRepository implements CommentaryRepository {
 
     private final EntityManager em;
 

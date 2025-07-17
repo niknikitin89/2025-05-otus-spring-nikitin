@@ -24,6 +24,7 @@ public class CommentaryCommands {
         sb.append(commentaryService.findByBookId(bookId).stream()
                 .map(commentaryConverter::commentaryToString)
                 .collect(Collectors.joining(System.lineSeparator())));
+
         return sb.toString();
     }
 

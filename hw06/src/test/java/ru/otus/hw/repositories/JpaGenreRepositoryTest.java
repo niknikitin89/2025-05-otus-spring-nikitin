@@ -13,19 +13,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с жанрами ")
 @DataJpaTest
-@Import({JdbcGenreRepository.class})
-class JdbcGenreRepositoryTest {
+@Import({JpaGenreRepository.class})
+class JpaGenreRepositoryTest {
 
-    private final int EXPECTED_NUMBER_OF_GENRES = 6;
+    private static final int EXPECTED_NUMBER_OF_GENRES = 6;
 
-    private final long FIRST_GENRE_ID = 1L;
+    private static final long FIRST_GENRE_ID = 1L;
 
-    private final long SECOND_GENRE_ID = 2L;
+    private static final long SECOND_GENRE_ID = 2L;
 
-    private final int EXPECTED_NUMBER_OF_GENRES_BY_ID_SEARCH = 2;
+    private static final int EXPECTED_NUMBER_OF_GENRES_BY_ID_SEARCH = 2;
 
     @Autowired
-    private JdbcGenreRepository repositoryJdbc;
+    private GenreRepository repositoryJdbc;
 
     @DisplayName("должен загружать жанры по списку id")
     @Test
