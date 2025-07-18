@@ -8,6 +8,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentaryRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -21,6 +22,12 @@ public class CommentaryServiceImpl implements CommentaryService {
     @Transactional(readOnly = true)
     public List<Commentary> findByBookId(long id) {
         return commentaryRepository.findAllByBookId(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Commentary> findById(long id) {
+        return commentaryRepository.findById(id);
     }
 
     @Override

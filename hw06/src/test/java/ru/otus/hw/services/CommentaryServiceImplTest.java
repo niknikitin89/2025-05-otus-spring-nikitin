@@ -26,22 +26,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({CommentaryServiceImpl.class,
         JpaCommentaryRepository.class,
         JpaBookRepository.class})
+@Transactional(propagation = Propagation.NEVER)
 class CommentaryServiceImplTest {
 
     private static final long COMMENTARY_ID = 1L;
 
     private static final long ILLEGAL_COMMENTARY_ID = 9999L;
 
-    private static final long BOOK_ID = 1L;
+    private static final long BOOK_ID = 3L;
 
     private static final long ILLEGAL_BOOK_ID = 9999L;
 
-    private static final int COMMENTARY_LIST_SIZE = 2;
+    private static final int COMMENTARY_LIST_SIZE = 3;
 
     private static final String COMMENTARY_TEXT = "New commentary";
-
-    @Autowired
-    private TestEntityManager em;
 
     @Autowired
     private CommentaryService commentaryService;
@@ -65,7 +63,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void testFindByBookIdShouldThrowLazyInitializationExceptionOnBookAccess() {
 
         List<Commentary> commentList = commentaryService.findByBookId(BOOK_ID);
@@ -78,6 +75,7 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testAddShouldAddCommentToBook() {
 
         var newComment = commentaryService.add(BOOK_ID, COMMENTARY_TEXT);
@@ -87,6 +85,7 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testAddWithZeroBookIdShouldTrowsIllegalArgumentException() {
         assertThatThrownBy(() -> commentaryService.add(0, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -94,6 +93,7 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testAddWithIllegalBookIdShouldTrowsIllegalArgumentException() {
         assertThatThrownBy(() -> commentaryService.add(ILLEGAL_BOOK_ID, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -101,39 +101,45 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testDeleteByIdShouldDeleteCommentary() {
-        var commentary = em.find(Commentary.class, COMMENTARY_ID);
-        assertThat(commentary).isNotNull()
-                .matches(comment -> comment.getId() == COMMENTARY_ID);
+        assertThat(commentaryService.findById(COMMENTARY_ID)).isPresent();
 
         commentaryService.deleteById(COMMENTARY_ID);
 
-        assertThat(em.find(Commentary.class, COMMENTARY_ID)).isNull();
+        assertThat(commentaryService.findById(COMMENTARY_ID)).isEmpty();
     }
 
     @Test
+    @Transactional
     void testUpdateShouldUpdateCommentary() {
-        var book = em.find(Book.class, BOOK_ID);
-        var expectedCommentary = new Commentary(COMMENTARY_ID, "New Text", book);
+        var result = commentaryService.findById(COMMENTARY_ID);
+        assertThat(result).isPresent();
+        Commentary commentary = result.get();
 
-        commentaryService.update(
-                expectedCommentary.getId(), expectedCommentary.getText());
+        assertThat(commentary.getText()).isNotEqualTo(COMMENTARY_TEXT);
 
-        assertThat(em.find(Commentary.class, COMMENTARY_ID))
-                .isNotNull()
-                .usingRecursiveComparison().isEqualTo(expectedCommentary);
+        commentaryService.update(COMMENTARY_ID, COMMENTARY_TEXT);
+
+        result = commentaryService.findById(COMMENTARY_ID);
+        assertThat(result).isPresent();
+        commentary = result.get();
+
+        assertThat(commentary.getText()).isEqualTo(COMMENTARY_TEXT);
     }
 
     @Test
+    @Transactional
     void testUpdateWithZeroIdShouldTrowsIllegalArgumentException() {
-        assertThatThrownBy(() -> commentaryService.update(0, "New Text"))
+        assertThatThrownBy(() -> commentaryService.update(0, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
                 .message().isEqualTo("Commentary id cannot be 0");
     }
 
     @Test
+    @Transactional
     void testUpdateWithIllegalIdShouldTrowsIllegalArgumentException() {
-        assertThatThrownBy(() -> commentaryService.update(ILLEGAL_COMMENTARY_ID, "New Text"))
+        assertThatThrownBy(() -> commentaryService.update(ILLEGAL_COMMENTARY_ID, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
                 .message().isEqualTo("Commentary %d not found".formatted(ILLEGAL_COMMENTARY_ID));
     }
