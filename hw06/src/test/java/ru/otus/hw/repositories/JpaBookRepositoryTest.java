@@ -18,7 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий для работы с книгами ")
 @DataJpaTest
-@Import({JpaBookRepository.class})
+@Import({JpaBookRepository.class,
+        JpaGenreRepository.class})
 class JpaBookRepositoryTest {
 
     private static final long FIRST_BOOK_ID = 1L;
@@ -26,7 +27,10 @@ class JpaBookRepositoryTest {
     private static final int EXPECTED_NUMBER_OF_BOOKS = 3;
 
     @Autowired
-    private BookRepository repositoryJdbc;
+    private BookRepository repository;
+
+    @Autowired
+    private GenreRepository genreRepository;
 
     @Autowired
     private TestEntityManager em;
@@ -47,7 +51,7 @@ class JpaBookRepositoryTest {
     @Test
     void shouldReturnCorrectBookById() {
         var expectedBook = em.find(Book.class, FIRST_BOOK_ID);
-        var actualBook = repositoryJdbc.findById(FIRST_BOOK_ID);
+        var actualBook = repository.findById(FIRST_BOOK_ID);
         assertThat(actualBook).isPresent().get()
                 .usingRecursiveComparison().isEqualTo(expectedBook);
     }
@@ -55,13 +59,12 @@ class JpaBookRepositoryTest {
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        var actualBooks = repositoryJdbc.findAll();
+        var actualBooks = repository.findAll();
 
         assertThat(actualBooks).hasSize(EXPECTED_NUMBER_OF_BOOKS)
                 .allMatch(book -> book.getTitle() != null && !book.getTitle().isEmpty())
                 .allMatch(book -> book.getAuthor() != null)
-                .allMatch(book -> book.getGenres() != null && book.getGenres().size() > 0)
-                .allMatch(book -> book.getCommentaries() != null && book.getCommentaries().size() > 0);
+                .allMatch(book -> book.getGenres() != null && book.getGenres().size() > 0);
     }
 
     @DisplayName("должен сохранять новую книгу")
@@ -69,7 +72,7 @@ class JpaBookRepositoryTest {
     void shouldSaveNewBook() {
         var expectedBook = new Book(0, "BookTitle_10500", dbAuthor, dbGenresList);
 
-        var actualBook = repositoryJdbc.save(expectedBook);
+        var actualBook = repository.save(expectedBook);
 
         assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() > 0)
@@ -88,7 +91,7 @@ class JpaBookRepositoryTest {
                 .isNotNull()
                 .isNotEqualTo(expectedBook);
 
-        var returnedBook = repositoryJdbc.save(expectedBook);
+        var returnedBook = repository.save(expectedBook);
 
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
@@ -106,7 +109,7 @@ class JpaBookRepositoryTest {
                 .isNotNull()
                 .matches(book -> book.getId() == FIRST_BOOK_ID);
 
-        repositoryJdbc.deleteById(FIRST_BOOK_ID);
+        repository.deleteById(FIRST_BOOK_ID);
 
         assertThat(em.find(Book.class, FIRST_BOOK_ID))
                 .isNull();

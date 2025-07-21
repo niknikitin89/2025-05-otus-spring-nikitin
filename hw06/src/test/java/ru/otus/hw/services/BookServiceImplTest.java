@@ -1,28 +1,27 @@
 package ru.otus.hw.services;
 
-import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.converters.AuthorConverter;
+import ru.otus.hw.converters.BookConverter;
+import ru.otus.hw.converters.GenreConverter;
+import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.repositories.JpaAuthorRepository;
 import ru.otus.hw.repositories.JpaBookRepository;
-import ru.otus.hw.repositories.JpaBookRepository;
 import ru.otus.hw.repositories.JpaGenreRepository;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +33,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({BookServiceImpl.class,
         JpaAuthorRepository.class,
         JpaGenreRepository.class,
-        JpaBookRepository.class})
+        JpaBookRepository.class,
+        BookConverter.class,
+        AuthorConverter.class,
+        GenreConverter.class})
 @Transactional(propagation = Propagation.NEVER)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookServiceImplTest {
 
     private static final long BOOK_ID = 1L;
@@ -68,17 +71,26 @@ class BookServiceImplTest {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private BookConverter bookConverter;
+
+    @Autowired
+    private AuthorConverter authorConverter;
+
+    @Autowired
+    private GenreConverter genreConverter;
+
     @Test
     void testFindByIdShouldReturnBook() {
         var result = bookService.findById(BOOK_ID);
 
         assertThat(result).isPresent();
-        Book book = result.get();
+        BookDto book = result.get();
 
-        assertThat(book.getTitle()).isNotBlank();
-        assertThat(book.getAuthor()).isNotNull();
-        assertThat(book.getAuthor().getFullName()).isNotBlank();
-        assertThat(book.getGenres()).isNotNull();
+        assertThat(book.title()).isNotBlank();
+        assertThat(book.author()).isNotNull();
+        assertThat(book.author().getFullName()).isNotBlank();
+        assertThat(book.genres()).isNotNull();
     }
 
     @Test
@@ -86,14 +98,11 @@ class BookServiceImplTest {
         var actualBookOption = bookService.findById(BOOK_ID);
         assertThat(actualBookOption).isPresent().isNotEmpty();
         var actualBook = actualBookOption.get();
-        assertThat(actualBook.getAuthor()).isNotNull();
-        assertThat(actualBook.getGenres()).isNotNull().isNotEmpty();
-        assertThat(actualBook.getCommentaries()).isNotNull();//комменты не должны выгружаться, так как остаются в LAZY
+        assertThat(actualBook.author()).isNotNull();
+        assertThat(actualBook.genres()).isNotNull().isNotEmpty();
 
-        assertThatNoException().isThrownBy(() -> actualBook.getAuthor().getFullName());
-        assertThatNoException().isThrownBy(() -> actualBook.getGenres().get(0).getName());
-        assertThatThrownBy(() -> actualBook.getCommentaries().get(0).getText())
-                .isInstanceOf(LazyInitializationException.class);
+        assertThatNoException().isThrownBy(() -> actualBook.author().getFullName());
+        assertThatNoException().isThrownBy(() -> actualBook.genres().get(0).getName());
     }
 
 
@@ -108,22 +117,21 @@ class BookServiceImplTest {
     void testFindAllShouldGetAllBooks() {
         assertThat(bookService.findAll())
                 .isNotEmpty().hasSize(BOOKS_NUMBER)
-                .allMatch(book -> book.getId() > 0)
-                .allMatch(book -> book.getAuthor() != null)
-                .allMatch(book -> book.getTitle() != null)
-                .allMatch(book -> book.getGenres() != null);
+                .allMatch(book -> book.id() > 0)
+                .allMatch(book -> book.author() != null)
+                .allMatch(book -> book.title() != null)
+                .allMatch(book -> book.genres() != null);
     }
 
     @Test
-    @Transactional
     void testInsertShouldAddBook() {
 
         Set<Long> genresIdsSet = Set.of(FIRST_GENRE_ID, SECOND_GENRE_ID);
 
-        Book savedBook = bookService.insert(BOOK_TITLE, AUTHOR_ID, genresIdsSet);
+        BookDto savedBook = bookService.insert(BOOK_TITLE, AUTHOR_ID, genresIdsSet);
 
         assertThat(savedBook).isNotNull()
-                .matches(book -> book.getId() > 0);
+                .matches(book -> book.id() > 0);
     }
 
     @Test
@@ -139,7 +147,6 @@ class BookServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testInsertWithIncorrectAuthorIdShouldThrowsEntityNotFoundException() {
 
         Set<Long> genresIdsSet = new HashSet<>();
@@ -154,7 +161,6 @@ class BookServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testInsertWithIncorrectGenreIdShouldThrowsEntityNotFoundException() {
 
         Set<Long> genresIdsSet = Set.of(INCORRECT_GENRE_ID);
@@ -168,17 +174,16 @@ class BookServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testUpdateShouldUpdateBook() {
         Set<Long> genresIdsSet = Set.of(FIRST_GENRE_ID, SECOND_GENRE_ID);
         var result = bookService.findById(BOOK_ID);
         assertThat(result).isPresent();
 
-        Book actualBook = result.get();
+        BookDto actualBook = result.get();
 
-        assertThat(actualBook.getTitle()).isNotEqualTo(BOOK_TITLE);
-        assertThat(actualBook.getAuthor().getId()).isNotEqualTo(AUTHOR_ID);
-        assertThat(actualBook.getGenres())
+        assertThat(actualBook.title()).isNotEqualTo(BOOK_TITLE);
+        assertThat(actualBook.author().getId()).isNotEqualTo(AUTHOR_ID);
+        assertThat(actualBook.genres())
                 .extracting(Genre::getId).doesNotContainAnyElementsOf(genresIdsSet);
 
         bookService.update(BOOK_ID, BOOK_TITLE, AUTHOR_ID, genresIdsSet);
@@ -188,15 +193,13 @@ class BookServiceImplTest {
         assertThat(result).isPresent();
         actualBook = result.get();
 
-        assertThat(actualBook.getTitle()).isEqualTo(BOOK_TITLE);
-        assertThat(actualBook.getAuthor().getId()).isEqualTo(AUTHOR_ID);
-        assertThat(actualBook.getGenres())
+        assertThat(actualBook.title()).isEqualTo(BOOK_TITLE);
+        assertThat(actualBook.author().getId()).isEqualTo(AUTHOR_ID);
+        assertThat(actualBook.genres())
                 .extracting(Genre::getId).containsExactlyInAnyOrderElementsOf(genresIdsSet);
-
     }
 
     @Test
-    @Transactional
     void testUpdateWithNoGenresShouldThrowsIllegalArgumentException() {
 
         assertThatThrownBy(() -> bookService.update(
@@ -209,7 +212,6 @@ class BookServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testUpdateWithIncorrectAuthorIdShouldThrowsEntityNotFoundException() {
 
         Set<Long> genresIdsSet = new HashSet<>();
@@ -225,7 +227,6 @@ class BookServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testUpdateWithIncorrectGenreIdShouldThrowsEntityNotFoundException() {
 
         Set<Long> genresIdsSet = Set.of(INCORRECT_GENRE_ID);
@@ -240,7 +241,6 @@ class BookServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testDeleteByIdShouldDeleteBook() {
         assertThat(bookService.findById(BOOK_ID)).isPresent();
 

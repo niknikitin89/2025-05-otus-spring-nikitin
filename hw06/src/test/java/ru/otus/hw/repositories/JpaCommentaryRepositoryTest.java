@@ -25,10 +25,10 @@ class JpaCommentaryRepositoryTest {
     private static final int EXPECTED_COMMENTARY_NUMBER = 3;
 
     @Autowired
-    private CommentaryRepository commentaryRepository;
+    private CommentaryRepository repository;
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @DisplayName("должен загружать комментарий по id")
     @Test
@@ -36,7 +36,7 @@ class JpaCommentaryRepositoryTest {
 
         var expectedComment = em.find(Commentary.class, FIRST_COMMENTARY_ID);
 
-        var actualComment = commentaryRepository.findById(FIRST_COMMENTARY_ID);
+        var actualComment = repository.findById(FIRST_COMMENTARY_ID);
 
         assertThat(actualComment).isPresent().get().isEqualTo(expectedComment);
     }
@@ -45,7 +45,7 @@ class JpaCommentaryRepositoryTest {
     @Test
     void testFindAllByBookIdShouldReturnCorrectCommentariesList() {
 
-        List<Commentary> commentList = commentaryRepository.findAllByBookId(BOOK_ID);
+        List<Commentary> commentList = repository.findAllByBookId(BOOK_ID);
 
         assertThat(commentList).hasSize(EXPECTED_COMMENTARY_NUMBER)
                 .allMatch(commentary -> commentary.getBook().getId() == BOOK_ID)
@@ -58,7 +58,7 @@ class JpaCommentaryRepositoryTest {
         var book = em.find(Book.class, BOOK_ID);
         var expectedComment = new Commentary(0,"New Commentary", book);
 
-        var actualComment = commentaryRepository.save(expectedComment);
+        var actualComment = repository.save(expectedComment);
 
         assertThat(actualComment).isNotNull()
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedComment);
@@ -73,7 +73,7 @@ class JpaCommentaryRepositoryTest {
         assertThat(em.find(Commentary.class, FIRST_COMMENTARY_ID))
                 .isNotNull().isNotEqualTo(expectedComment);
 
-        var actualComment = commentaryRepository.save(expectedComment);
+        var actualComment = repository.save(expectedComment);
 
         assertThat(actualComment).isNotNull()
                 .usingRecursiveComparison().isEqualTo(expectedComment);
@@ -86,7 +86,7 @@ class JpaCommentaryRepositoryTest {
                 .isNotNull()
                 .matches(comment -> comment.getId() == FIRST_COMMENTARY_ID);
 
-        commentaryRepository.deleteById(FIRST_COMMENTARY_ID);
+        repository.deleteById(FIRST_COMMENTARY_ID);
 
         assertThat(em.find(Commentary.class,FIRST_COMMENTARY_ID))
                 .isNull();

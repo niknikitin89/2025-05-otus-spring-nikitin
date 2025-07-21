@@ -1,13 +1,15 @@
 package ru.otus.hw.repositories;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Book;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -16,43 +18,35 @@ public class JpaBookRepository implements BookRepository {
 
     private final EntityManager em;
 
+    private final GenreRepository genreRepository;
+
     @Override
     public Optional<Book> findById(long id) {
 
-        TypedQuery<Book> query = em.createQuery("""
-                        select distinct b from Book b
-                        left join fetch b.author
-                        left join fetch b.genres
-                        where b.id = :id""",
-                Book.class);
-        query.setParameter("id", id);
+        EntityGraph<?> entityGraph = em.getEntityGraph("authors-and-genres-entity-graph");
 
-        var result = query.getResultList();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("javax.persistence.loadgraph", entityGraph);
 
-        return !result.isEmpty() ?
-                Optional.of(result.get(0)) : Optional.empty();
+        return Optional.ofNullable(em.find(Book.class, id, properties));
     }
 
     @Override
-    public Optional<Book> findByIdLazy(long id) {
+    public Optional<Book> findByIdSmall(long id) {
         return Optional.ofNullable(em.find(Book.class, id));
     }
 
     @Override
     public List<Book> findAll() {
+        EntityGraph<?> entityGraph = em.getEntityGraph("authors-entity-graph");
 
-        TypedQuery<Book> query = em.createQuery("""
-                        select distinct b from Book b
-                        left join fetch b.author
-                        left join fetch b.genres""",
-                Book.class);
+        TypedQuery<Book> query = em.createQuery("select distinct b from Book b", Book.class);
+        query.setHint("javax.persistence.loadgraph", entityGraph);
 
         return query.getResultList();
-
     }
 
     @Override
-    @Transactional
     public Book save(Book book) {
         if (book.getId() == 0) {
             em.persist(book);
@@ -63,8 +57,8 @@ public class JpaBookRepository implements BookRepository {
     }
 
     @Override
-    @Transactional
     public void deleteById(long id) {
         em.remove(em.find(Book.class, id));
     }
+
 }

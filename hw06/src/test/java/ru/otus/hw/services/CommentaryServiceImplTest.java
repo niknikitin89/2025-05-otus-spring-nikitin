@@ -7,14 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Commentary;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentaryRepository;
+import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.repositories.JpaBookRepository;
 import ru.otus.hw.repositories.JpaCommentaryRepository;
+import ru.otus.hw.repositories.JpaGenreRepository;
 
 import java.util.List;
 
@@ -25,8 +28,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DataJpaTest
 @Import({CommentaryServiceImpl.class,
         JpaCommentaryRepository.class,
-        JpaBookRepository.class})
+        JpaBookRepository.class,
+        JpaGenreRepository.class})
 @Transactional(propagation = Propagation.NEVER)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CommentaryServiceImplTest {
 
     private static final long COMMENTARY_ID = 1L;
@@ -49,6 +54,9 @@ class CommentaryServiceImplTest {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private GenreRepository genreRepository;
 
     @Test
     void testFindByBookIdShouldReturnCommentariesList() {
@@ -75,7 +83,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testAddShouldAddCommentToBook() {
 
         var newComment = commentaryService.add(BOOK_ID, COMMENTARY_TEXT);
@@ -85,7 +92,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testAddWithZeroBookIdShouldTrowsIllegalArgumentException() {
         assertThatThrownBy(() -> commentaryService.add(0, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -93,7 +99,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testAddWithIllegalBookIdShouldTrowsIllegalArgumentException() {
         assertThatThrownBy(() -> commentaryService.add(ILLEGAL_BOOK_ID, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -101,7 +106,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testDeleteByIdShouldDeleteCommentary() {
         assertThat(commentaryService.findById(COMMENTARY_ID)).isPresent();
 
@@ -111,7 +115,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testUpdateShouldUpdateCommentary() {
         var result = commentaryService.findById(COMMENTARY_ID);
         assertThat(result).isPresent();
@@ -129,7 +132,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testUpdateWithZeroIdShouldTrowsIllegalArgumentException() {
         assertThatThrownBy(() -> commentaryService.update(0, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -137,7 +139,6 @@ class CommentaryServiceImplTest {
     }
 
     @Test
-    @Transactional
     void testUpdateWithIllegalIdShouldTrowsIllegalArgumentException() {
         assertThatThrownBy(() -> commentaryService.update(ILLEGAL_COMMENTARY_ID, COMMENTARY_TEXT))
                 .isInstanceOf(IllegalArgumentException.class)

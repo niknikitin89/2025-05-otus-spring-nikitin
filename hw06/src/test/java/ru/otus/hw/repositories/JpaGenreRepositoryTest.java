@@ -25,7 +25,7 @@ class JpaGenreRepositoryTest {
     private static final int EXPECTED_NUMBER_OF_GENRES_BY_ID_SEARCH = 2;
 
     @Autowired
-    private GenreRepository repositoryJdbc;
+    private GenreRepository repository;
 
     @DisplayName("должен загружать жанры по списку id")
     @Test
@@ -35,7 +35,7 @@ class JpaGenreRepositoryTest {
         genresIdSet.add(FIRST_GENRE_ID);
         genresIdSet.add(SECOND_GENRE_ID);
 
-        var genres = repositoryJdbc.findAllByIds(genresIdSet);
+        var genres = repository.findAllByIds(genresIdSet);
 
         assertThat(genres).hasSize(EXPECTED_NUMBER_OF_GENRES_BY_ID_SEARCH)
                 .allMatch(genre -> genresIdSet.contains(genre.getId()))
@@ -45,7 +45,7 @@ class JpaGenreRepositoryTest {
     @DisplayName("должен загружать список всех жанров")
     @Test
     void testFindAllShouldReturnCorrectGenresList() {
-        var genres = repositoryJdbc.findAll();
+        var genres = repository.findAll();
 
         assertThat(genres).hasSize(EXPECTED_NUMBER_OF_GENRES)
                 .allMatch(genre -> genre.getName() != null && !genre.getName().isEmpty());

@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface BookRepository {
     Optional<Book> findById(long id);
 
-    Optional<Book> findByIdLazy(long id);
+    Optional<Book> findByIdSmall(long id);
 
     List<Book> findAll();
 

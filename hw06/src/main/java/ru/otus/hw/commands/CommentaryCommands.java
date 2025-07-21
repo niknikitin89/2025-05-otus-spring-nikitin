@@ -16,6 +16,17 @@ public class CommentaryCommands {
 
     private final CommentaryConverter commentaryConverter;
 
+    // cbid 3
+    @ShellMethod(value = "Find comment by id", key = "cbid")
+    public String findById(long id) {
+        var result = commentaryService.findById(id);
+        if (result.isPresent()) {
+            return commentaryConverter.commentaryToString(result.get());
+        } else {
+            return "Comment not found";
+        }
+    }
+
     // cb 3
     @ShellMethod(value = "Find comment by book", key = "cb")
     public String findByBookId(long bookId) {

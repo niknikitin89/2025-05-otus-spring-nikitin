@@ -37,7 +37,7 @@ public class CommentaryServiceImpl implements CommentaryService {
             throw new IllegalArgumentException("Book id cannot be 0");
         }
 
-        var book = bookRepository.findByIdLazy(bookId)
+        var book = bookRepository.findByIdSmall(bookId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Book %d not found".formatted(bookId)));
 

@@ -18,7 +18,7 @@ class JpaAuthorRepositoryTest {
     private static final int EXPECTED_NUMBER_OF_AUTHORS = 3;
 
     @Autowired
-    private AuthorRepository repositoryJdbc;
+    private AuthorRepository repository;
 
     @Autowired
     private TestEntityManager em;
@@ -27,7 +27,7 @@ class JpaAuthorRepositoryTest {
     @Test
     void testFindAllShouldReturnCorrectAuthorsList() {
 
-        var authors = repositoryJdbc.findAll();
+        var authors = repository.findAll();
 
         assertThat(authors).hasSize(EXPECTED_NUMBER_OF_AUTHORS)
                 .allMatch(author -> author.getFullName() != null && !author.getFullName().isEmpty());
@@ -40,7 +40,7 @@ class JpaAuthorRepositoryTest {
         Author expectedAuthor = new Author(0,"AuthorFullname");
         expectedAuthor = em.persist(expectedAuthor);
 
-        var author = repositoryJdbc.findById(expectedAuthor.getId());
+        var author = repository.findById(expectedAuthor.getId());
 
         assertThat(author).isPresent().get()
                 .isEqualTo(expectedAuthor);
