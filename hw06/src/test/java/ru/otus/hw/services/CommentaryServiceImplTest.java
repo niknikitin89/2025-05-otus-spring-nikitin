@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         JpaBookRepository.class,
         JpaGenreRepository.class})
 @Transactional(propagation = Propagation.NEVER)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CommentaryServiceImplTest {
 
     private static final long COMMENTARY_ID = 1L;
@@ -83,6 +82,7 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testAddShouldAddCommentToBook() {
 
         var newComment = commentaryService.add(BOOK_ID, COMMENTARY_TEXT);
@@ -106,6 +106,7 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testDeleteByIdShouldDeleteCommentary() {
         assertThat(commentaryService.findById(COMMENTARY_ID)).isPresent();
 
@@ -115,6 +116,7 @@ class CommentaryServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testUpdateShouldUpdateCommentary() {
         var result = commentaryService.findById(COMMENTARY_ID);
         assertThat(result).isPresent();

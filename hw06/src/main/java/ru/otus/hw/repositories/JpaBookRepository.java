@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
+
 @Repository
 @RequiredArgsConstructor
 public class JpaBookRepository implements BookRepository {
 
     private final EntityManager em;
-
-    private final GenreRepository genreRepository;
 
     @Override
     public Optional<Book> findById(long id) {
@@ -26,7 +26,7 @@ public class JpaBookRepository implements BookRepository {
         EntityGraph<?> entityGraph = em.getEntityGraph("authors-and-genres-entity-graph");
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("javax.persistence.loadgraph", entityGraph);
+        properties.put(FETCH.getKey(), entityGraph);
 
         return Optional.ofNullable(em.find(Book.class, id, properties));
     }
@@ -40,8 +40,8 @@ public class JpaBookRepository implements BookRepository {
     public List<Book> findAll() {
         EntityGraph<?> entityGraph = em.getEntityGraph("authors-entity-graph");
 
-        TypedQuery<Book> query = em.createQuery("select distinct b from Book b", Book.class);
-        query.setHint("javax.persistence.loadgraph", entityGraph);
+        TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
+        query.setHint(FETCH.getKey(), entityGraph);
 
         return query.getResultList();
     }

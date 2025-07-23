@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         AuthorConverter.class,
         GenreConverter.class})
 @Transactional(propagation = Propagation.NEVER)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookServiceImplTest {
 
     private static final long BOOK_ID = 1L;
@@ -58,6 +58,9 @@ class BookServiceImplTest {
     private static final long SECOND_GENRE_ID = 4L;
 
     private static final long INCORRECT_GENRE_ID = 9999L;
+
+    @Autowired
+    private EntityManager em;
 
     @Autowired
     private BookService bookService;
@@ -124,6 +127,7 @@ class BookServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testInsertShouldAddBook() {
 
         Set<Long> genresIdsSet = Set.of(FIRST_GENRE_ID, SECOND_GENRE_ID);
@@ -132,10 +136,11 @@ class BookServiceImplTest {
 
         assertThat(savedBook).isNotNull()
                 .matches(book -> book.id() > 0);
+
+
     }
 
     @Test
-    @Transactional
     void testInsertWithNoGenresShouldThrowsIllegalArgumentException() {
 
         assertThatThrownBy(() -> bookService.insert(
@@ -174,6 +179,7 @@ class BookServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testUpdateShouldUpdateBook() {
         Set<Long> genresIdsSet = Set.of(FIRST_GENRE_ID, SECOND_GENRE_ID);
         var result = bookService.findById(BOOK_ID);
@@ -241,6 +247,7 @@ class BookServiceImplTest {
     }
 
     @Test
+    @Transactional
     void testDeleteByIdShouldDeleteBook() {
         assertThat(bookService.findById(BOOK_ID)).isPresent();
 
