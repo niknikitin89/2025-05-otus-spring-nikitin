@@ -21,6 +21,4 @@ public interface BookRepository extends CrudRepository<Book, Integer>, BookRepos
     Book save(@Nonnull Book book);
 
     void deleteById(long id);
-
-    boolean existsById(long id);
 }
