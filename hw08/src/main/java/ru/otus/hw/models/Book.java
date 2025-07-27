@@ -7,8 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class Book {
 
     private Author author;
 
-    @DBRef
+    @DocumentReference(lazy = true)
     private List<Genre> genres;
 
     public Book(String title, Author author, List<Genre> genres) {

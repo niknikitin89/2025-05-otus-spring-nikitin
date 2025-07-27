@@ -11,4 +11,6 @@ public interface CommentaryRepository extends MongoRepository<Commentary, String
     @Nonnull
     List<Commentary> findAllByBookId(String id);
 
+    void deleteAllByBookId(String id);
+
 }

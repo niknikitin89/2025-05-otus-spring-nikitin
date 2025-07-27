@@ -54,7 +54,7 @@ public class CommentaryServiceImpl implements CommentaryService {
     @Override
     @Transactional
     public void update(String id, String text) {
-        if (id.equals("0")||id.isEmpty()) {
+        if (id.equals("0") || id.isEmpty()) {
             throw new IllegalArgumentException("Commentary id cannot be empty");
         }
 
