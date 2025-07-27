@@ -1,0 +1,26 @@
+spring:
+  data:
+    mongodb:
+      port: 0 # when flapdoodle using
+      database: test_db
+#      embedded:
+#        version: 4.20.1
+#      auto-index-creation: false
+
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+#      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+
+mongock:
+  enabled: false
+#  runner-type: "ApplicationRunner"
+#  change-logs-scan-package:
+#    - ru.otus.hw.mongock.changelog
