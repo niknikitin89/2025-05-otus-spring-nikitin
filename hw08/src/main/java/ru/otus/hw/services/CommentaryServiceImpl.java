@@ -37,7 +37,7 @@ public class CommentaryServiceImpl implements CommentaryService {
             throw new IllegalArgumentException("Book id cannot be empty");
         }
 
-        var book = bookRepository.findByIdSmall(bookId)
+        var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Book %s not found".formatted(bookId)));
 

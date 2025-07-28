@@ -30,6 +30,7 @@ public class Book {
     @ToString.Include
     private String title;
 
+    @DocumentReference(lazy = true)
     private Author author;
 
     @DocumentReference(lazy = true)

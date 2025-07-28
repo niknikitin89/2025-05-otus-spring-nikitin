@@ -17,7 +17,5 @@ public interface BookRepository extends MongoRepository<Book, String> {
     @Override
     List<Book> findAll();
 
-    @Query("{ '_id' : :#{#id}}")
-    Optional<Book> findByIdSmall(@Param("id") String id);
 
 }
