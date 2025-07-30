@@ -92,7 +92,7 @@
     <form method="post" th:action="@{/book/save}" th:object="${book}">
         <input name="_method" th:value="${book.id != null ? 'put' : 'post'}" type="hidden">
         <!-- Скрытое поле для ID -->
-        <input type="hidden" th:field="*{id}">
+        <input th:field="*{id}" type="hidden">
         <!--Заголовок-->
         <div class="form-group">
             <label for="title">Title:</label>
@@ -127,14 +127,17 @@
             <small class="form-text text-muted">Use Ctrl+Click for multiple selection</small>
         </div>
 
-
+        <!--Кнопки-->
         <div class="form-actions">
+
             <button class="btn"
                     style="padding: 8px 16px; line-height: 1.5; "
-                    type="submit">Save Changes</button>
+                    type="submit">Save Changes
+            </button>
+
             <a class="btn btn-secondary"
-               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
                href="bookPage.html"
+               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
                th:href="@{/book/{id}(id=${book.id})}">Cancel</a>
         </div>
     </form>

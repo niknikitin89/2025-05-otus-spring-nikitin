@@ -81,6 +81,7 @@
             <th>Actions</th>
         </tr>
         </thead>
+
         <tbody>
         <tr th:each="book : ${books}">
             <td th:text="${book.id}">1</td>
@@ -104,8 +105,9 @@
                 <form method="post"
                       onsubmit="return confirm('Delete book?')"
                       style="display: inline;"
-                      th:action="@{/book_delete/{id}(id=${book.id})}">
+                      th:action="@{/book_delete}">
                     <input name="_method" type="hidden" value="delete">
+                    <input name="bookId" th:value="${book.id}" type="hidden">
                     <button class="btn delete-btn" type="submit">Delete</button>
                 </form>
             </td>

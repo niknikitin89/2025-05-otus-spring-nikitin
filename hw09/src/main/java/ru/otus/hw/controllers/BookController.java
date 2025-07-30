@@ -1,5 +1,6 @@
 package ru.otus.hw.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
@@ -59,7 +61,7 @@ public class BookController {
     }
 
     @PostMapping("/book/save")
-    public String saveBook(@ModelAttribute BookDto book) {
+    public String saveBook(@Valid @ModelAttribute BookDto book) {
         if (book.getId() == 0) {
             bookService.insert(
                     book.getTitle(),
@@ -85,5 +87,11 @@ public class BookController {
         model.addAttribute("authors", authors);
         model.addAttribute("allGenres", genres);
         return "bookEditPage";
+    }
+
+    @PostMapping("/book_delete")
+    public String deleteBook(@RequestParam("bookId") long bookId) {
+        bookService.deleteById(bookId);
+        return "redirect:/";
     }
 }

@@ -1,6 +1,7 @@
 package ru.otus.hw.dto;
 
 import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,9 @@ public class BookDto {
 
     private long id;
     private String title;
+    @NotBlank(message = "Empty author")
     private Author author;
+    @NotBlank(message = "Empty author")
     private List<Genre> genres;
 
     public static BookDto fromDomainObject(@Nonnull Book book) {
