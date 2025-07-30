@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Genres List</title>
+    <style>
+        .table {
+            max-width: 800px;
+        }
+
+        .table-header {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .navigation {
+            margin-bottom: 20px;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #343a40;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .warning {
+            padding: 10px;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Genres List</h1>
+
+    <div class="navigation">
+        <a href="allBooksPage.html" th:href="@{/}">Main Page</a>
+    </div>
+
+    <table class="table">
+        <thead class="table-header">
+        <tr>
+            <th>ID</th>
+            <th>Genre Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="genre : ${genres}">
+            <td th:text="${genre.id}">1</td>
+            <td th:text="${genre.name}">Genre Name</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="warning" th:if="${genres.empty}">
+        No genres
+    </div>
+</div>
+</body>
+</html>

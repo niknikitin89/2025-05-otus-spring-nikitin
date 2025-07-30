@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .book-info {
+            margin: 20px 0;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            min-width: 120px;
+            color: #343a40;
+        }
+
+        .info-value {
+            flex-grow: 1;
+        }
+
+        .genre-tag {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            margin-right: 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.95em;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #2196F3;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            min-width: 100px;
+            border-radius: 4px;
+            border: none;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .btn-edit {
+            background-color: #2196F3;
+            padding: 8px 16px;
+            line-height: 1.5;
+            text-align: center;
+
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+            padding: 8px 16px;
+            line-height: 1.5;
+            text-align: center;
+            width: 100%;
+
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+        }
+
+        .action-buttons form {
+            min-width: 100px;
+        }
+
+        .comments-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Отступ между комментариями */
+        }
+
+        .comment-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #eee; /* Необязательная разделительная линия */
+        }
+
+        .navigation {
+            margin-bottom: 20px;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #343a40;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .comment-list {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .comment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comment-content {
+            flex-grow: 1;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+        .btn {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .inline-form {
+            display: inline;
+            margin: 0;
+        }
+        .comment-line {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .comment-line {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .comment-id {
+            font-weight: bold;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+
+        .comment-text {
+            flex: 1;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .comment-buttons {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn-edit {
+            background-color: #2196F3;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+        }
+
+        .inline-form {
+            display: inline;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Book</h1>
+
+    <div class="navigation">
+        <a href="/">Main Page</a>
+    </div>
+
+
+    <div class="book-info">
+        <h1 th:text="${book.title}">Book Title</h1>
+
+        <div class="book-info">
+            <div class="info-row">
+                <span class="info-label">ID:</span>
+                <span class="info-value" th:text="${book.id}">123</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Author:</span>
+                <span class="info-value" th:text="${book.author.fullName}">Author Name</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Genres:</span>
+                <span class="info-value">
+                <span class="genre-tag" th:each="genre, iterStat : ${book.genres}">
+                    <span th:text="${genre.name}">Genre</span>
+                    <span th:unless="${iterStat.last}">, </span>
+                </span>
+            </span>
+            </div>
+
+            <div class="comments-container">
+                <span class="info-label">Commentaries:</span>
+                <div class="comment-list">
+                    <div class="comment-line" th:each="comment : ${commentary}">
+                        <span class="comment-id" th:text="${comment.id} + ':'"></span>
+                        <span class="comment-text" th:text="${comment.text}"></span>
+
+                        <span class="comment-buttons">
+                <!-- Кнопка редактирования -->
+                <a th:href="@{/comments/{id}/edit(id=${comment.id})}"
+                   class="btn btn-edit">Edit</a>
+
+                            <!-- Кнопка удаления -->
+                <form th:action="@{/comments/{id}(id=${comment.id})}"
+                      method="post"
+                      class="inline-form">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit"
+                            class="btn btn-delete"
+                            onclick="return confirm('Delete this comment?')">
+                        Delete
+                    </button>
+                </form>
+            </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons" style="display: flex; gap: 10px;">
+            <!-- Кнопка добавлдения комментария -->
+            <a class="btn btn-edit"
+               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
+               th:href="@{/comment/add_to_book/{id}(id=${book.id})}">
+                Add Comment
+            </a>
+
+            <!-- Кнопка редактирования -->
+            <a class="btn btn-edit"
+               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
+               th:href="@{/books/{id}/edit(id=${book.id})}">
+                Edit Book
+            </a>
+
+            <!-- Кнопка удаления (форма) -->
+            <form style="margin: 0;">
+                <input name="_method" type="hidden" value="delete">
+                <button class="btn btn-delete" onclick="return confirm('Удалить эту книгу?')"
+                        style="padding: 8px 16px; line-height: 1.5; width: 100%;"
+                        type="submit">
+                    Delete Book
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

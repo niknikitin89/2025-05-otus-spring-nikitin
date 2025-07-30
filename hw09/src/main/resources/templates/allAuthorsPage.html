@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authors List</title>
+    <style>
+        .author-table {
+            max-width: 800px;
+        }
+
+        .table-header {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .navigation {
+            margin-bottom: 20px;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #343a40;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .warning {
+            padding: 10px;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Authors List</h1>
+
+    <div class="navigation">
+        <a href="allBooksPage.html" th:href="@{/}">Main Page</a>
+    </div>
+
+    <table class="author-table">
+        <thead class="table-header">
+        <tr>
+            <th>ID</th>
+            <th>Author Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="author : ${authors}">
+            <td th:text="${author.id}">1</td>
+            <td th:text="${author.fullName}">Author Name</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="warning" th:if="${authors.empty}">
+        No authors
+    </div>
+</div>
+</body>
+</html>
