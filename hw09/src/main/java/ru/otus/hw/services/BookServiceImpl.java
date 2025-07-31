@@ -3,7 +3,6 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-//import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
@@ -12,6 +11,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -25,11 +25,10 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-//    private final BookConverter bookConverter;
-
     @Override
-    public BookDto findById(long id) {
-        return bookRepository.findById(id).map(BookDto::fromDomainObject).orElse(null);
+    public Optional<BookDto> findById(long id) {
+        var bookOpt = bookRepository.findById(id);
+        return bookOpt.map(BookDto::fromDomainObject);
     }
 
     @Override

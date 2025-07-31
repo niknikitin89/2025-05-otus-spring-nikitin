@@ -9,6 +9,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentaryRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -28,9 +29,16 @@ public class CommentaryServiceImpl implements CommentaryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CommentaryDto findById(long id) {
+    public Optional<CommentaryDto> findById(long id) {
         var comment = commentaryRepository.findById(id);
-        return comment.map(CommentaryDto::fromDomainObject).orElse(null);
+        return comment.map(CommentaryDto::fromDomainObject);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CommentaryDto> findByIdWithBook(long id) {
+        var comment = commentaryRepository.findById(id);
+        return comment.map(CommentaryDto::fromDomainObjectWithBook);
     }
 
     @Override
@@ -68,4 +76,6 @@ public class CommentaryServiceImpl implements CommentaryService {
         commentary.setText(text);
         commentaryRepository.save(commentary);
     }
+
+
 }

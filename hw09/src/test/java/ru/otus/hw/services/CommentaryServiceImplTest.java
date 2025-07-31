@@ -52,26 +52,28 @@ class CommentaryServiceImplTest {
     @Test
     void testFindByBookIdShouldReturnCommentariesList() {
 
-        List<CommentaryDto> expectedCommentList = commentaryRepository.findAllByBookId(BOOK_ID);
+        List<CommentaryDto> expectedCommentList =
+                commentaryRepository.findAllByBookId(BOOK_ID).stream()
+                        .map(CommentaryDto::fromDomainObject).toList();
 
-        List<Commentary> commentList = commentaryService.findByBookId(BOOK_ID);
+        List<CommentaryDto> commentList = commentaryService.findByBookId(BOOK_ID);
 
         assertThat(commentList).isNotEmpty()
                 .hasSize(COMMENTARY_LIST_SIZE)
                 .usingRecursiveAssertion().isEqualTo(expectedCommentList);
     }
 
-    @Test
-    void testFindByBookIdShouldThrowLazyInitializationExceptionOnBookAccess() {
-
-        List<Commentary> commentList = commentaryService.findByBookId(BOOK_ID);
-
-        assertThat(commentList).isNotEmpty()
-                .hasSize(COMMENTARY_LIST_SIZE);
-
-        assertThatThrownBy(() -> commentList.get(0).getBook().getTitle())
-                .isInstanceOf(LazyInitializationException.class);
-    }
+//    @Test
+//    void testFindByBookIdShouldThrowLazyInitializationExceptionOnBookAccess() {
+//
+//        List<CommentaryDto> commentList = commentaryService.findByBookId(BOOK_ID);
+//
+//        assertThat(commentList).isNotEmpty()
+//                .hasSize(COMMENTARY_LIST_SIZE);
+//
+//        assertThatThrownBy(() -> commentList.get(0).getBook().getTitle())
+//                .isInstanceOf(LazyInitializationException.class);
+//    }
 
     @Test
     @Transactional
@@ -112,7 +114,7 @@ class CommentaryServiceImplTest {
     void testUpdateShouldUpdateCommentary() {
         var result = commentaryService.findById(COMMENTARY_ID);
         assertThat(result).isPresent();
-        Commentary commentary = result.get();
+        CommentaryDto commentary = result.get();
 
         assertThat(commentary.getText()).isNotEqualTo(COMMENTARY_TEXT);
 

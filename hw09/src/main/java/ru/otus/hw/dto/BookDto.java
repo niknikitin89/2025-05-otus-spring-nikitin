@@ -17,10 +17,9 @@ import java.util.List;
 public class BookDto {
 
     private long id;
+    @NotBlank(message = "Empty Title")
     private String title;
-    @NotBlank(message = "Empty author")
     private Author author;
-    @NotBlank(message = "Empty author")
     private List<Genre> genres;
 
     public static BookDto fromDomainObject(@Nonnull Book book) {

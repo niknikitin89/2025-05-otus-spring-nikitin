@@ -1,5 +1,7 @@
 package ru.otus.hw.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +24,7 @@ public class CommentaryController {
     //http://localhost:8080/comment/add_to_book/1
     @GetMapping("/comment/add_to_book/{id}")
     public String enterCommentToBook(@PathVariable("id") long bookId, Model model) {
-        var book = bookService.findById(bookId);
+        var book = bookService.findById(bookId).orElseThrow(()->new EntityNotFoundException("Book not found"));
         model.addAttribute("book", book);
         CommentaryDto comment = new CommentaryDto();
         model.addAttribute("comment", comment);
@@ -32,7 +34,7 @@ public class CommentaryController {
     @PostMapping("/comment/save")
     public String saveCommentForBook(@RequestParam("bookId") long bookId,
                                      @RequestParam("commentId") long commentId,
-                                     @RequestParam String text) {
+                                     @Valid @RequestParam String text) {
         if (commentId == 0) {
             commentaryService.add(bookId, text);
         } else {
@@ -51,7 +53,9 @@ public class CommentaryController {
 
     @GetMapping("/comment/edit/{id}")
     public String editComment(@PathVariable("id") long commentId, Model model) {
-        var comment = commentaryService.findById(commentId);
+        var commentOpt = commentaryService.findByIdWithBook(commentId);
+        CommentaryDto comment = commentOpt.orElseThrow(
+                () -> new EntityNotFoundException("Comment not found"));
         model.addAttribute("book", comment.getBook());
         model.addAttribute("comment", comment);
         return "enterCommentToBookPage";

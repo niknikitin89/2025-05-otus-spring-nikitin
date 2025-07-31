@@ -1,5 +1,6 @@
 package ru.otus.hw.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,13 +14,18 @@ public class CommentaryDto {
 
     private long id;
 
+    @NotBlank(message = "Empty Text")
     private String text;
 
     private BookDto book;
 
-    public static CommentaryDto fromDomainObject(Commentary commet) {
+    public static CommentaryDto fromDomainObjectWithBook(Commentary commet) {
         var book = BookDto.fromDomainObject(commet.getBook());
         return new CommentaryDto(commet.getId(), commet.getText(), book);
+    }
+
+    public static CommentaryDto fromDomainObject(Commentary commet) {
+        return new CommentaryDto(commet.getId(), commet.getText(), null);
     }
 
     public Commentary toDomainObject() {

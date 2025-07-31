@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
@@ -41,7 +42,10 @@ public class BookController {
     //http://localhost:8080/book/1
     @GetMapping("/book/{id}")
     public String bookPage(@PathVariable("id") long id, Model model) {
-        var book = bookService.findById(id);
+        var book = bookService.findById(id)
+                .orElseThrow(
+                        ()-> new EntityNotFoundException("Book with id " + id + " not found")
+                );
         var commentary = commentaryService.findByBookId(id);
         model.addAttribute("book", book);
         model.addAttribute("commentary", commentary);
@@ -51,7 +55,7 @@ public class BookController {
     //http://localhost:8080/book/2/edit
     @GetMapping("/book/{id}/edit")
     public String editBookPage(@PathVariable("id") long id, Model model) {
-        var book = bookService.findById(id);
+        var book = bookService.findById(id).orElseThrow(()->new EntityNotFoundException("Book not found"));
         var authors = authorService.findAll();
         var genres = genreService.findAll();
         model.addAttribute("book", book);

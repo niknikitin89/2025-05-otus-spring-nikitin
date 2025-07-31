@@ -65,8 +65,8 @@ class BookServiceImplTest {
     void testFindByIdShouldReturnBook() {
         var result = bookService.findById(BOOK_ID);
 
-//        assertThat(result).isPresent();
-        BookDto book = result;//.get();
+        assertThat(result).isPresent();
+        BookDto book = result.get();
 
         assertThat(book.getTitle()).isNotBlank();
         assertThat(book.getAuthor()).isNotNull();

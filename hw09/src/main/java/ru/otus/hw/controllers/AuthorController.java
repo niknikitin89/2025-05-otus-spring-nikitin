@@ -1,5 +1,6 @@
 package ru.otus.hw.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +18,11 @@ public class AuthorController {
     //http://localhost:8080/author?id=1
     //http://localhost:8080/author?id=2
     @GetMapping("/author")
-    public String authorPage(@RequestParam("id")long id, Model model) {
-        AuthorDto author = authorService.findById(id);
+    public String authorPage(@RequestParam("id") long id, Model model) {
+        var authorOpt = authorService.findById(id);
+        AuthorDto author = authorOpt.orElseThrow(
+                () -> new EntityNotFoundException("Author with id " + id + " not found")
+        );
         model.addAttribute("author", author);
         return "authorPage";
     }

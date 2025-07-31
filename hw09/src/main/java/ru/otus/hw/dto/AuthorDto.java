@@ -1,7 +1,6 @@
 package ru.otus.hw.dto;
 
 import jakarta.annotation.Nonnull;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.otus.hw.models.Author;
@@ -18,7 +17,7 @@ public class AuthorDto {
         return new AuthorDto(author.getId(), author.getFullName());
     }
 
-    public Author toDomainObject(){
+    public Author toDomainObject() {
         return new Author(id, fullName);
     }
 
