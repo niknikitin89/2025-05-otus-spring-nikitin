@@ -1,6 +1,6 @@
 package ru.otus.hw.controllers;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.CommentaryDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentaryService;
 
@@ -51,6 +52,7 @@ public class CommentaryController {
         return "redirect:/book/" + bookId;
     }
 
+    //http://localhost:8080/comment/edit/1
     @GetMapping("/comment/edit/{id}")
     public String editComment(@PathVariable("id") long commentId, Model model) {
         var commentOpt = commentaryService.findByIdWithBook(commentId);

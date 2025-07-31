@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>Books List</title>
     <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
         .table {
             max-width: 800px;
         }
@@ -57,6 +66,9 @@
 
         .btn-secondary {
             background-color: #6c757d;
+        }
+        .action-buttons {
+            margin-top: 30px;
         }
 
     </style>
@@ -121,8 +133,8 @@
 
     <br> <!--Пустая строка-->
 
-    <div class="navigation">
-        <a class="btn btn-secondary" href="bookEditPage.html" th:href="@{/add_book}">New Book</a>
+    <div class="action-buttons">
+        <a class="btn" href="bookEditPage.html" th:href="@{/add_book}">New Book</a>
     </div>
 </div>
 </body>
