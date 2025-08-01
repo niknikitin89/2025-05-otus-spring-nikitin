@@ -44,7 +44,7 @@ public class BookController {
     public String bookPage(@PathVariable("id") long id, Model model) {
         var book = bookService.findById(id)
                 .orElseThrow(
-                        ()-> new EntityNotFoundException("Book with id " + id + " not found")
+                        () -> new EntityNotFoundException("Book with id " + id + " not found")
                 );
         var commentary = commentaryService.findByBookId(id);
         model.addAttribute("book", book);
@@ -55,7 +55,7 @@ public class BookController {
     //http://localhost:8080/book/2/edit
     @GetMapping("/book/{id}/edit")
     public String editBookPage(@PathVariable("id") long id, Model model) {
-        var book = bookService.findById(id).orElseThrow(()->new EntityNotFoundException("Book not found"));
+        var book = bookService.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not found"));
         var authors = authorService.findAll();
         var genres = genreService.findAll();
         model.addAttribute("book", book);
@@ -72,11 +72,11 @@ public class BookController {
                     book.getAuthor().getId(),
                     book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
         } else {
-                bookService.update(
-                        book.getId(),
-                        book.getTitle(),
-                        book.getAuthor().getId(),
-                        book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
+            bookService.update(
+                    book.getId(),
+                    book.getTitle(),
+                    book.getAuthor().getId(),
+                    book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
 
         }
         return "redirect:/";

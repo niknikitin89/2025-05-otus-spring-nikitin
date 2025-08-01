@@ -3,46 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Authors List</title>
-    <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .author-table {
-            max-width: 800px;
-        }
-
-        .table-header {
-            background-color: #343a40;
-            color: white;
-        }
-
-        .navigation {
-            margin-bottom: 20px;
-        }
-
-        .navigation a {
-            display: inline-block;
-            padding: 8px 16px;
-            background: #343a40;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .warning {
-            padding: 10px;
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            border-radius: 4px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container">
@@ -52,7 +13,7 @@
         <a href="allBooksPage.html" th:href="@{/}">Main Page</a>
     </div>
 
-    <table class="author-table">
+    <table class="table">
         <thead class="table-header">
         <tr>
             <th>ID</th>
@@ -68,7 +29,7 @@
     </table>
 
 
-    <div class="warning" th:if="${authors.empty}">
+    <div class="warning" th:if="${authors.isEmpty()}">
         No authors
     </div>
 </div>

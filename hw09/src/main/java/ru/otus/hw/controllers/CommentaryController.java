@@ -25,7 +25,8 @@ public class CommentaryController {
     //http://localhost:8080/comment/add_to_book/1
     @GetMapping("/comment/add_to_book/{id}")
     public String enterCommentToBook(@PathVariable("id") long bookId, Model model) {
-        var book = bookService.findById(bookId).orElseThrow(()->new EntityNotFoundException("Book not found"));
+        var book = bookService.findById(bookId).orElseThrow(
+                () -> new EntityNotFoundException("Book not found"));
         model.addAttribute("book", book);
         CommentaryDto comment = new CommentaryDto();
         model.addAttribute("comment", comment);

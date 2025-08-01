@@ -3,75 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Books List</title>
-    <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
 
-        .table {
-            max-width: 800px;
-        }
-
-        .table-header {
-            background-color: #343a40;
-            color: white;
-        }
-
-        .navigation {
-            margin-bottom: 20px;
-        }
-
-        .navigation a {
-            display: inline-block;
-            padding: 8px 16px;
-            background: #343a40;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .warning {
-            padding: 10px;
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            border-radius: 4px;
-        }
-
-        .actions-cell {
-            white-space: nowrap;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-
-        .delete-btn {
-            background-color: rgba(161, 32, 22, 0.71);
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .action-buttons {
-            margin-top: 30px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container">
@@ -105,7 +38,7 @@
                     <span th:unless="${iterStat.last}">, </span>
                 </span>
             </td>
-            <td class="actions-cell">
+            <td class="comment-actions">
                 <a class="btn"
                    href="bookPage.html"
                    th:href="@{/book/{id}(id=${book.id})}">Browse</a>
@@ -116,11 +49,11 @@
 
                 <form method="post"
                       onsubmit="return confirm('Delete book?')"
-                      style="display: inline;"
                       th:action="@{/book_delete}">
                     <input name="_method" type="hidden" value="delete">
                     <input name="bookId" th:value="${book.id}" type="hidden">
-                    <button class="btn delete-btn" type="submit">Delete</button>
+                    <button style="display: inline;"
+                            class="btn btn-delete" type="submit">Delete</button>
                 </form>
             </td>
         </tr>
