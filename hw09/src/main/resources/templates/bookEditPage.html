@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Edit Book</h1>
+
+    <div class="navigation">
+        <a class="btn btn-secondary" href="allBooksPage.html" th:href="@{/}">Main Page</a>
+    </div>
+
+    <form method="post" th:action="@{/book/save}" th:object="${book}">
+        <input name="_method" th:value="${book.id != null ? 'put' : 'post'}" type="hidden">
+        <!-- Скрытое поле для ID -->
+        <input th:field="*{id}" type="hidden">
+        <!--Заголовок-->
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input id="title" required th:field="*{title}" type="text">
+        </div>
+        <!--Автор-->
+        <div class="form-group">
+            <label for="author">Author:</label>
+            <select id="author" required th:field="*{author.id}">
+                <option th:value="*{author.id}">-- Select Author --</option>
+                <option th:each="author : ${authors}"
+                        th:selected="${book.author != null and book.author.id == author.id}"
+                        th:text="${author.fullName}"
+                        th:value="${author.id}">
+                </option>
+            </select>
+        </div>
+        <!--Жанры-->
+        <div class="form-group">
+            <label>Genres:</label>
+            <select class="form-control"
+                    multiple="multiple"
+                    size="5"
+                    style="width: 100%; margin-bottom: 10px;"
+                    th:field="*{genres}">
+                <option th:each="genre : ${allGenres}"
+                        th:selected="${#lists.contains(book.genres, genre)}"
+                        th:text="${genre.name}"
+                        th:value="${genre.id}">
+                </option>
+            </select>
+            <small class="form-text text-muted">Use Ctrl+Click for multiple selection</small>
+        </div>
+
+        <!--Кнопки-->
+        <div class="form-actions">
+
+            <button class="btn"
+                    style="padding: 8px 16px; line-height: 1.5; "
+                    type="submit">Save Changes
+            </button>
+
+            <a class="btn btn-secondary"
+               href="bookPage.html"
+               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
+               th:href="@{/book/{id}(id=${book.id})}">Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

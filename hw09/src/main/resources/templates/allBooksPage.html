@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books List</title>
+
+    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Books List</h1>
+
+    <div class="navigation">
+        <a class="btn btn-secondary" href="allBooksPage.html" th:href="@{/}">Main Page</a>
+        <a class="btn btn-secondary" href="allAuthorsPage.html" th:href="@{/all_authors}">Authors List</a>
+        <a class="btn btn-secondary" href="allGenresPage.html" th:href="@{/all_genres}">Genres List</a>
+    </div>
+
+    <table class="table">
+        <thead class="table-header">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genres</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}">1</td>
+            <td th:text="${book.title}">Book Title</td>
+            <td th:text="${book.author.fullName}">Author Name</td>
+            <td>
+                <span th:each="genre, iterStat : ${book.genres}">
+                    <span th:text="${genre.name}">Genre</span>
+                    <span th:unless="${iterStat.last}">, </span>
+                </span>
+            </td>
+            <td class="comment-actions">
+                <a class="btn"
+                   href="bookPage.html"
+                   th:href="@{/book/{id}(id=${book.id})}">Browse</a>
+
+                <a class="btn"
+                   href="bookEditPage.html"
+                   th:href="@{/book/{id}/edit(id=${book.id})}">Edit</a>
+
+                <form method="post"
+                      onsubmit="return confirm('Delete book?')"
+                      th:action="@{/book_delete}">
+                    <input name="_method" type="hidden" value="delete">
+                    <input name="bookId" th:value="${book.id}" type="hidden">
+                    <button style="display: inline;"
+                            class="btn btn-delete" type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="warning" th:if="${books.empty}">
+        No books available
+    </div>
+
+    <br> <!--Пустая строка-->
+
+    <div class="action-buttons">
+        <a class="btn" href="bookEditPage.html" th:href="@{/add_book}">New Book</a>
+    </div>
+</div>
+</body>
+</html>
