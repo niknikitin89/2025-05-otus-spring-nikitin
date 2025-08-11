@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books List</title>
+
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Books List</h1>
+
+    <div class="navigation">
+        <a class="btn btn-secondary" href="allBooksPage.html" th:href="@{/}">Main Page</a>
+        <a class="btn btn-secondary" href="allAuthorsPage.html" th:href="@{/all_authors}">Authors List</a>
+        <a class="btn btn-secondary" href="allGenresPage.html" th:href="@{/all_genres}">Genres List</a>
+    </div>
+
+    <table class="table">
+        <thead class="table-header">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genres</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="book-table">
+        </tbody>
+    </table>
+
+    <script>
+        $(function () {
+            $.get('api/book').done(function (books) {
+                    const tbody = document.getElementById("book-table")
+
+                    books.forEach(function (book) {
+                        const row = document.createElement('tr');
+
+                        // ID книги
+                        const idBook = document.createElement('td');
+                        idBook.textContent = book.id;
+                        row.appendChild(idBook);
+
+                        // Название книги
+                        const title = document.createElement('td');
+                        title.textContent = book.title;
+                        row.appendChild(title);
+
+                        // Автор
+                        const authorName = document.createElement('td');
+                        authorName.textContent = book.author.fullName;
+                        row.appendChild(authorName);
+
+                        // Жанры
+                        const genres = document.createElement('td');
+                        book.genres.forEach((genre, index) => {
+                            const genreSpan = document.createElement('span');
+                            genreSpan.textContent = genre.name;
+                            genres.appendChild(genreSpan);
+
+                            if (index !== book.genres.length - 1) {
+                                const commaSpan = document.createElement('span');
+                                commaSpan.textContent = ', ';
+                                genres.appendChild(commaSpan);
+                            }
+                        });
+                        row.appendChild(genres);
+
+                        // Действия
+                        const actionsCell = document.createElement('td');
+                        actionsCell.className = 'comment-actions';
+
+                        // Кнопка Browse
+                        const browseLink = document.createElement('a');
+                        browseLink.className = 'btn';
+                        browseLink.href = `/book/${book.id}`;
+                        browseLink.textContent = 'Browse';
+                        actionsCell.appendChild(browseLink);
+
+                        // Кнопка Edit
+                        const editLink = document.createElement('a');
+                        editLink.className = 'btn';
+                        editLink.href = `/book/${book.id}/edit`;
+                        editLink.textContent = 'Edit';
+                        actionsCell.appendChild(editLink);
+
+                        // Форма Delete
+                        const deleteForm = document.createElement('form');
+                        deleteForm.method = 'post';
+                        deleteForm.action = '/book_delete';
+                        deleteForm.onsubmit = "return confirm('Delete book?')";
+
+                        const methodInput = document.createElement('input');
+                        methodInput.name = '_method';
+                        methodInput.type = 'hidden';
+                        methodInput.value = 'delete';
+                        deleteForm.appendChild(methodInput);
+
+                        const bookIdInput = document.createElement('input');
+                        bookIdInput.name = 'bookId';
+                        bookIdInput.type = 'hidden';
+                        bookIdInput.value = book.id;
+                        deleteForm.appendChild(bookIdInput);
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'btn btn-delete';
+                        deleteButton.style.display = 'inline';
+                        deleteButton.type = 'submit';
+                        deleteButton.textContent = 'Delete';
+                        deleteForm.appendChild(deleteButton);
+
+                        actionsCell.appendChild(deleteForm);
+                        row.appendChild(actionsCell);
+
+
+                        tbody.appendChild(row);
+                    })
+                }
+            )
+        })
+    </script>
+
+
+    <!--    <tr th:each="book : ${books}">-->
+    <!--        <td th:text="${book.id}">1</td>-->
+    <!--        <td th:text="${book.title}">Book Title</td>-->
+    <!--        <td th:text="${book.author.fullName}">Author Name</td>-->
+    <!--        <td>-->
+    <!--                <span th:each="genre, iterStat : ${book.genres}">-->
+    <!--                    <span th:text="${genre.name}">Genre</span>-->
+    <!--                    <span th:unless="${iterStat.last}">, </span>-->
+    <!--                </span>-->
+    <!--        </td>-->
+    <!--        <td class="comment-actions">-->
+    <!--            <a class="btn"-->
+    <!--               href="bookPage.html"-->
+    <!--               th:href="@{/book/{id}(id=${book.id})}">Browse</a>-->
+
+    <!--            <a class="btn"-->
+    <!--               href="bookEditPage.html"-->
+    <!--               th:href="@{/book/{id}/edit(id=${book.id})}">Edit</a>-->
+
+    <!--            <form method="post"-->
+    <!--                  onsubmit="return confirm('Delete book?')"-->
+    <!--                  th:action="@{/book_delete}">-->
+    <!--                <input name="_method" type="hidden" value="delete">-->
+    <!--                <input name="bookId" th:value="${book.id}" type="hidden">-->
+    <!--                <button class="btn btn-delete"-->
+    <!--                        style="display: inline;" type="submit">Delete-->
+    <!--                </button>-->
+    <!--            </form>-->
+    <!--        </td>-->
+    <!--    </tr>-->
+
+
+<!--        <div class="warning" th:if="${books.empty}">-->
+<!--            No books available-->
+<!--        </div>-->
+
+    <br> <!--Пустая строка-->
+
+    <div class="action-buttons">
+        <a class="btn" href="bookEditPage.html" th:href="@{/add_book}">New Book</a>
+    </div>
+</div>
+</body>
+</html>

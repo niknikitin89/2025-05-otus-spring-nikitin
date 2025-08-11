@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Comment</title>
+    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Add Comment to Book: <span th:text="${book.title}">Book Title</span></h1>
+
+    <div class="navigation">
+        <a class="btn btn-secondary" href="allBooksPage.html" th:href="@{/}">Main Page</a>
+    </div>
+
+    <form method="post" th:action="@{/comment/save}">
+        <div class="form-group">
+            <label for="commentText">Your Comment:</label>
+            <textarea id="commentText" name="text" required th:text="${comment.text}"></textarea>
+            <!--      Здесь text - имя параметра @RequestParam-->
+            <input name="commentId" th:value="${comment.id}" type="hidden">
+            <input name="bookId" th:value="${book.id}" type="hidden">
+        </div>
+
+        <div class="action-buttons" style="display: flex; gap: 10px;">
+
+            <button class="btn btn-edit" type="submit">
+                Submit Comment
+            </button>
+
+            <a class="btn btn-secondary"
+               href="bookPage.html" style="padding: 8px 16px; line-height: 1.5; text-align: center;"
+               th:href="@{/book/{id}(id=${book.id})}">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
