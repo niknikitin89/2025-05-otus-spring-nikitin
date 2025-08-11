@@ -108,7 +108,7 @@
                         // Кнопка Browse
                         const browseLink = document.createElement('a');
                         browseLink.className = 'btn';
-                        browseLink.href = `/book/${book.id}`;
+                        browseLink.href = `/book?id=${book.id}`;
                         browseLink.textContent = 'Browse';
                         actionsCell.appendChild(browseLink);
 

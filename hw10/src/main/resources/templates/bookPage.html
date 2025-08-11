@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Book Info</title>
-    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container">
@@ -15,94 +15,112 @@
 
 
     <div class="book-info">
-        <h1 th:text="${book.title}">Book Title</h1>
+        <h1 id="book-title">Book Title</h1>
 
         <div class="book-info">
             <div class="info-row">
                 <span class="info-label">ID:</span>
-                <span class="info-value" th:text="${book.id}">123</span>
+                <span class="info-value" id="book-id">123</span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">Author:</span>
-                <span class="info-value" th:text="${book.author.fullName}">Author Name</span>
+                <span class="info-value" id="book-author">Author Name</span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">Genres:</span>
-                <span class="info-value">
-                <span class="genre-tag" th:each="genre, iterStat : ${book.genres}">
-                    <span th:text="${genre.name}">Genre</span>
-                    <span th:unless="${iterStat.last}">, </span>
-                </span>
-            </span>
+                <span class="info-value" id="book-genres">Genres</span>
             </div>
 
             <div class="comments-container">
                 <span class="info-label">Commentaries:</span>
-                <div class="comment-list">
-                    <div class="comment-line" th:each="comment : ${commentary}">
-                        <div class="comment-content">
-                            <span th:text="${comment.id} + ':'">ID :</span>
-                            <span th:text="${comment.text}">Comment</span>
-                        </div>
-
-                        <div class="comment-actions">
-                            <!-- Кнопка редактирования -->
-                            <a class="btn btn-edit"
-                               href="enterCommentToBookPage.html"
-                               th:href="@{/comment/edit/{id}(id=${comment.id})}">Edit</a>
-
-                            <!-- Кнопка удаления (форма) -->
-                            <form class="inline-form" method="post"
-                                  th:action="@{/comment/del}">
-                                <input name="commentId" th:value="${comment.id}" type="hidden">
-                                <input name="bookId" th:value="${book.id}" type="hidden">
-                                <input name="_method" type="hidden" value="delete">
-                                <button class="btn btn-delete"
-                                        onclick="return confirm('Delete this comment?')"
-                                        type="submit">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                <div class="comment-list" id="comment-list">
+                    <div>Comment</div>
                 </div>
             </div>
         </div>
-
-        <div class="action-buttons" style="display: flex; gap: 10px;">
-            <!-- Кнопка добавлдения комментария -->
-            <a class="btn btn-edit"
-               href="enterCommentToBookPage.html"
-               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
-               th:href="@{/comment/add_to_book/{id}(id=${book.id})}">
-                Add Comment
-            </a>
-
-            <!-- Кнопка редактирования -->
-            <a class="btn btn-edit"
-               href="bookEditPage.html"
-               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
-               th:href="@{/book/{id}/edit(id=${book.id})}">
-                Edit Book
-            </a>
-
-            <!-- Кнопка удаления (форма) -->
-            <form method="post" style="margin: 0;"
-                  th:action="@{/book_delete}">
-                <input name="_method" type="hidden" value="delete">
-                <input name="bookId" th:value="${book.id}" type="hidden">
-                <button class="btn btn-delete" onclick="return confirm('Удалить эту книгу?')"
-                        style="padding: 8px 16px; line-height: 1.5; width: 100%;"
-                        type="submit">
-                    Delete Book
-                </button>
-            </form>
-
-        </div>
-
     </div>
+
+<!--    <div class="action-buttons" style="display: flex; gap: 10px;">-->
+<!--        &lt;!&ndash; Кнопка добавлдения комментария &ndash;&gt;-->
+<!--        <a class="btn btn-edit"-->
+<!--           href="enterCommentToBookPage.html"-->
+<!--           style="padding: 8px 16px; line-height: 1.5; text-align: center;"-->
+<!--           th:href="@{/comment/add_to_book/{id}(id=${book.id})}">-->
+<!--            Add Comment-->
+<!--        </a>-->
+
+<!--        &lt;!&ndash; Кнопка редактирования &ndash;&gt;-->
+<!--        <a class="btn btn-edit"-->
+<!--           href="bookEditPage.html"-->
+<!--           style="padding: 8px 16px; line-height: 1.5; text-align: center;"-->
+<!--           th:href="@{/book/{id}/edit(id=${book.id})}">-->
+<!--            Edit Book-->
+<!--        </a>-->
+
+<!--        &lt;!&ndash; Кнопка удаления (форма) &ndash;&gt;-->
+<!--        <form method="post" style="margin: 0;"-->
+<!--              th:action="@{/book_delete}">-->
+<!--            <input name="_method" type="hidden" value="delete">-->
+<!--            <input name="bookId" th:value="${book.id}" type="hidden">-->
+<!--            <button class="btn btn-delete" onclick="return confirm('Удалить эту книгу?')"-->
+<!--                    style="padding: 8px 16px; line-height: 1.5; width: 100%;"-->
+<!--                    type="submit">-->
+<!--                Delete Book-->
+<!--            </button>-->
+<!--        </form>-->
+
+<!--    </div>-->
+
 </div>
+
+<script>
+    // Получаем ID книги из URL
+    const bookId = new URLSearchParams(window.location.search).get('id');
+
+    async function getBook() {
+        try {
+            // 1. Делаем запрос и ждем ответа
+            const response = await fetch(`/api/book/${bookId}`);
+
+            // 2. Проверяем статус ответа
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // 3. Преобразуем ответ в JSON
+            const book = await response.json();
+
+            // 4. Обновляем DOM
+            document.getElementById("book-title").textContent = book.title;
+            document.getElementById("book-id").textContent = book.id;
+            document.getElementById("book-author").textContent = book.author.fullName;
+
+            //Жанры
+            const genresList = document.getElementById("book-genres");
+            genresList.innerHTML = '';//почистим дефолтное значение
+            book.genres.forEach((genre,index)=>{
+                const genreSpan = document.createElement('span');
+                genreSpan.className = 'genre-tag';
+                genreSpan.textContent = genre.name;
+                genresList.appendChild(genreSpan);
+
+                if (index !== book.genres.length - 1) {
+                    const commaSpan = document.createElement('span');
+                    commaSpan.textContent = ', ';
+                    genresList.appendChild(commaSpan);
+                }
+            });
+
+        } catch (error) {
+            console.error('Error loading book data:', error);
+            document.getElementById("book-title").textContent = 'Error loading book';
+        }
+    }
+
+    // Вызываем функцию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', getBook);
+</script>
 </body>
 </html>

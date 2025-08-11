@@ -35,15 +35,9 @@ public class BookPageController {
     }
 
     //http://localhost:8080/book/1
-    @GetMapping("/book/{id}")
-    public String bookPage(@PathVariable("id") long id, Model model) {
-        var book = bookService.findById(id)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("Book with id " + id + " not found")
-                );
-        var commentary = commentaryService.findByBookId(id);
-        model.addAttribute("book", book);
-        model.addAttribute("commentary", commentary);
+    @GetMapping("/book")
+    public String bookPage(@RequestParam("id") long id, Model model) {
+
         return "bookPage";
     }
 
