@@ -11,13 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentaryService;
 import ru.otus.hw.services.GenreService;
-
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -66,19 +63,8 @@ public class BookController {
 
     @PostMapping("/book/save")
     public String saveBook(@Valid @ModelAttribute BookDto book) {
-        if (book.getId() == 0) {
-            bookService.insert(
-                    book.getTitle(),
-                    book.getAuthor().getId(),
-                    book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
-        } else {
-            bookService.update(
-                    book.getId(),
-                    book.getTitle(),
-                    book.getAuthor().getId(),
-                    book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
+        bookService.save(book);
 
-        }
         return "redirect:/";
     }
 

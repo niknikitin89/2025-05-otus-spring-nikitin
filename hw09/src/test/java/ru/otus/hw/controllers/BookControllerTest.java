@@ -153,7 +153,7 @@ class BookControllerTest {
                         .param("genres[0].id", String.valueOf(GENRE_ID)))
                 .andExpect(view().name("redirect:/"));
 
-        verify(bookService, times(1)).insert(anyString(), anyLong(), any());
+        verify(bookService, times(1)).save(any());
     }
 
     @Test
@@ -166,7 +166,7 @@ class BookControllerTest {
                         .param("genres[0].id", String.valueOf(GENRE_ID)))
                 .andExpect(view().name("redirect:/"));
 
-        verify(bookService, times(1)).update(anyLong(),anyString(),anyLong(),any());
+        verify(bookService, times(1)).save(any());
     }
 
     @Test

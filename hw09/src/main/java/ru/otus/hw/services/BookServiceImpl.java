@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
@@ -13,6 +14,7 @@ import ru.otus.hw.repositories.GenreRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -55,6 +57,16 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteById(long id) {
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void save(BookDto book) {
+        this.save(
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor().getId(),
+                book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
     }
 
     private BookDto save(long id, String title, long authorId, Set<Long> genresIds) {

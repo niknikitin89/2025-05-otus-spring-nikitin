@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import jakarta.validation.Valid;
 import ru.otus.hw.dto.BookDto;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface BookService {
     BookDto update(long id, String title, long authorId, Set<Long> genresIds);
 
     void deleteById(long id);
+
+    void save(@Valid BookDto book);
 }
