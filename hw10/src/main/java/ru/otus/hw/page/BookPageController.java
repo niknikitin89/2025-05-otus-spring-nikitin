@@ -31,8 +31,6 @@ public class BookPageController {
     //http://localhost:8080/
     @GetMapping("/")
     public String allBooksPage(Model model) {
-//        var books = bookService.findAll();
-//        model.addAttribute("books", books);
         return "allBooksPage";
     }
 
@@ -79,9 +77,4 @@ public class BookPageController {
         return "bookEditPage";
     }
 
-    @PostMapping("/book_delete")
-    public String deleteBook(@RequestParam("bookId") long bookId) {
-        bookService.deleteById(bookId);
-        return "redirect:/";
-    }
 }

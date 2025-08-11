@@ -6,6 +6,25 @@
 
     <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
     <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        function deleteBook(bookId) {
+            // Подтверждение удаления
+            if (!confirm('Вы уверены, что хотите удалить книгу?')) {
+                return;
+            }
+
+            // Отправляем DELETE запрос на сервер
+            fetch(`/api/book/${bookId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(data => {
+                    window.location.href = '/';
+                });
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -31,10 +50,23 @@
         </tbody>
     </table>
 
+    <div class="warning" id="no-books-warning">
+        No books available
+    </div>
+
     <script>
         $(function () {
             $.get('api/book').done(function (books) {
-                    const tbody = document.getElementById("book-table")
+                    const tbody = document.getElementById("book-table");
+
+                    const warning = document.getElementById("no-books-warning");
+
+                    if (books.length === 0) {
+                        warning.style.display = 'block';
+                        return;
+                    } else {
+                        warning.style.display = 'none';
+                    }
 
                     books.forEach(function (book) {
                         const row = document.createElement('tr');
@@ -89,17 +121,11 @@
 
                         // Форма Delete
                         const deleteForm = document.createElement('form');
-                        deleteForm.method = 'post';
-                        deleteForm.action = '/book_delete';
-                        deleteForm.onsubmit = "return confirm('Delete book?')";
-
-                        const methodInput = document.createElement('input');
-                        methodInput.name = '_method';
-                        methodInput.type = 'hidden';
-                        methodInput.value = 'delete';
-                        deleteForm.appendChild(methodInput);
+                        deleteForm.method = 'delete';
+                        deleteForm.action = 'book-delete';
 
                         const bookIdInput = document.createElement('input');
+                        bookIdInput.id = "book-id";
                         bookIdInput.name = 'bookId';
                         bookIdInput.type = 'hidden';
                         bookIdInput.value = book.id;
@@ -108,13 +134,13 @@
                         const deleteButton = document.createElement('button');
                         deleteButton.className = 'btn btn-delete';
                         deleteButton.style.display = 'inline';
-                        deleteButton.type = 'submit';
+                        deleteButton.type = 'button';
                         deleteButton.textContent = 'Delete';
+                        deleteButton.onclick = () => deleteBook(book.id);
                         deleteForm.appendChild(deleteButton);
 
                         actionsCell.appendChild(deleteForm);
                         row.appendChild(actionsCell);
-
 
                         tbody.appendChild(row);
                     })
@@ -122,43 +148,6 @@
             )
         })
     </script>
-
-
-    <!--    <tr th:each="book : ${books}">-->
-    <!--        <td th:text="${book.id}">1</td>-->
-    <!--        <td th:text="${book.title}">Book Title</td>-->
-    <!--        <td th:text="${book.author.fullName}">Author Name</td>-->
-    <!--        <td>-->
-    <!--                <span th:each="genre, iterStat : ${book.genres}">-->
-    <!--                    <span th:text="${genre.name}">Genre</span>-->
-    <!--                    <span th:unless="${iterStat.last}">, </span>-->
-    <!--                </span>-->
-    <!--        </td>-->
-    <!--        <td class="comment-actions">-->
-    <!--            <a class="btn"-->
-    <!--               href="bookPage.html"-->
-    <!--               th:href="@{/book/{id}(id=${book.id})}">Browse</a>-->
-
-    <!--            <a class="btn"-->
-    <!--               href="bookEditPage.html"-->
-    <!--               th:href="@{/book/{id}/edit(id=${book.id})}">Edit</a>-->
-
-    <!--            <form method="post"-->
-    <!--                  onsubmit="return confirm('Delete book?')"-->
-    <!--                  th:action="@{/book_delete}">-->
-    <!--                <input name="_method" type="hidden" value="delete">-->
-    <!--                <input name="bookId" th:value="${book.id}" type="hidden">-->
-    <!--                <button class="btn btn-delete"-->
-    <!--                        style="display: inline;" type="submit">Delete-->
-    <!--                </button>-->
-    <!--            </form>-->
-    <!--        </td>-->
-    <!--    </tr>-->
-
-
-<!--        <div class="warning" th:if="${books.empty}">-->
-<!--            No books available-->
-<!--        </div>-->
 
     <br> <!--Пустая строка-->
 
