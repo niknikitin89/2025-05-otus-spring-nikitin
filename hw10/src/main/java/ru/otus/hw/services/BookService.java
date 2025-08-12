@@ -18,5 +18,5 @@ public interface BookService {
 
     void deleteById(long id);
 
-    void save(@Valid BookDto book);
+    BookDto save(@Valid BookDto book);
 }

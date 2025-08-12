@@ -36,38 +36,19 @@ public class BookPageController {
 
     //http://localhost:8080/book/1
     @GetMapping("/book")
-    public String bookPage(@RequestParam("id") long id, Model model) {
+    public String bookPage(@RequestParam("id") long id) {
 
         return "bookPage";
     }
 
     //http://localhost:8080/book/2/edit
     @GetMapping("/book/{id}/edit")
-    public String editBookPage(@PathVariable("id") long id, Model model) {
-        var book = bookService.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not found"));
-        var authors = authorService.findAll();
-        var genres = genreService.findAll();
-        model.addAttribute("book", book);
-        model.addAttribute("authors", authors);
-        model.addAttribute("allGenres", genres);
+    public String editBookPage(@PathVariable("id") long id) {
         return "bookEditPage";
-    }
-
-    @PostMapping("/book/save")
-    public String saveBook(@Valid @ModelAttribute BookDto book) {
-        bookService.save(book);
-
-        return "redirect:/";
     }
 
     @GetMapping("/add_book")
     String addBook(Model model) {
-        BookDto book = new BookDto();
-        var authors = authorService.findAll();
-        var genres = genreService.findAll();
-        model.addAttribute("book", book);
-        model.addAttribute("authors", authors);
-        model.addAttribute("allGenres", genres);
         return "bookEditPage";
     }
 

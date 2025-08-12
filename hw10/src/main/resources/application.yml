@@ -1,9 +1,9 @@
 spring:
   devtools:
     restart:
-      enable: true
+      enabled: true
     livereload:
-      enable: true
+      enabled: true
 
   thymeleaf:
     cache: false

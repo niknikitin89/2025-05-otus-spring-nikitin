@@ -16,7 +16,7 @@ import ru.otus.hw.services.CommentaryService;
 
 @Controller
 @RequiredArgsConstructor
-public class CommentaryController {
+public class CommentaryPageController {
 
     private final CommentaryService commentaryService;
 
@@ -42,7 +42,7 @@ public class CommentaryController {
         } else {
             commentaryService.update(commentId, text);
         }
-        return "redirect:/book/" + bookId;
+        return "redirect:/book?id=" + bookId;
     }
 
     @PostMapping("/comment/del")

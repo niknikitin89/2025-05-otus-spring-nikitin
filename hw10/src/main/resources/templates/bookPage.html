@@ -42,42 +42,52 @@
         </div>
     </div>
 
-<!--    <div class="action-buttons" style="display: flex; gap: 10px;">-->
-<!--        &lt;!&ndash; Кнопка добавлдения комментария &ndash;&gt;-->
-<!--        <a class="btn btn-edit"-->
-<!--           href="enterCommentToBookPage.html"-->
-<!--           style="padding: 8px 16px; line-height: 1.5; text-align: center;"-->
-<!--           th:href="@{/comment/add_to_book/{id}(id=${book.id})}">-->
-<!--            Add Comment-->
-<!--        </a>-->
-
-<!--        &lt;!&ndash; Кнопка редактирования &ndash;&gt;-->
-<!--        <a class="btn btn-edit"-->
-<!--           href="bookEditPage.html"-->
-<!--           style="padding: 8px 16px; line-height: 1.5; text-align: center;"-->
-<!--           th:href="@{/book/{id}/edit(id=${book.id})}">-->
-<!--            Edit Book-->
-<!--        </a>-->
-
-<!--        &lt;!&ndash; Кнопка удаления (форма) &ndash;&gt;-->
-<!--        <form method="post" style="margin: 0;"-->
-<!--              th:action="@{/book_delete}">-->
-<!--            <input name="_method" type="hidden" value="delete">-->
-<!--            <input name="bookId" th:value="${book.id}" type="hidden">-->
-<!--            <button class="btn btn-delete" onclick="return confirm('Удалить эту книгу?')"-->
-<!--                    style="padding: 8px 16px; line-height: 1.5; width: 100%;"-->
-<!--                    type="submit">-->
-<!--                Delete Book-->
-<!--            </button>-->
-<!--        </form>-->
-
-<!--    </div>-->
+    <div class="action-buttons">
+        <a class="btn btn-edit" id="add-comment-btn">Add Comment</a>
+        <a class="btn btn-edit" id="edit-book-btn">Edit Book</a>
+        <button class="btn btn-delete" id="delete-book-btn">Delete Book</button>
+    </div>
 
 </div>
 
 <script>
     // Получаем ID книги из URL
     const bookId = new URLSearchParams(window.location.search).get('id');
+
+    // Вызываем функцию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', fillPage);
+
+    async function fillPage() {
+
+        //Собираем инфу по книге
+        await getBook();
+
+        //Подтягиваем комментарии
+        await getComments();
+
+        //Настраиваем кнопки
+        document.getElementById('add-comment-btn').href = `/comment/add_to_book/${bookId}`;
+        document.getElementById('edit-book-btn').href = `/book/${bookId}/edit`;
+        // Функция удаления книги
+        document.getElementById('delete-book-btn').addEventListener('click', async function () {
+            if (!confirm('Delete this book?')) return;
+
+            try {
+                const response = await fetch(`/api/book/${bookId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Failed to delete book');
+                }
+            } catch (error) {
+                console.error('Error deleting book:', error);
+                alert('Error deleting book');
+            }
+        });
+    }
 
     async function getBook() {
         try {
@@ -100,7 +110,7 @@
             //Жанры
             const genresList = document.getElementById("book-genres");
             genresList.innerHTML = '';//почистим дефолтное значение
-            book.genres.forEach((genre,index)=>{
+            book.genres.forEach((genre, index) => {
                 const genreSpan = document.createElement('span');
                 genreSpan.className = 'genre-tag';
                 genreSpan.textContent = genre.name;
@@ -112,15 +122,71 @@
                     genresList.appendChild(commaSpan);
                 }
             });
-
         } catch (error) {
             console.error('Error loading book data:', error);
             document.getElementById("book-title").textContent = 'Error loading book';
         }
+
     }
 
-    // Вызываем функцию при загрузке страницы
-    document.addEventListener('DOMContentLoaded', getBook);
+    async function getComments() {
+        try {
+
+            // Загрузка комментариев
+            const commentsResponse = await fetch(`/api/book/${bookId}/comments`);
+            if (!commentsResponse.ok) throw new Error('Failed to load comments');
+            const comments = await commentsResponse.json();
+
+            // Отображаем комментарии
+            const commentList = document.getElementById('comment-list');
+            commentList.innerHTML = '';
+
+            if (comments.length === 0) {
+                commentList.innerHTML = '<div>No comments yet</div>';
+            } else {
+                comments.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'comment-line';
+
+                    commentDiv.innerHTML = `
+                        <div class="comment-content">
+                            <span>${comment.id}:</span>
+                            <span>${comment.text}</span>
+                        </div>
+                        <div class="comment-actions">
+                            <a class="btn btn-edit" href="/comment/edit/${comment.id}">Edit</a>
+                            <button class="btn btn-delete" onclick="deleteComment(${comment.id}, ${bookId})">Delete</button>
+                        </div>
+                    `;
+                    commentList.appendChild(commentDiv);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading comments:', error);
+            document.getElementById('comment-list').textContent = 'Error loading comments';
+        }
+    }
+
+    // Функция удаления комментария
+    async function deleteComment(commentId, bookId) {
+        if (!confirm('Delete this comment?')) return;
+
+        try {
+            const response = await fetch(`/api/comment/${commentId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                // Перезагружаем данные
+                await fillPage();
+            } else {
+                alert('Failed to delete comment');
+            }
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Error deleting comment');
+        }
+    }
 </script>
 </body>
 </html>

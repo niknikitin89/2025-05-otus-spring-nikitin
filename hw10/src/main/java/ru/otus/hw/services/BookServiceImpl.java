@@ -61,8 +61,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void save(BookDto book) {
-        this.save(
+    public BookDto save(BookDto book) {
+        return this.save(
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor().getId(),

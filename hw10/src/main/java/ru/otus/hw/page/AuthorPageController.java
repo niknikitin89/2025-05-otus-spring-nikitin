@@ -11,7 +11,7 @@ import ru.otus.hw.services.AuthorService;
 
 @Controller
 @RequiredArgsConstructor
-public class AuthorController {
+public class AuthorPageController {
 
     private final AuthorService authorService;
 

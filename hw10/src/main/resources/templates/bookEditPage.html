@@ -3,68 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Book</title>
-    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container">
     <h1>Edit Book</h1>
 
     <div class="navigation">
-        <a class="btn btn-secondary" href="allBooksPage.html" th:href="@{/}">Main Page</a>
+        <a class="btn btn-secondary" href="/">Main Page</a>
     </div>
 
-    <form method="post" th:action="@{/book/save}" th:object="${book}">
-        <input name="_method" th:value="${book.id != null ? 'put' : 'post'}" type="hidden">
-        <!-- Скрытое поле для ID -->
-        <input th:field="*{id}" type="hidden">
-        <!--Заголовок-->
+    <form id="bookForm">
+        <input id="bookId" type="hidden">
+
+        <!-- Заголовок -->
         <div class="form-group">
             <label for="title">Title:</label>
-            <input id="title" required th:field="*{title}" type="text">
+            <input id="title" required type="text">
         </div>
-        <!--Автор-->
+
+        <!-- Автор -->
         <div class="form-group">
             <label for="author">Author:</label>
-            <select id="author" required th:field="*{author.id}">
-                <option th:value="*{author.id}">-- Select Author --</option>
-                <option th:each="author : ${authors}"
-                        th:selected="${book.author != null and book.author.id == author.id}"
-                        th:text="${author.fullName}"
-                        th:value="${author.id}">
-                </option>
+            <select id="author" required>
+                <option value="">-- Select Author --</option>
+                <!-- Авторы будут загружены динамически -->
             </select>
         </div>
-        <!--Жанры-->
+
+        <!-- Жанры -->
         <div class="form-group">
-            <label>Genres:</label>
-            <select class="form-control"
-                    multiple="multiple"
-                    size="5"
-                    style="width: 100%; margin-bottom: 10px;"
-                    th:field="*{genres}">
-                <option th:each="genre : ${allGenres}"
-                        th:selected="${#lists.contains(book.genres, genre)}"
-                        th:text="${genre.name}"
-                        th:value="${genre.id}">
-                </option>
+            <label for="genres">Genres:</label>
+            <select id="genres" multiple size="5" style="width: 100%; margin-bottom: 10px;">
+                <!-- Жанры будут загружены динамически -->
             </select>
             <small class="form-text text-muted">Use Ctrl+Click for multiple selection</small>
         </div>
 
-        <!--Кнопки-->
+        <!-- Кнопки -->
         <div class="form-actions">
-
-            <button class="btn"
-                    style="padding: 8px 16px; line-height: 1.5; "
-                    type="submit">Save Changes
-            </button>
-
-            <a class="btn btn-secondary"
-               href="bookPage.html"
-               style="padding: 8px 16px; line-height: 1.5; text-align: center;"
-               th:href="@{/book/{id}(id=${book.id})}">Cancel</a>
+            <button class="btn" id="save-book-button" type="button">Save Changes</button>
+            <a class="btn btn-secondary" id="cancelBtn">Cancel</a>
         </div>
     </form>
 </div>
+
+<script>
+    let bookId = '0';
+
+    if (window.location.pathname !== '/add_book') {
+        //Получаем ID книги из URL ("/book/{id}/edit")
+        const pathParts = window.location.pathname.split('/');
+        bookId = pathParts[2];
+    }
+
+    let allAuthors = [];
+    let allGenres = [];
+
+    document.addEventListener('DOMContentLoaded', fillPage);
+
+    async function fillPage() {
+        //Заполняем список авторов
+        const authorResponse = await fetch('/api/authors');
+        allAuthors = await authorResponse.json();
+        showAuthors(allAuthors);
+
+        //Заполняем список жанров
+        const genresResponse = await fetch('/api/genres');
+        allGenres = await genresResponse.json();
+        showGenres(allGenres);
+
+        //Если это редактирование существующей книги, загружаем её данные
+        if (bookId && bookId !== '0') {
+            await loadBook(bookId);
+        }
+
+        //Кнопка отмены
+        document.getElementById('cancelBtn').href = '/';
+
+    }
+
+    function showAuthors(authors) {
+        const authorSelect = document.getElementById('author');
+        authorSelect.innerHTML = '<option value="">-- Select Author --</option>';
+
+        authors.forEach(author => {
+            const option = document.createElement('option');
+            option.value = author.id;
+            option.textContent = author.fullName;
+            authorSelect.appendChild(option);
+        });
+    }
+
+    function showGenres(genres) {
+        const genresSelect = document.getElementById('genres');
+        genresSelect.innerHTML = '';
+
+        genres.forEach(genre => {
+            const option = document.createElement('option');
+            option.value = genre.id;
+            option.textContent = genre.name;
+            genresSelect.appendChild(option);
+        });
+    }
+
+    async function loadBook(bookId) {
+        try {
+            const response = await fetch(`/api/book/${bookId}`);
+            if (!response.ok) throw new Error('Book not found');
+
+            const book = await response.json();
+
+            // Заполняем форму данными книги
+            document.getElementById('bookId').value = book.id;
+            document.getElementById('title').value = book.title;
+            document.getElementById('author').value = book.author.id;
+
+            // Выбираем жанры книги
+            const genreSelect = document.getElementById('genres');
+            const bookGenreIds = book.genres.map(g => g.id);
+            Array.from(genreSelect.options).forEach(option => {
+                option.selected = bookGenreIds.includes(Number(option.value));
+            });
+
+        } catch (error) {
+            console.error('Error loading book:', error);
+            alert('Failed to load book data');
+        }
+    }
+
+
+    // Обработка кнопки Сохранить
+    document.getElementById('save-book-button').addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            id: document.getElementById('bookId').value,
+            title: document.getElementById('title').value,
+            author: {
+                id: document.getElementById('author').value
+            },
+            genres: Array.from(document.getElementById('genres').selectedOptions)
+                .map(option => ({id: option.value}))
+        };
+
+        try {
+            const method = formData.id ? 'PUT' : 'POST';
+            const url = '/api/book';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) throw new Error('Save failed');
+
+            window.location.href = '/';
+
+        } catch (error) {
+            console.error('Error saving book:', error);
+            alert('Failed to save book');
+        }
+    });
+
+</script>
+
 </body>
+
 </html>
