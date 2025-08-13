@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Genres List</title>
-    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container">
     <h1>Genres List</h1>
 
     <div class="navigation">
-        <a href="allBooksPage.html" th:href="@{/}">Main Page</a>
+        <a href="/" id="main-page-link">Main Page</a>
     </div>
 
     <table class="table">
@@ -20,18 +20,59 @@
             <th>Genre Name</th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each="genre : ${genres}">
-            <td th:text="${genre.id}">1</td>
-            <td th:text="${genre.name}">Genre Name</td>
-        </tr>
+        <tbody id="genres-table-body">
         </tbody>
     </table>
 
 
-    <div class="warning" th:if="${genres.empty}">
-        No genres
+    <div class="warning" id="no-genres-warning" style="display: none;">
+        No genres available
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/genres')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(genres => {
+                const tableBody = document.getElementById('genres-table-body');
+                const warningDiv = document.getElementById('no-genres-warning');
+
+                tableBody.innerHTML = '';
+
+                if (genres.length === 0) {
+                    warningDiv.style.display = 'block';
+                    return;
+                }
+
+                warningDiv.style.display = 'none';
+
+                genres.forEach(genre => {
+                    const row = document.createElement('tr');
+
+                    const idCell = document.createElement('td');
+                    idCell.textContent = genre.id;
+                    row.appendChild(idCell);
+
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = genre.name;
+                    row.appendChild(nameCell);
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching genres:', error);
+                document.getElementById('no-genres-warning').textContent =
+                    'Error loading genres: ' + error.message;
+                document.getElementById('no-genres-warning').style.display = 'block';
+            });
+    });
+</script>
 </body>
 </html>

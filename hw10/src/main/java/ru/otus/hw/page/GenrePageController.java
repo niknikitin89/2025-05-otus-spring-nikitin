@@ -15,8 +15,6 @@ public class GenrePageController {
     //http://localhost:8080/all_genres
     @GetMapping("/all_genres")
     public String allGenresPage(Model model) {
-        var genres = genreService.findAll();
-        model.addAttribute("genres", genres);
         return "allGenresPage";
     }
 }
