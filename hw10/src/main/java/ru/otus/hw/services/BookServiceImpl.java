@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
@@ -66,7 +66,7 @@ public class BookServiceImpl implements BookService {
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor().getId(),
-                book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
+                book.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
     }
 
     private BookDto save(long id, String title, long authorId, Set<Long> genresIds) {

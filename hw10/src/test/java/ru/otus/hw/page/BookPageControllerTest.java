@@ -70,8 +70,8 @@ class BookPageControllerTest {
         bookDto = new BookDto(
                 BOOK_ID,
                 "Title_1",
-                new Author(AUTHOR_ID, "Author_1"),
-                List.of(new Genre(GENRE_ID, "Genre_1")));
+                new AuthorDto(AUTHOR_ID, "Author_1"),
+                List.of(new GenreDto(GENRE_ID, "Genre_1")));
 
         bookDtoList = List.of(bookDto);
 

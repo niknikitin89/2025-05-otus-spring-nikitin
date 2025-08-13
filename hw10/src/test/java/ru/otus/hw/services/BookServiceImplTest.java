@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.AuthorRepository;
@@ -168,7 +169,7 @@ class BookServiceImplTest {
         assertThat(actualBook.getTitle()).isNotEqualTo(BOOK_TITLE);
         assertThat(actualBook.getAuthor().getId()).isNotEqualTo(AUTHOR_ID);
         assertThat(actualBook.getGenres())
-                .extracting(Genre::getId).doesNotContainAnyElementsOf(genresIdsSet);
+                .extracting(GenreDto::getId).doesNotContainAnyElementsOf(genresIdsSet);
 
         bookService.update(BOOK_ID, BOOK_TITLE, AUTHOR_ID, genresIdsSet);
 
@@ -180,7 +181,7 @@ class BookServiceImplTest {
         assertThat(actualBook.getTitle()).isEqualTo(BOOK_TITLE);
         assertThat(actualBook.getAuthor().getId()).isEqualTo(AUTHOR_ID);
         assertThat(actualBook.getGenres())
-                .extracting(Genre::getId).containsExactlyInAnyOrderElementsOf(genresIdsSet);
+                .extracting(GenreDto::getId).containsExactlyInAnyOrderElementsOf(genresIdsSet);
     }
 
     @Test

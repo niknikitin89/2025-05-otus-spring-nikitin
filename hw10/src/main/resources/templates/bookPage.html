@@ -57,36 +57,34 @@
     // Вызываем функцию при загрузке страницы
     document.addEventListener('DOMContentLoaded', fillPage);
 
-    async function fillPage() {
+    //Настраиваем кнопки
+    document.getElementById('add-comment-btn').href = `/comment/add_to_book/${bookId}`;
+    document.getElementById('edit-book-btn').href = `/book/${bookId}/edit`;
+    // Функция удаления книги
+    document.getElementById('delete-book-btn').addEventListener('click', async function () {
+        if (!confirm('Delete this book?')) return;
 
+        try {
+            const response = await fetch(`/api/book/${bookId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                window.location.href = '/';
+            } else {
+                alert('Failed to delete book');
+            }
+        } catch (error) {
+            console.error('Error deleting book:', error);
+            alert('Error deleting book');
+        }
+    });
+
+    async function fillPage() {
         //Собираем инфу по книге
         await getBook();
-
         //Подтягиваем комментарии
         await getComments();
-
-        //Настраиваем кнопки
-        document.getElementById('add-comment-btn').href = `/comment/add_to_book/${bookId}`;
-        document.getElementById('edit-book-btn').href = `/book/${bookId}/edit`;
-        // Функция удаления книги
-        document.getElementById('delete-book-btn').addEventListener('click', async function () {
-            if (!confirm('Delete this book?')) return;
-
-            try {
-                const response = await fetch(`/api/book/${bookId}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    window.location.href = '/';
-                } else {
-                    alert('Failed to delete book');
-                }
-            } catch (error) {
-                console.error('Error deleting book:', error);
-                alert('Error deleting book');
-            }
-        });
     }
 
     async function getBook() {

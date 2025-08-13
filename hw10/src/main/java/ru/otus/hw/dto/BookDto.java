@@ -20,20 +20,24 @@ public class BookDto {
     @NotBlank(message = "Empty Title")
     private String title;
 
-    private Author author;
+    private AuthorDto author;
 
-    private List<Genre> genres;
+    private List<GenreDto> genres;
 
     public BookDto() {
         genres = new ArrayList<>();
     }
 
     public static BookDto fromDomainObject(@Nonnull Book book) {
-        return new BookDto(book.getId(), book.getTitle(), book.getAuthor(), book.getGenres().stream().toList());
+        return new BookDto(book.getId(), book.getTitle(),
+                AuthorDto.fromDomainObject(book.getAuthor()),
+                book.getGenres().stream().map(GenreDto::fromDomainObject).toList());
     }
 
     public Book toDomainObject() {
-        return new Book(id, title, author, genres);
+        return new Book(id, title,
+                author.toDomainObject(),
+                genres.stream().map(GenreDto::toDomainObject).toList());
     }
 
 }

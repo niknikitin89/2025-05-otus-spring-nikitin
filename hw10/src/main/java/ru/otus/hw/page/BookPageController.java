@@ -1,32 +1,15 @@
 package ru.otus.hw.page;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.services.AuthorService;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.CommentaryService;
-import ru.otus.hw.services.GenreService;
 
 @Controller
 @RequiredArgsConstructor
 public class BookPageController {
-
-    private final BookService bookService;
-
-    private final AuthorService authorService;
-
-    private final GenreService genreService;
-
-    private final CommentaryService commentaryService;
 
     //http://localhost:8080/
     @GetMapping("/")
@@ -37,13 +20,12 @@ public class BookPageController {
     //http://localhost:8080/book/1
     @GetMapping("/book")
     public String bookPage(@RequestParam("id") long id) {
-
         return "bookPage";
     }
 
     //http://localhost:8080/book/2/edit
     @GetMapping("/book/{id}/edit")
-    public String editBookPage(@PathVariable("id") long id) {
+    public String editBookPage(@PathVariable long id) {
         return "bookEditPage";
     }
 
