@@ -62,6 +62,14 @@ class CommentaryControllerTest {
     }
 
     @Test
+    void getCommentWithBookWithIncorrectIdShouldReturnNotFoundStatus() throws Exception {
+        given(commentaryService.findByIdWithBook(1L)).willThrow(EntityNotFoundException.class);
+
+        mvc.perform(get("/api/v1/comments/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void addCommentShouldReturnCreatedComment() throws Exception {
         CommentaryDto newComment = new CommentaryDto(0L, "New Comment", sampleBook);
         CommentaryDto savedComment = new CommentaryDto(1L, "New Comment", sampleBook);

@@ -7,8 +7,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>Error:</h1>
-    <span th:text="${errorText}">Error text</span>
+    <h1 th:text="${error.code}">Error code</h1>
+    <span th:text="${error.message}">Error text</span>
 </div>
 </body>
 </html>

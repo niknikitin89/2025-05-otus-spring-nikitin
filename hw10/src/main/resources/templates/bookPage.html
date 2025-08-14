@@ -15,28 +15,28 @@
 
 
     <div class="book-info">
-        <h1 id="book-title">Book Title</h1>
+        <h1 id="book-title">Loading...</h1>
 
         <div class="book-info">
             <div class="info-row">
                 <span class="info-label">ID:</span>
-                <span class="info-value" id="book-id">123</span>
+                <span class="info-value" id="book-id">Loading...</span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">Author:</span>
-                <span class="info-value" id="book-author">Author Name</span>
+                <span class="info-value" id="book-author">Loading...</span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">Genres:</span>
-                <span class="info-value" id="book-genres">Genres</span>
+                <span class="info-value" id="book-genres">Loading...</span>
             </div>
 
             <div class="comments-container">
                 <span class="info-label">Commentaries:</span>
                 <div class="comment-list" id="comment-list">
-                    <div>Comment</div>
+                    <div>Loading...</div>
                 </div>
             </div>
         </div>
@@ -94,7 +94,9 @@
 
             // 2. Проверяем статус ответа
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                debugger;
+                const error = await response.json();
+                throw new Error(`Status: ${error.code}. Message: ${error.message}`);
             }
 
             // 3. Преобразуем ответ в JSON
@@ -121,18 +123,21 @@
                 }
             });
         } catch (error) {
+            debugger;
             console.error('Error loading book data:', error);
-            alert('Oops! Something went wrong.');
+            alert(error.message);
         }
 
     }
 
     async function getComments() {
         try {
-
             // Загрузка комментариев
             const commentsResponse = await fetch(`/api/v1/books/${bookId}/comments`);
-            if (!commentsResponse.ok) throw new Error('Failed to load comments');
+            if (!commentsResponse.ok) {
+                const error = await commentsResponse.json();
+                throw new Error(`Status: ${error.code}. Message: ${error.message}`);
+            }
             const comments = await commentsResponse.json();
 
             // Отображаем комментарии
@@ -160,8 +165,8 @@
                 });
             }
         } catch (error) {
-            console.error('Error loading comments:', error);
-            document.getElementById('comment-list').textContent = 'Error loading comments';
+            console.error('Error loading comments:', error.message);
+            document.getElementById('comment-list').textContent = error.message;
         }
     }
 

@@ -60,6 +60,14 @@ class BookControllerTest {
     }
 
     @Test
+    void getBookWithIncorrectIdShouldReturnNotFoundStatus() throws Exception {
+        given(bookService.findById(1L)).willThrow(EntityNotFoundException.class);
+
+        mvc.perform(get("/api/v1/books/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void updateBookShouldReturnUpdatedBook() throws Exception {
         BookDto updatedBook = new BookDto(1L, "Updated Book", null, null);
         given(bookService.save(any(BookDto.class))).willReturn(updatedBook);
