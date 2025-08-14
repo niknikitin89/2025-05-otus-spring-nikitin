@@ -65,7 +65,7 @@
         if (!confirm('Delete this book?')) return;
 
         try {
-            const response = await fetch(`/api/book/${bookId}`, {
+            const response = await fetch(`/api/v1/books/${bookId}`, {
                 method: 'DELETE'
             });
 
@@ -76,7 +76,7 @@
             }
         } catch (error) {
             console.error('Error deleting book:', error);
-            alert('Error deleting book');
+            alert('Oops! Something went wrong.');
         }
     });
 
@@ -90,7 +90,7 @@
     async function getBook() {
         try {
             // 1. Делаем запрос и ждем ответа
-            const response = await fetch(`/api/book/${bookId}`);
+            const response = await fetch(`/api/v1/books/${bookId}`);
 
             // 2. Проверяем статус ответа
             if (!response.ok) {
@@ -122,7 +122,7 @@
             });
         } catch (error) {
             console.error('Error loading book data:', error);
-            document.getElementById("book-title").textContent = 'Error loading book';
+            alert('Oops! Something went wrong.');
         }
 
     }
@@ -131,7 +131,7 @@
         try {
 
             // Загрузка комментариев
-            const commentsResponse = await fetch(`/api/book/${bookId}/comments`);
+            const commentsResponse = await fetch(`/api/v1/books/${bookId}/comments`);
             if (!commentsResponse.ok) throw new Error('Failed to load comments');
             const comments = await commentsResponse.json();
 
@@ -170,7 +170,7 @@
         if (!confirm('Delete this comment?')) return;
 
         try {
-            const response = await fetch(`/api/comment/${commentId}`, {
+            const response = await fetch(`/api/v1/comments/${commentId}`, {
                 method: 'DELETE'
             });
 
@@ -178,11 +178,11 @@
                 // Перезагружаем данные
                 await fillPage();
             } else {
-                alert('Failed to delete comment');
+                alert('Oops! Something went wrong.');
             }
         } catch (error) {
             console.error('Error deleting comment:', error);
-            alert('Error deleting comment');
+            alert('Oops! Something went wrong.');
         }
     }
 </script>

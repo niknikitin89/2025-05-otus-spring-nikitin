@@ -14,7 +14,7 @@
             }
 
             // Отправляем DELETE запрос на сервер
-            fetch(`/api/book/${bookId}`, {
+            fetch(`/api/v1/books/${bookId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,106 +54,118 @@
         No books available
     </div>
 
-    <script>
-        $(function () {
-            $.get('api/book').done(function (books) {
-                    const tbody = document.getElementById("book-table");
-
-                    const warning = document.getElementById("no-books-warning");
-
-                    if (books.length === 0) {
-                        warning.style.display = 'block';
-                        return;
-                    } else {
-                        warning.style.display = 'none';
-                    }
-
-                    books.forEach(function (book) {
-                        const row = document.createElement('tr');
-
-                        // ID книги
-                        const idBook = document.createElement('td');
-                        idBook.textContent = book.id;
-                        row.appendChild(idBook);
-
-                        // Название книги
-                        const title = document.createElement('td');
-                        title.textContent = book.title;
-                        row.appendChild(title);
-
-                        // Автор
-                        const authorName = document.createElement('td');
-                        authorName.textContent = book.author.fullName;
-                        row.appendChild(authorName);
-
-                        // Жанры
-                        const genres = document.createElement('td');
-                        book.genres.forEach((genre, index) => {
-                            const genreSpan = document.createElement('span');
-                            genreSpan.textContent = genre.name;
-                            genres.appendChild(genreSpan);
-
-                            if (index !== book.genres.length - 1) {
-                                const commaSpan = document.createElement('span');
-                                commaSpan.textContent = ', ';
-                                genres.appendChild(commaSpan);
-                            }
-                        });
-                        row.appendChild(genres);
-
-                        // Действия
-                        const actionsCell = document.createElement('td');
-                        actionsCell.className = 'comment-actions';
-
-                        // Кнопка Browse
-                        const browseLink = document.createElement('a');
-                        browseLink.className = 'btn';
-                        browseLink.href = `/book?id=${book.id}`;
-                        browseLink.textContent = 'Browse';
-                        actionsCell.appendChild(browseLink);
-
-                        // Кнопка Edit
-                        const editLink = document.createElement('a');
-                        editLink.className = 'btn';
-                        editLink.href = `/book/${book.id}/edit`;
-                        editLink.textContent = 'Edit';
-                        actionsCell.appendChild(editLink);
-
-                        // Форма Delete
-                        const deleteForm = document.createElement('form');
-                        deleteForm.method = 'delete';
-                        deleteForm.action = 'book-delete';
-
-                        const bookIdInput = document.createElement('input');
-                        bookIdInput.id = "book-id";
-                        bookIdInput.name = 'bookId';
-                        bookIdInput.type = 'hidden';
-                        bookIdInput.value = book.id;
-                        deleteForm.appendChild(bookIdInput);
-
-                        const deleteButton = document.createElement('button');
-                        deleteButton.className = 'btn btn-delete';
-                        deleteButton.style.display = 'inline';
-                        deleteButton.type = 'button';
-                        deleteButton.textContent = 'Delete';
-                        deleteButton.onclick = () => deleteBook(book.id);
-                        deleteForm.appendChild(deleteButton);
-
-                        actionsCell.appendChild(deleteForm);
-                        row.appendChild(actionsCell);
-
-                        tbody.appendChild(row);
-                    })
-                }
-            )
-        })
-    </script>
-
     <br> <!--Пустая строка-->
 
     <div class="action-buttons">
         <a class="btn" href="bookEditPage.html" th:href="@{/add_book}">New Book</a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/v1/books')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(books => {
+                const tbody = document.getElementById("book-table");
+
+                const warning = document.getElementById("no-books-warning");
+
+                if (books.length === 0) {
+                    warning.style.display = 'block';
+                    return;
+                } else {
+                    warning.style.display = 'none';
+                }
+
+                books.forEach(function (book) {
+                    const row = document.createElement('tr');
+
+                    // ID книги
+                    const idBook = document.createElement('td');
+                    idBook.textContent = book.id;
+                    row.appendChild(idBook);
+
+                    // Название книги
+                    const title = document.createElement('td');
+                    title.textContent = book.title;
+                    row.appendChild(title);
+
+                    // Автор
+                    const authorName = document.createElement('td');
+                    authorName.textContent = book.author.fullName;
+                    row.appendChild(authorName);
+
+                    // Жанры
+                    const genres = document.createElement('td');
+                    book.genres.forEach((genre, index) => {
+                        const genreSpan = document.createElement('span');
+                        genreSpan.textContent = genre.name;
+                        genres.appendChild(genreSpan);
+
+                        if (index !== book.genres.length - 1) {
+                            const commaSpan = document.createElement('span');
+                            commaSpan.textContent = ', ';
+                            genres.appendChild(commaSpan);
+                        }
+                    });
+                    row.appendChild(genres);
+
+                    // Действия
+                    const actionsCell = document.createElement('td');
+                    actionsCell.className = 'comment-actions';
+
+                    // Кнопка Browse
+                    const browseLink = document.createElement('a');
+                    browseLink.className = 'btn';
+                    browseLink.href = `/book?id=${book.id}`;
+                    browseLink.textContent = 'Browse';
+                    actionsCell.appendChild(browseLink);
+
+                    // Кнопка Edit
+                    const editLink = document.createElement('a');
+                    editLink.className = 'btn';
+                    editLink.href = `/book/${book.id}/edit`;
+                    editLink.textContent = 'Edit';
+                    actionsCell.appendChild(editLink);
+
+                    // Форма Delete
+                    const deleteForm = document.createElement('form');
+                    deleteForm.method = 'delete';
+                    deleteForm.action = 'book-delete';
+
+                    const bookIdInput = document.createElement('input');
+                    bookIdInput.id = "book-id";
+                    bookIdInput.name = 'bookId';
+                    bookIdInput.type = 'hidden';
+                    bookIdInput.value = book.id;
+                    deleteForm.appendChild(bookIdInput);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-delete';
+                    deleteButton.style.display = 'inline';
+                    deleteButton.type = 'button';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => deleteBook(book.id);
+                    deleteForm.appendChild(deleteButton);
+
+                    actionsCell.appendChild(deleteForm);
+                    row.appendChild(actionsCell);
+
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching books:', error);
+                document.getElementById('no-books-warning').textContent =
+                    'Error loading books';
+                document.getElementById('no-books-warning').style.display = 'block';
+            });
+    });
+</script>
 </body>
 </html>

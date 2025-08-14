@@ -31,30 +31,6 @@
             </a>
         </div>
     </form>
-
-
-    <!--    <form method="post" th:action="@{/comment/save}">-->
-    <!--        <div class="form-group">-->
-    <!--            <label for="commentText">Your Comment:</label>-->
-    <!--            <textarea id="commentText" name="text" required th:text="${comment.text}"></textarea>-->
-    <!--            &lt;!&ndash;      Здесь text - имя параметра @RequestParam&ndash;&gt;-->
-    <!--            <input name="commentId" th:value="${comment.id}" type="hidden">-->
-    <!--            <input name="bookId" th:value="${book.id}" type="hidden">-->
-    <!--        </div>-->
-
-    <!--        <div class="action-buttons" style="display: flex; gap: 10px;">-->
-
-    <!--            <button class="btn btn-edit" type="submit">-->
-    <!--                Submit Comment-->
-    <!--            </button>-->
-
-    <!--            <a class="btn btn-secondary"-->
-    <!--               href="bookPage.html" style="padding: 8px 16px; line-height: 1.5; text-align: center;"-->
-    <!--               th:href="@{/book/{id}(id=${book.id})}">-->
-    <!--                Cancel-->
-    <!--            </a>-->
-    <!--        </div>-->
-    <!--    </form>-->
 </div>
 
 <script>
@@ -78,8 +54,11 @@
         };
 
         const method = commentData.id ? 'PUT' : 'POST';
+        const url = commentData.id ?
+            `/api/v1/comments/${commentData.id}` :
+            `/api/v1/comments`;
 
-        fetch('/api/comment', {
+        fetch(url, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
@@ -130,7 +109,7 @@
     }
 
     function getCommentInfo(id) {
-        fetch(`/api/comment/${id}`)
+        fetch(`/api/v1/comments/${id}`)
             .then(response => response.json())
             .then(comment => {
                 //Установим ID коммента и книги в скрытые поля
@@ -142,17 +121,19 @@
             })
             .catch(error => {
                 console.error('Error loading comment:', error);
+                alert('Oops! Something went wrong.');
             });
     }
 
     function getBookInfo(id) {
-        fetch(`/api/book/${id}`)
+        fetch(`/api/v1/books/${id}`)
             .then(response => response.json())
             .then(book => {
                 document.getElementById('book-title').textContent = book.title;
             })
             .catch(error => {
                 console.error('Error loading book:', error);
+                alert('Oops! Something went wrong.');
             });
     }
 

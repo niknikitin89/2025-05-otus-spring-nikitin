@@ -20,29 +20,30 @@ public class CommentaryController {
 
     private final CommentaryService commentaryService;
 
-    @GetMapping("/api/book/{bookId}/comments")
+    @GetMapping("/api/v1/books/{bookId}/comments")
     public List<CommentaryDto> getCommentsForBook(@PathVariable("bookId") long bookId) {
         return commentaryService.findByBookId(bookId);
     }
 
-    @GetMapping("/api/comment/{id}")
+    @GetMapping("/api/v1/comments/{id}")
     public CommentaryDto getCommentWithBook(@PathVariable("id") long id) {
         return commentaryService.findByIdWithBook(id)
                 .orElseThrow(
                 () -> new EntityNotFoundException("Comment not found"));
     }
 
-    @PostMapping("/api/comment")
+    @PostMapping("/api/v1/comments")
     public CommentaryDto addComment(@RequestBody CommentaryDto comment) {
         return commentaryService.add(comment.getBook().getId(), comment.getText());
     }
 
-    @PutMapping("/api/comment")
-    public void updateComment(@RequestBody CommentaryDto comment) {
+    @PutMapping("/api/v1/comments/{id}")
+    public void updateComment(@PathVariable("id") long id, @RequestBody CommentaryDto comment) {
+        comment.setId(id);
         commentaryService.update(comment.getId(),comment.getText());
     }
 
-    @DeleteMapping("/api/comment/{id}")
+    @DeleteMapping("/api/v1/comments/{id}")
     public void deleteComment(@PathVariable("id") long id) {
         commentaryService.deleteById(id);
     }

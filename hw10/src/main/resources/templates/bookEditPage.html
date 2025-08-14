@@ -81,7 +81,7 @@
 
         try {
             const method = formData.id ? 'PUT' : 'POST';
-            const url = '/api/book';
+            const url = `/api/v1/books/${bookId}`;
 
             const response = await fetch(url, {
                 method: method,
@@ -97,18 +97,18 @@
 
         } catch (error) {
             console.error('Error saving book:', error);
-            alert('Failed to save book');
+            alert('Oops! Something went wrong.');
         }
     });
 
     async function fillPage() {
         //Заполняем список авторов
-        const authorResponse = await fetch('/api/authors');
+        const authorResponse = await fetch('/api/v1/authors');
         allAuthors = await authorResponse.json();
         showAuthors(allAuthors);
 
         //Заполняем список жанров
-        const genresResponse = await fetch('/api/genres');
+        const genresResponse = await fetch('/api/v1/genres');
         allGenres = await genresResponse.json();
         showGenres(allGenres);
 
@@ -144,7 +144,7 @@
 
     async function loadBook(bookId) {
         try {
-            const response = await fetch(`/api/book/${bookId}`);
+            const response = await fetch(`/api/v1/books/${bookId}`);
             if (!response.ok) throw new Error('Book not found');
 
             const book = await response.json();
@@ -163,7 +163,7 @@
 
         } catch (error) {
             console.error('Error loading book:', error);
-            alert('Failed to load book data');
+            alert('Oops! Something went wrong.');
         }
     }
 

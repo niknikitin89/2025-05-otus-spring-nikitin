@@ -20,12 +20,12 @@ public class BookController {
 
     private final BookService bookService;
 
-    @GetMapping("/api/book")
+    @GetMapping("/api/v1/books")
     public List<BookDto> getAllBooks() {
         return bookService.findAll();
     }
 
-    @GetMapping("/api/book/{id}")
+    @GetMapping("/api/v1/books/{id}")
     public BookDto getBook(@PathVariable long id) {
         return bookService.findById(id)
                 .orElseThrow(
@@ -33,17 +33,19 @@ public class BookController {
                 );
     }
 
-    @PutMapping("/api/book")
-    public BookDto updateBook(@RequestBody BookDto bookDto) {
+    @PutMapping("/api/v1/books/{id}")
+    public BookDto updateBook(@PathVariable("id") long id, @RequestBody BookDto bookDto) {
+        bookDto.setId(id);
         return bookService.save(bookDto);
     }
 
-    @PostMapping("/api/book")
-    public BookDto createBook(@RequestBody BookDto bookDto) {
+    @PostMapping("/api/v1/books/{id}")
+    public BookDto createBook(@PathVariable("id") long id, @RequestBody BookDto bookDto) {
+        bookDto.setId(id);
         return bookService.save(bookDto);
     }
 
-    @DeleteMapping("/api/book/{id}")
+    @DeleteMapping("/api/v1/books/{id}")
     public void deleteBook(@PathVariable("id") long id) {
         bookService.deleteById(id);
     }

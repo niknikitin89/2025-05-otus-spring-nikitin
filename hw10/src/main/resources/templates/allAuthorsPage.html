@@ -32,7 +32,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        fetch('/api/authors')
+        fetch('/api/v1/authors')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to load authors');
@@ -73,7 +73,7 @@
             .catch(error => {
                 console.error('Error:', error);
                 const warningDiv = document.getElementById('noAuthorsWarning');
-                warningDiv.textContent = 'Error loading authors: ' + error.message;
+                warningDiv.textContent = 'Error loading authors';
                 warningDiv.style.display = 'block';
             });
     });
