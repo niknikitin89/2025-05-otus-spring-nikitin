@@ -4,9 +4,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 
 import java.util.ArrayList;
 import java.util.List;

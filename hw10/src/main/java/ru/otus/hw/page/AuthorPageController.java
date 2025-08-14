@@ -1,12 +1,9 @@
 package ru.otus.hw.page;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.services.AuthorService;
 
 @Controller

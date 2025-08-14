@@ -39,9 +39,8 @@ public class BookController {
         return bookService.save(bookDto);
     }
 
-    @PostMapping("/api/v1/books/{id}")
-    public BookDto createBook(@PathVariable("id") long id, @RequestBody BookDto bookDto) {
-        bookDto.setId(id);
+    @PostMapping("/api/v1/books")
+    public BookDto createBook(@RequestBody BookDto bookDto) {
         return bookService.save(bookDto);
     }
 

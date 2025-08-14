@@ -15,7 +15,7 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @GetMapping("/api/v1/authors")
-    public List<AuthorDto> getAllAuthors(){
+    public List<AuthorDto> getAllAuthors() {
         return authorService.findAll();
     }
 }

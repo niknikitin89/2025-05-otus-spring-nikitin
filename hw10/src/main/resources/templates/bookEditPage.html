@@ -81,7 +81,9 @@
 
         try {
             const method = formData.id ? 'PUT' : 'POST';
-            const url = `/api/v1/books/${bookId}`;
+            const url = formData.id ?
+                `/api/v1/books/${bookId}` :
+                '/api/v1/books';
 
             const response = await fetch(url, {
                 method: method,
