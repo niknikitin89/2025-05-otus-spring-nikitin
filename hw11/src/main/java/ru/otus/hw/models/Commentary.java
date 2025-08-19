@@ -2,6 +2,7 @@ package ru.otus.hw.models;
 
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,8 @@ public class Commentary {
     private String text;
 
     @Column("book_id")
+    private Long bookId;
+
+    @Transient
     private Book book;
 }

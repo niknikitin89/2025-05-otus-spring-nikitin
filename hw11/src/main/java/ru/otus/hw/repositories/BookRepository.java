@@ -12,8 +12,6 @@ import java.util.Optional;
 
 public interface BookRepository extends ReactiveCrudRepository<Book, Long>, CustomBookRepository {
 
-    Mono<Book> findById(long id);
-
     @Nonnull
     @Override
     Flux<Book> findAll();

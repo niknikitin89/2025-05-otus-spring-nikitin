@@ -9,7 +9,8 @@ import ru.otus.hw.models.Commentary;
 
 import java.util.List;
 
-public interface CommentaryRepository extends ReactiveCrudRepository<Commentary, Long> {
+public interface CommentaryRepository extends ReactiveCrudRepository<Commentary, Long>,
+        CustomCommentaryRepository {
 
     @Nonnull
     Flux<Commentary> findAllByBookId(long id);
