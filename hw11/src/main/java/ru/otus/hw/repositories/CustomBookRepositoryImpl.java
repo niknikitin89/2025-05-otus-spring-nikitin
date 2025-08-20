@@ -10,11 +10,10 @@ import reactor.core.publisher.Mono;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.validators.BookValidator;
 
 import java.util.List;
 import java.util.Objects;
-
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,9 +21,9 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
 
     private final R2dbcEntityTemplate entityTemplate;
 
-    private final AuthorRepository authorRepository;
-
     private final GenreRepository genreRepository;
+
+    private final BookValidator bookValidator;
 
     @Override
     public Mono<Book> findByIdWithAuthorAndGenres(long id) {
@@ -106,23 +105,7 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
                 .all()
                 .groupBy(BookWithGenre::bookId)
                 .flatMap(group -> group.collectList()
-                        .map(items -> {
-                            // Первый элемент гарантированно существует (groupBy создает непустые группы)
-                            BookWithGenre firstItem = items.get(0);
-
-                            List<Genre> genres = items.stream()
-                                    .map(BookWithGenre::genre)
-                                    .filter(Objects::nonNull)
-                                    .toList();
-
-                            return new Book(
-                                    firstItem.bookId(),
-                                    firstItem.title(),
-                                    firstItem.author().getId(),
-                                    firstItem.author(),
-                                    genres
-                            );
-                        })
+                        .map(this::mapBookWithGenreToBook)
                 );
     }
 
@@ -138,15 +121,33 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
         }
     }
 
+    private Book mapBookWithGenreToBook(List<BookWithGenre> items) {
+        // Первый элемент гарантированно существует (groupBy создает непустые группы)
+        BookWithGenre firstItem = items.get(0);
+
+        List<Genre> genres = items.stream()
+                .map(BookWithGenre::genre)
+                .filter(Objects::nonNull)
+                .toList();
+
+        return new Book(
+                firstItem.bookId(),
+                firstItem.title(),
+                firstItem.author().getId(),
+                firstItem.author(),
+                genres
+        );
+    }
+
     private Mono<Book> insertBook(Book book) {
-        return validateBook(book)
+        return bookValidator.validateBook(book)
                 .then(entityTemplate.insert(book))
                 .flatMap(savedBook -> saveBookGenres(savedBook, book.getGenres()))
                 .flatMap(savedBook -> this.findByIdWithAuthorAndGenres(savedBook.getId()));
     }
 
     private Mono<Book> updateBook(Book book) {
-        return validateBook(book)
+        return bookValidator.validateBook(book)
                 .then(entityTemplate.update(book))
                 .flatMap(savedBook -> updateBookGenres(savedBook, book.getGenres()))
                 .flatMap(savedBook -> this.findByIdWithAuthorAndGenres(savedBook.getId()));
@@ -198,60 +199,34 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
         if (genreIds == null || genreIds.isEmpty()) {
             return Mono.empty();
         }
-
         // Проверяем существование жанров
         return genreRepository.findAllById(genreIds).collectList()
                 .flatMap(existingGenres -> {
                     List<Long> existingGenreIds = existingGenres.stream()
-                            .map(Genre::getId)
-                            .toList();
+                            .map(Genre::getId).toList();
 
                     List<Long> notFoundIds = genreIds.stream()
-                            .filter(id -> !existingGenreIds.contains(id))
-                            .toList();
+                            .filter(id -> !existingGenreIds.contains(id)).toList();
 
                     if (!notFoundIds.isEmpty()) {
                         return Mono.error(new IllegalArgumentException("Genres not found: " + notFoundIds));
                     }
 
                     // Сохраняем связи
-                    return Flux.fromIterable(existingGenreIds)
-                            .flatMap(genreId -> entityTemplate.getDatabaseClient()
-                                    .sql(
-                                            "INSERT INTO books_genres (book_id, genre_id) VALUES (:bookId, :genreId)")
-                                    .bind("bookId", bookId)
-                                    .bind("genreId", genreId)
-                                    .fetch()
-                                    .rowsUpdated()
-                            )
-                            .then();
+                    return saveLinkBookWithGenres(bookId, existingGenreIds);
                 });
     }
 
-    private Mono<Book> validateBook(Book book) {
-        return Mono.defer(() -> {
-            if (isEmpty(book.getGenres())) {
-                return Mono.error(new IllegalArgumentException("Genres ids must not be null"));
-            }
-
-            var authorId = book.getAuthorId();
-            if (authorId == null) {
-                return Mono.error(new IllegalArgumentException("Author id must not be null"));
-            }
-
-            return authorRepository.existsById(authorId)
-                    .flatMap(exists -> {
-                        if (!exists) {
-                            return Mono.error(new IllegalArgumentException("Author with id " + authorId + " not found"));
-                        }
-                        return Mono.empty();
-                    });
-
-//            var genres = genreRepository.findAllByIdIn(genresIds);
-//            if (isEmpty(genres) || genresIds.size() != genres.size()) {
-//                throw new EntityNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
-//            }
-        });
+    private Mono<Void> saveLinkBookWithGenres(Long bookId, List<Long> existingGenreIds) {
+        return Flux.fromIterable(existingGenreIds)
+                .flatMap(genreId -> entityTemplate.getDatabaseClient()
+                        .sql("INSERT INTO books_genres (book_id, genre_id) VALUES (:bookId, :genreId)")
+                        .bind("bookId", bookId)
+                        .bind("genreId", genreId)
+                        .fetch()
+                        .rowsUpdated()
+                )
+                .then();
     }
 
     private record BookWithGenre(
@@ -262,3 +237,4 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
     ) {
     }
 }
+

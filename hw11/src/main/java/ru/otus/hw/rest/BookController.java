@@ -12,22 +12,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.GenreRepository;
-import ru.otus.hw.services.BookService;
 
 @RestController
 @RequiredArgsConstructor
 public class BookController {
 
-    private final BookService bookService;
-
     private final BookRepository bookRepository;
-
-    private final AuthorRepository authorRepository;
-
-    private final GenreRepository genreRepository;
 
     @GetMapping("/api/v1/books")
     public Flux<BookDto> getAllBooks() {

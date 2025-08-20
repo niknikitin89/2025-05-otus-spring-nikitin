@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
-import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Commentary;
@@ -13,6 +12,7 @@ import ru.otus.hw.models.Commentary;
 public class CustomCommentaryRepositoryImpl implements CustomCommentaryRepository {
 
     private final R2dbcEntityTemplate entityTemplate;
+
     private final BookRepository bookRepository;
 
     @Override

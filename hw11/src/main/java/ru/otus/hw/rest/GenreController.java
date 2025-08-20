@@ -7,8 +7,6 @@ import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.repositories.GenreRepository;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class GenreController {

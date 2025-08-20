@@ -6,6 +6,8 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 import ru.otus.hw.models.Genre;
 
+import java.util.List;
+
 public interface GenreRepository extends ReactiveCrudRepository<Genre, Long> {
 
     @Nonnull
@@ -19,5 +21,11 @@ public interface GenreRepository extends ReactiveCrudRepository<Genre, Long> {
         """)
     @Nonnull
     Flux<Genre> findByBookId(@Nonnull Long id);
+
+    @Query("""
+            SELECT g.* FROM genres g
+            where g.id in (:genreId)
+            """)
+    Flux<Genre> findAllByIdIn(@Nonnull List<Long> ids);
 
 }
