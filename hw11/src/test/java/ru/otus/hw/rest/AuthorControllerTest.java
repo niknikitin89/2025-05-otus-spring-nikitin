@@ -1,52 +1,64 @@
 package ru.otus.hw.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.repositories.AuthorRepository;
 
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AuthorController.class)
+@WebFluxTest(AuthorController.class)
 class AuthorControllerTest {
 
-//    @Autowired
-//    private MockMvc mvc;
-//
-//    @Autowired
-//    private ObjectMapper mapper;
-//
-//
-//    @Test
-//    void getAllAuthorsShouldReturnListOfAuthors() throws Exception {
-//        AuthorDto author1 = new AuthorDto(1L, "Author1");
-//        AuthorDto author2 = new AuthorDto(2L, "Author2");
-//        List<AuthorDto> expectedAuthors = List.of(author1, author2);
-//
-//        when(authorService.findAll()).thenReturn(expectedAuthors);
-//
-//        mvc.perform(get("/api/v1/authors"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(mapper.writeValueAsString(expectedAuthors)));
-//    }
-//
-//    @Test
-//    void getAllAuthorsWhenNoAuthorsShouldReturnEmptyList() throws Exception {
-//        List<AuthorDto> expectedEmptyList = List.of();
-//
-//        when(authorService.findAll()).thenReturn(expectedEmptyList);
-//
-//        mvc.perform(get("/api/v1/authors"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(mapper.writeValueAsString(expectedEmptyList)));
-//    }
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @MockBean
+    private AuthorRepository authorRepository;
+
+    @Test
+    void getAllAuthorsShouldReturnAllAuthors() {
+        // given
+        List<Author> authors = List.of(
+                new Author(1L, "Author 1"),
+                new Author(2L, "Author 2")
+        );
+
+        List<AuthorDto> expectedDtos = authors.stream()
+                .map(AuthorDto::fromDomainObject)
+                .toList();
+
+        when(authorRepository.findAll()).thenReturn(Flux.fromIterable(authors));
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/authors")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(AuthorDto.class)
+                .hasSize(2)
+                .contains(expectedDtos.toArray(new AuthorDto[0]));
+    }
+
+    @Test
+    void getAllAuthorsShouldReturnEmptyListWhenNoAuthors() {
+        // given
+        when(authorRepository.findAll()).thenReturn(Flux.empty());
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/authors")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(AuthorDto.class)
+                .hasSize(0);
+    }
 
 }

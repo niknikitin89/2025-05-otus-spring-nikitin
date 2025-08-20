@@ -19,4 +19,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Mono<ErrorResponse>> handeNotFoundException(IllegalArgumentException ex) {
+        var error = Mono.just(new ErrorResponse("400", "Incorrect data"));
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
 }

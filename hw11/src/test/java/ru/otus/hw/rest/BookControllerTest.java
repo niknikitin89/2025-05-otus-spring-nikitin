@@ -1,103 +1,195 @@
 package ru.otus.hw.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.services.BookService;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.BookRepository;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.when;
 
-@WebMvcTest(BookController.class)
+@WebFluxTest(BookController.class)
 class BookControllerTest {
 
-//    @Autowired
-//    private MockMvc mvc;
-//
-//    @Autowired
-//    private ObjectMapper mapper;
-//
-//    @MockBean
-//    private BookService bookService;
-//
-//    @Test
-//    void getAllBooksShouldReturnListOfBooks() throws Exception {
-//        BookDto book1 = new BookDto(1L, "Book 1", null, null);
-//        BookDto book2 = new BookDto(2L, "Book 2", null, null);
-//        List<BookDto> expectedBooks = List.of(book1, book2);
-//
-//        given(bookService.findAll()).willReturn(expectedBooks);
-//
-//        mvc.perform(get("/api/v1/books"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(mapper.writeValueAsString(expectedBooks)));
-//    }
-//
-//    @Test
-//    void getBookWithExistingIdShouldReturnBook() throws Exception {
-//        BookDto expectedBook = new BookDto(1L, "Existing Book", null, null);
-//        given(bookService.findById(1L)).willReturn(java.util.Optional.of(expectedBook));
-//
-//        mvc.perform(get("/api/v1/books/1"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(mapper.writeValueAsString(expectedBook)));
-//    }
-//
-//    @Test
-//    void getBookWithIncorrectIdShouldReturnNotFoundStatus() throws Exception {
-//        given(bookService.findById(1L)).willThrow(EntityNotFoundException.class);
-//
-//        mvc.perform(get("/api/v1/books/1"))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void updateBookShouldReturnUpdatedBook() throws Exception {
-//        BookDto updatedBook = new BookDto(1L, "Updated Book", null, null);
-//        given(bookService.save(any(BookDto.class))).willReturn(updatedBook);
-//
-//        mvc.perform(put("/api/v1/books/1")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(mapper.writeValueAsString(updatedBook)))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(mapper.writeValueAsString(updatedBook)));
-//    }
-//
-//    @Test
-//    void createBookShouldReturnCreatedBook() throws Exception {
-//        BookDto newBook = new BookDto(1L, "New Book", null, null);
-//
-//        given(bookService.save(any(BookDto.class))).willReturn(newBook);
-//
-//        mvc.perform(post("/api/v1/books")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(mapper.writeValueAsString(newBook)))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(mapper.writeValueAsString(newBook)));
-//    }
-//
-//    @Test
-//    void deleteBookShouldReturnCorrectResult() throws Exception {
-//        mvc.perform(delete("/api/v1/books/1"))
-//                .andExpect(status().isOk());
-//
-//        verify(bookService).deleteById(1L);
-//    }
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @MockBean
+    private BookRepository bookRepository;
+
+    private Book book;
+    private BookDto bookDto;
+    private BookDto requestDto;
+
+    @BeforeEach
+    void setUp() {
+        Author author = new Author(1L, "Author");
+        Genre genre = new Genre(1L, "Genre");
+
+        book = new Book(
+                1L,
+                "Book",
+                1L,
+                author,
+                List.of(genre));
+
+        bookDto = BookDto.fromDomainObject(book);
+        requestDto = BookDto.fromDomainObject(book);
+    }
+
+    @Test
+    void shouldReturnAllBooks() {
+        // given
+        when(bookRepository.findAllWithAuthorsAndGenres())
+                .thenReturn(Flux.just(book));
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/books")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(BookDto.class)
+                .hasSize(1)
+                .contains(bookDto);
+    }
+
+    @Test
+    void shouldReturnEmptyBooksList() {
+        // given
+        when(bookRepository.findAllWithAuthorsAndGenres())
+                .thenReturn(Flux.empty());
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/books")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(BookDto.class)
+                .hasSize(0);
+    }
+
+    @Test
+    void shouldReturnBookById() {
+        // given
+        when(bookRepository.findByIdWithAuthorAndGenres(1L))
+                .thenReturn(Mono.just(book));
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/books/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(BookDto.class)
+                .isEqualTo(bookDto);
+    }
+
+    @Test
+    void shouldReturnNotFoundForNonExistingBook() {
+        // given
+        when(bookRepository.findByIdWithAuthorAndGenres(999L))
+                .thenReturn(Mono.empty());
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/books/999")
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void shouldCreateBook() {
+        // given
+        requestDto.setId(null);
+
+        when(bookRepository.saveBookWithAuthorsAndGenres(any(Book.class)))
+                .thenReturn(Mono.just(book));
+
+        // when & then
+        webTestClient.post()
+                .uri("/api/v1/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(BookDto.class)
+                .isEqualTo(bookDto);
+    }
+
+    @Test
+    void shouldReturnBadRequestForInvalidBookCreation() {
+        // given
+        book.setAuthorId(null);
+        requestDto = BookDto.fromDomainObject(book);
+
+        when(bookRepository.saveBookWithAuthorsAndGenres(any(Book.class)))
+                .thenReturn(Mono.error(new IllegalArgumentException("Author id must not be null")));
+
+        // when & then
+        webTestClient.post()
+                .uri("/api/v1/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestDto)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void shouldUpdateBook() {
+
+        when(bookRepository.saveBookWithAuthorsAndGenres(any(Book.class)))
+                .thenReturn(Mono.just(book));
+
+        // when & then
+        webTestClient.put()
+                .uri("/api/v1/books/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(BookDto.class)
+                .isEqualTo(bookDto);
+    }
+
+    @Test
+    void shouldReturnNotFoundForNonExistingBookOnUpdate() {
+        // given
+        requestDto.setId(999L);
+
+        when(bookRepository.saveBookWithAuthorsAndGenres(any(Book.class)))
+                .thenReturn(Mono.error(new EntityNotFoundException("Book not found")));
+
+        // when & then
+        webTestClient.put()
+                .uri("/api/v1/books/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestDto)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void shouldDeleteBook() {
+        // given
+        when(bookRepository.deleteById(1L)).thenReturn(Mono.empty());
+
+        // when & then
+        webTestClient.delete()
+                .uri("/api/v1/books/1")
+                .exchange()
+                .expectStatus().isOk();
+    }
 
 }

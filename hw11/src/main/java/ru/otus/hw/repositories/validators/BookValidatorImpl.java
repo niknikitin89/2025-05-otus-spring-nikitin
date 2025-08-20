@@ -23,10 +23,8 @@ public class BookValidatorImpl implements BookValidator {
 
     @Override
     public Mono<Void> validateBook(Book book) {
-        return Mono.defer(() -> {
-            return validateAuthor(book)
-                    .then(validateGenres(book));
-        });
+        return Mono.defer(() -> validateAuthor(book)
+                .then(validateGenres(book)));
     }
 
     private Mono<Void> validateGenres(Book book) {
