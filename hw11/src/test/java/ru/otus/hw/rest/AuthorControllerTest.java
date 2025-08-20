@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDto;
-import ru.otus.hw.services.AuthorService;
 
 import java.util.List;
 
@@ -25,8 +24,6 @@ class AuthorControllerTest {
 //    @Autowired
 //    private ObjectMapper mapper;
 //
-//    @MockBean
-//    private AuthorService authorService;
 //
 //    @Test
 //    void getAllAuthorsShouldReturnListOfAuthors() throws Exception {

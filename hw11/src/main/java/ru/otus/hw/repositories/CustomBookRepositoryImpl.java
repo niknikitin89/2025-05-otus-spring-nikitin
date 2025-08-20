@@ -1,7 +1,8 @@
 package ru.otus.hw.repositories;
 
+import io.r2dbc.spi.Row;
+import io.r2dbc.spi.RowMetadata;
 import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.Java6BDDSoftAssertionsProvider;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -20,7 +21,9 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class CustomBookRepositoryImpl implements CustomBookRepository {
 
     private final R2dbcEntityTemplate entityTemplate;
+
     private final AuthorRepository authorRepository;
+
     private final GenreRepository genreRepository;
 
     @Override
@@ -39,26 +42,28 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
         return entityTemplate.getDatabaseClient()
                 .sql(sql)
                 .bind("id", id)
-                .map((row, meta) -> {
-                    Long bookId = row.get("book_id", Long.class);
-                    String title = row.get("title", String.class);
-                    Author author = new Author(
-                            row.get("author_id", Long.class),
-                            row.get("full_name", String.class)
-                    );
-
-                    Genre genre = null;
-                    if (row.get("genre_id", Long.class) != null) {
-                        genre = new Genre(
-                                row.get("genre_id", Long.class),
-                                row.get("genre_name", String.class)
-                        );
-                    }
-                    return new BookWithGenre(bookId, title, author, genre);
-                })
+                .map(this::mapToBookWithGenre)
                 .all()
                 .collectList()
                 .flatMap(this::agregateBookWithGenres);
+    }
+
+    private BookWithGenre mapToBookWithGenre(Row row, RowMetadata meta) {
+        Long bookId = row.get("book_id", Long.class);
+        String title = row.get("title", String.class);
+        Author author = new Author(
+                row.get("author_id", Long.class),
+                row.get("full_name", String.class)
+        );
+
+        Genre genre = null;
+        if (row.get("genre_id", Long.class) != null) {
+            genre = new Genre(
+                    row.get("genre_id", Long.class),
+                    row.get("genre_name", String.class)
+            );
+        }
+        return new BookWithGenre(bookId, title, author, genre);
     }
 
     private Mono<Book> agregateBookWithGenres(List<BookWithGenre> booksWithGenres) {
@@ -97,23 +102,7 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
 
         return entityTemplate.getDatabaseClient()
                 .sql(sql)
-                .map((row, meta) -> {
-                    Long bookId = row.get("book_id", Long.class);
-                    String title = row.get("title", String.class);
-                    Author author = new Author(
-                            row.get("author_id", Long.class),
-                            row.get("full_name", String.class)
-                    );
-
-                    Genre genre = null;
-                    if (row.get("genre_id", Long.class) != null) {
-                        genre = new Genre(
-                                row.get("genre_id", Long.class),
-                                row.get("genre_name", String.class)
-                        );
-                    }
-                    return new BookWithGenre(bookId, title, author, genre);
-                })
+                .map(this::mapToBookWithGenre)
                 .all()
                 .groupBy(BookWithGenre::bookId)
                 .flatMap(group -> group.collectList()
@@ -144,7 +133,7 @@ public class CustomBookRepositoryImpl implements CustomBookRepository {
 
         if (isInsert) {
             return insertBook(book);
-        }else{
+        } else {
             return updateBook(book);
         }
     }

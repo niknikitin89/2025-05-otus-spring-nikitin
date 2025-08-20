@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.rest.GenreController;
-import ru.otus.hw.services.GenreService;
+//import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import static org.mockito.Mockito.when;

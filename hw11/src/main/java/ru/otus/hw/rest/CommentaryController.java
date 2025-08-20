@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.CommentaryDto;
+import ru.otus.hw.dto.CommentaryWithBookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.repositories.CommentaryRepository;
-import ru.otus.hw.services.CommentaryService;
+//import ru.otus.hw.services.CommentaryService;
 
 @RestController
 @RequiredArgsConstructor
 public class CommentaryController {
 
-    private final CommentaryService commentaryService;
     private final CommentaryRepository commentaryRepository;
 
     @GetMapping("/api/v1/books/{bookId}/comments")
@@ -29,23 +29,48 @@ public class CommentaryController {
     }
 
     @GetMapping("/api/v1/comments/{id}")
-    public Mono<CommentaryDto> getCommentWithBook(@PathVariable("id") long id) {
+    public Mono<CommentaryWithBookDto> getCommentWithBook(@PathVariable("id") long id) {
         return commentaryRepository.findByIdWithBook(id)
-                .map(CommentaryDto::fromDomainObjectWithBook)
+                .map(CommentaryWithBookDto::fromDomainObject)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Comment not found")));
     }
 
     @PostMapping("/api/v1/comments")
-    public Mono<CommentaryDto> addComment(@RequestBody CommentaryDto comment) {
-        return commentaryRepository.save(comment.toNewDomainObject())
-                .map(CommentaryDto::fromDomainObjectWithBook);
+    public Mono<CommentaryWithBookDto> addComment(@RequestBody CommentaryWithBookDto comment) {
+        return Mono.defer(() -> {
+            if (comment.getText().isEmpty()) {
+                return Mono.error(new IllegalArgumentException("Commentary is empty"));
+            }
+            if (comment.getBook().getId() == null || comment.getBook().getId() == 0) {
+                return Mono.error(new IllegalArgumentException("Book id cannot be 0"));
+            }
+
+            return commentaryRepository.save(comment.toDomainObject())
+                    .map(CommentaryWithBookDto::fromDomainObject);
+        });
     }
 
     @PutMapping("/api/v1/comments/{id}")
-    public Mono<CommentaryDto> updateComment(@PathVariable("id") long id, @RequestBody CommentaryDto comment) {
+    public Mono<CommentaryWithBookDto> updateComment(
+            @PathVariable("id") long id,
+            @RequestBody CommentaryWithBookDto comment) {
+
+        if (id == 0) {
+            return Mono.error(new IllegalArgumentException("Commentary id cannot be 0"));
+        }
+
         comment.setId(id);
-        return commentaryRepository.save(comment.toDomainObject())
-                .map(CommentaryDto::fromDomainObjectWithBook);
+        return commentaryRepository
+                .existsById(id)
+                .flatMap(commExist -> {
+                    if (!commExist) {
+                        return Mono.error(new IllegalArgumentException(
+                                "Commentary %d not found".formatted(id)));
+                    }
+                    return commentaryRepository
+                            .save(comment.toDomainObject())
+                            .map(CommentaryWithBookDto::fromDomainObject);
+                });
     }
 
     @DeleteMapping("/api/v1/comments/{id}")

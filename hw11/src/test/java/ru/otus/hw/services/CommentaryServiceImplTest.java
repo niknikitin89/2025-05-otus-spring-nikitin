@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Сервис комментариев")
 @DataJpaTest
-@Import({CommentaryServiceImpl.class})
+//@Import({CommentaryServiceImpl.class})
 @Transactional(propagation = Propagation.NEVER)
 class CommentaryServiceImplTest {
 

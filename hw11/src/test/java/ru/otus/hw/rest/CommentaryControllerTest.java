@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.CommentaryDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.services.CommentaryService;
+//import ru.otus.hw.services.CommentaryService;
 
 import java.util.List;
 

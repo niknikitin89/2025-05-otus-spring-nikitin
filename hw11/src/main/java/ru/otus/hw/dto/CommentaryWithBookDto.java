@@ -9,21 +9,22 @@ import ru.otus.hw.models.Commentary;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentaryDto {
+public class CommentaryWithBookDto {
 
     private Long id;
 
     @NotBlank(message = "Empty Text")
     private String text;
 
-    private Long bookId;
+    private BookForCommentDto book;
 
-    public static CommentaryDto fromDomainObject(Commentary commet) {
-        return new CommentaryDto(commet.getId(), commet.getText(), commet.getBookId());
+    public static CommentaryWithBookDto fromDomainObject(Commentary commet) {
+        return new CommentaryWithBookDto(commet.getId(), commet.getText(),
+                BookForCommentDto.fromDomainObject(commet.getBook()));
     }
 
     public Commentary toDomainObject() {
-        return new Commentary(id, text, bookId, null);
+        return new Commentary(id, text, book.getId(), book.toDomainObject());
     }
 
 }
