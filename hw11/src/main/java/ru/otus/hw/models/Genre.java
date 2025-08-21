@@ -1,21 +1,24 @@
 package ru.otus.hw.models;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "genres")
+@Document(collection = "genres")
 public class Genre {
     @Id
-    private Long id;
+    private String id;
 
-    @Column("name")
+    @Field(name = "name")
     private String name;
+
+    public Genre(String name) {
+        this.name = name;
+    }
 }

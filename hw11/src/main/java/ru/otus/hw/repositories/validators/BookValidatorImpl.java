@@ -17,9 +17,9 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 public class BookValidatorImpl implements BookValidator {
 
-    private final AuthorRepository authorRepository;
-
-    private final GenreRepository genreRepository;
+//    private final AuthorRepository authorRepository;
+//
+//    private final GenreRepository genreRepository;
 
     @Override
     public Mono<Void> validateBook(Book book) {
@@ -28,38 +28,41 @@ public class BookValidatorImpl implements BookValidator {
     }
 
     private Mono<Void> validateGenres(Book book) {
-        if (isEmpty(book.getGenres())) {
-            return Mono.error(new IllegalArgumentException("Genres ids must not be null"));
-        }
+//        if (isEmpty(book.getGenres())) {
+//            return Mono.error(new IllegalArgumentException("Genres ids must not be null"));
+//        }
+//
+//        List<String> genresIds = book.getGenres().stream()
+//                .map(Genre::getId).toList();
+//
+//        return genreRepository.findAllByIdIn(genresIds)
+//                .map(Genre::getId)
+//                .collectList()
+//                .flatMap(existingIds -> {
+//                    if (existingIds.size() != genresIds.size()) {
+//                        return Mono.error(
+//                                new EntityNotFoundException("One or all genres with ids %s not found"
+//                                        .formatted(genresIds)));
+//                    }
+//                    return Mono.empty();
+//                });
 
-        List<Long> genresIds = book.getGenres().stream()
-                .map(Genre::getId).toList();
-
-        return genreRepository.findAllByIdIn(genresIds)
-                .map(Genre::getId)
-                .collectList()
-                .flatMap(existingIds -> {
-                    if (existingIds.size() != genresIds.size()) {
-                        return Mono.error(
-                                new EntityNotFoundException("One or all genres with ids %s not found"
-                                        .formatted(genresIds)));
-                    }
-                    return Mono.empty();
-                });
+        return null;
     }
 
     private Mono<Void> validateAuthor(Book book) {
-        var authorId = book.getAuthorId();
-        if (authorId == null) {
-            return Mono.error(new IllegalArgumentException("Author id must not be null"));
-        }
-
-        return authorRepository.existsById(authorId)
-                .flatMap(exists -> {
-                    if (!exists) {
-                        return Mono.error(new IllegalArgumentException("Author with id " + authorId + " not found"));
-                    }
-                    return Mono.empty();
-                });
+//        var authorId = book.getAuthorId();
+//        if (authorId == null) {
+//            return Mono.error(new IllegalArgumentException("Author id must not be null"));
+//        }
+//
+//        return authorRepository.existsById(authorId)
+//                .flatMap(exists -> {
+//                    if (!exists) {
+//                        return Mono.error(new IllegalArgumentException("Author with id " + authorId + " not found"));
+//                    }
+//                    return Mono.empty();
+//                });
+        return null;
     }
 }

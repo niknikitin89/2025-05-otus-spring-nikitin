@@ -11,7 +11,7 @@ import ru.otus.hw.models.Commentary;
 @NoArgsConstructor
 public class CommentaryWithBookDto {
 
-    private Long id;
+    private String id;
 
     @NotBlank(message = "Empty Text")
     private String text;
@@ -24,7 +24,7 @@ public class CommentaryWithBookDto {
     }
 
     public Commentary toDomainObject() {
-        return new Commentary(id, text, book.getId(), book.toDomainObject());
+        return new Commentary(id, text, book.toDomainObject());
     }
 
 }

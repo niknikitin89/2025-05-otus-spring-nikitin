@@ -1,36 +1,38 @@
 package ru.otus.hw.models;
 
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "commentaries")
+@Document(collection = "commentaries")
 public class Commentary {
     @Id
     @EqualsAndHashCode.Include
     @ToString.Include
-    private Long id;
+    private String id;
 
-    @Column("text")
+    @Field(name = "text")
     @EqualsAndHashCode.Include
     @ToString.Include
     private String text;
 
-    @Column("book_id")
-    private Long bookId;
-
-    @Transient
+    @DocumentReference(lazy = true)
     private Book book;
+
+    public Commentary(String text, Book book) {
+        this.text = text;
+        this.book = book;
+    }
 }

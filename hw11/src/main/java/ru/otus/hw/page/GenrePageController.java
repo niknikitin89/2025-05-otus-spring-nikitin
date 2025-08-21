@@ -11,7 +11,7 @@ public class GenrePageController {
 
     //http://localhost:8080/all_genres
     @GetMapping("/all_genres")
-    public String allGenresPage(Model model) {
+    public String allGenresPage() {
         return "allGenresPage";
     }
 }

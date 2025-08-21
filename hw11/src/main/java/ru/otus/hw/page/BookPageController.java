@@ -13,7 +13,7 @@ public class BookPageController {
 
     //http://localhost:8080/
     @GetMapping("/")
-    public String allBooksPage(Model model) {
+    public String allBooksPage() {
         return "allBooksPage";
     }
 
@@ -30,7 +30,7 @@ public class BookPageController {
     }
 
     @GetMapping("/add_book")
-    String addBook(Model model) {
+    String addBook() {
         return "bookEditPage";
     }
 

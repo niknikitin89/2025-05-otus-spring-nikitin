@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BookDto {
 
-    private Long id;
+    private String id;
 
     @NotBlank(message = "Empty Title")
     private String title;
@@ -33,31 +33,21 @@ public class BookDto {
     }
 
     public static BookDto fromDomainObjectOnlyBook(@Nonnull Book book) {
-        return new BookDto(book.getId(), book.getTitle(),null,null);
+        return new BookDto(book.getId(), book.getTitle(), null, null);
     }
 
 
     public Book toDomainObject() {
         return new Book(id, title,
-                author.getId(),
                 author.toDomainObject(),
                 genres.stream().map(GenreDto::toDomainObject).toList());
     }
 
-
-    public Book toDomainObjectOnlyBook() {
-        return new Book(id, title,
-                null,
-                null,
-                null);
-    }
 
     public Book toNewDomainObject() {
         return new Book(null, title,
-                author.getId(),
                 author.toDomainObject(),
                 genres.stream().map(GenreDto::toDomainObject).toList());
     }
-
 
 }

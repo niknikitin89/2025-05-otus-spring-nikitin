@@ -6,10 +6,12 @@ import ru.otus.hw.models.Book;
 
 public interface CustomBookRepository {
 
-    Mono<Book> findByIdWithAuthorAndGenres(long id);
+    Mono<Book> findByIdWithAuthor(String id);
 
-    Flux<Book> findAllWithAuthorsAndGenres();
-
-    Mono<Book> saveBookWithAuthorsAndGenres(Book book);
+//    Mono<Book> findByIdWithAuthorAndGenres(long id);
+//
+//    Flux<Book> findAllWithAuthorsAndGenres();
+//
+//    Mono<Book> saveBookWithAuthorsAndGenres(Book book);
 
 }

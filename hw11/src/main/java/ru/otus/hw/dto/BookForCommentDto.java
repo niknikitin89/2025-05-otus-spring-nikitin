@@ -9,7 +9,7 @@ import ru.otus.hw.models.Book;
 @AllArgsConstructor
 public class BookForCommentDto {
 
-    private Long id;
+    private String id;
 
     private String title;
 
@@ -18,6 +18,6 @@ public class BookForCommentDto {
     }
 
     public Book toDomainObject() {
-        return new Book(id, title, null, null, null);
+        return new Book(id, title,null, null);
     }
 }

@@ -2,7 +2,6 @@ package ru.otus.hw.page;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -11,7 +10,7 @@ public class AuthorPageController {
 
     //http://localhost:8080/all_authors
     @GetMapping("/all_authors")
-    public String allAuthorsPage(Model model) {
+    public String allAuthorsPage() {
         return "allAuthorsPage";
     }
 }

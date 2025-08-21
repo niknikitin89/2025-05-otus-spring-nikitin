@@ -1,4 +1,4 @@
-package ru.otus.hw.models;
+package ru.otus.hw.projections;
 
 
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
@@ -18,12 +17,21 @@ import java.util.List;
 @ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
+@Document(collection = "books")
+public class BookProjection {
+    @Id
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private String id;
 
+    @Field(name = "title")
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private String title;
 
-    private Author author;
+    @Field(name = "author")
+    private String author;
 
-    private List<Genre> genres;
+    @Field(name = "genres")
+    private List<String> genres;
 }

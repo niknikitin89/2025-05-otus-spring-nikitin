@@ -27,9 +27,9 @@ class GenreControllerTest {
     void getAllGenresShouldReturnAllGenres() {
         // given
         List<Genre> genres = List.of(
-                new Genre(1L, "Genre1"),
-                new Genre(2L, "Genre2"),
-                new Genre(3L, "Genre3")
+                new Genre("1", "Genre1"),
+                new Genre("2", "Genre2"),
+                new Genre("3", "Genre3")
         );
 
         List<GenreDto> expectedDtos = genres.stream()

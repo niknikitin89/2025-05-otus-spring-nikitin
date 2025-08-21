@@ -13,43 +13,44 @@ import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.services.BookService;
 
 @RestController
 @RequiredArgsConstructor
 public class BookController {
 
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @GetMapping("/api/v1/books")
     public Flux<BookDto> getAllBooks() {
-        return bookRepository.findAllWithAuthorsAndGenres()
+        return bookService.findAllFullBooks()
                 .map(BookDto::fromDomainObject);
     }
-
-    @GetMapping("/api/v1/books/{id}")
-    public Mono<BookDto> getBook(@PathVariable long id) {
-        return bookRepository.findByIdWithAuthorAndGenres(id).map(BookDto::fromDomainObject)
-                .switchIfEmpty(Mono.error(
-                        new EntityNotFoundException("Book with id " + id + " not found")
-                ));
-    }
-
-    @PutMapping("/api/v1/books/{id}")
-    public Mono<BookDto> updateBook(@PathVariable("id") long id, @RequestBody BookDto bookDto) {
-        bookDto.setId(id);
-        return bookRepository
-                .saveBookWithAuthorsAndGenres(bookDto.toDomainObject())
-                .map(BookDto::fromDomainObject);
-    }
-
-    @PostMapping("/api/v1/books")
-    public Mono<BookDto> createBook(@RequestBody BookDto bookDto) {
-        return bookRepository.saveBookWithAuthorsAndGenres(bookDto.toNewDomainObject())
-                .map(BookDto::fromDomainObject);
-    }
-
-    @DeleteMapping("/api/v1/books/{id}")
-    public Mono<Void> deleteBook(@PathVariable("id") long id) {
-        return bookRepository.deleteById(id);
-    }
+//
+//    @GetMapping("/api/v1/books/{id}")
+//    public Mono<BookDto> getBook(@PathVariable long id) {
+//        return bookRepository.findByIdWithAuthorAndGenres(id).map(BookDto::fromDomainObject)
+//                .switchIfEmpty(Mono.error(
+//                        new EntityNotFoundException("Book with id " + id + " not found")
+//                ));
+//    }
+//
+//    @PutMapping("/api/v1/books/{id}")
+//    public Mono<BookDto> updateBook(@PathVariable("id") String id, @RequestBody BookDto bookDto) {
+//        bookDto.setId(id);
+//        return bookRepository
+//                .saveBookWithAuthorsAndGenres(bookDto.toDomainObject())
+//                .map(BookDto::fromDomainObject);
+//    }
+//
+//    @PostMapping("/api/v1/books")
+//    public Mono<BookDto> createBook(@RequestBody BookDto bookDto) {
+//        return bookRepository.saveBookWithAuthorsAndGenres(bookDto.toNewDomainObject())
+//                .map(BookDto::fromDomainObject);
+//    }
+//
+//    @DeleteMapping("/api/v1/books/{id}")
+//    public Mono<Void> deleteBook(@PathVariable("id") String id) {
+//        return bookRepository.deleteById(id);
+//    }
 }
