@@ -23,42 +23,42 @@ class AuthorControllerTest {
     @MockBean
     private AuthorRepository authorRepository;
 
-//    @Test
-//    void getAllAuthorsShouldReturnAllAuthors() {
-//        // given
-//        List<Author> authors = List.of(
-//                new Author("1", "Author 1"),
-//                new Author("2", "Author 2")
-//        );
-//
-//        List<AuthorDto> expectedDtos = authors.stream()
-//                .map(AuthorDto::fromDomainObject)
-//                .toList();
-//
-//        when(authorRepository.findAll()).thenReturn(Flux.fromIterable(authors));
-//
-//        // when & then
-//        webTestClient.get()
-//                .uri("/api/v1/authors")
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectBodyList(AuthorDto.class)
-//                .hasSize(2)
-//                .contains(expectedDtos.toArray(new AuthorDto[0]));
-//    }
-//
-//    @Test
-//    void getAllAuthorsShouldReturnEmptyListWhenNoAuthors() {
-//        // given
-//        when(authorRepository.findAll()).thenReturn(Flux.empty());
-//
-//        // when & then
-//        webTestClient.get()
-//                .uri("/api/v1/authors")
-//                .exchange()
-//                .expectStatus().isOk()
-//                .expectBodyList(AuthorDto.class)
-//                .hasSize(0);
-//    }
+    @Test
+    void getAllAuthorsShouldReturnAllAuthors() {
+        // given
+        List<Author> authors = List.of(
+                new Author("1", "Author 1"),
+                new Author("2", "Author 2")
+        );
+
+        List<AuthorDto> expectedDtos = authors.stream()
+                .map(AuthorDto::fromDomainObject)
+                .toList();
+
+        when(authorRepository.findAll()).thenReturn(Flux.fromIterable(authors));
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/authors")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(AuthorDto.class)
+                .hasSize(2)
+                .contains(expectedDtos.toArray(new AuthorDto[0]));
+    }
+
+    @Test
+    void getAllAuthorsShouldReturnEmptyListWhenNoAuthors() {
+        // given
+        when(authorRepository.findAll()).thenReturn(Flux.empty());
+
+        // when & then
+        webTestClient.get()
+                .uri("/api/v1/authors")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(AuthorDto.class)
+                .hasSize(0);
+    }
 
 }
