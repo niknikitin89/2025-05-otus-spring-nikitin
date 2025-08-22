@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.projections.BookProjection;
 import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
@@ -22,10 +22,13 @@ public class BookValidatorImpl implements BookValidator {
 
     private final GenreRepository genreRepository;
 
+    private final BookRepository bookRepository;
+
     @Override
-    public Mono<Void> validateBook(BookProjection book) {
-        return Mono.defer(() -> validateAuthor(book)
-                .then(validateGenres(book)));
+    public Mono<Void> validate(BookProjection book) {
+        return validateAuthor(book)
+                .then(validateGenres(book))
+                .then(validateExistence(book.getId()));
     }
 
     private Mono<Void> validateGenres(BookProjection book) {
@@ -62,5 +65,20 @@ public class BookValidatorImpl implements BookValidator {
                     }
                     return Mono.empty();
                 });
+    }
+
+    private Mono<Void> validateExistence(String bookId) {
+        if (bookId != null && !bookId.isBlank()) {
+            return bookRepository.existsById(bookId)
+                    .flatMap(exists -> {
+                        if (!exists) {
+                            return Mono.error(new IllegalArgumentException(
+                                    "Book %s not found".formatted(bookId)
+                            ));
+                        }
+                        return Mono.empty();
+                    });
+        }
+        return Mono.empty();
     }
 }

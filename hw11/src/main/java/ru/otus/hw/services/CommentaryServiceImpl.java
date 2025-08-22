@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import ru.otus.hw.models.Commentary;
 import ru.otus.hw.projections.CommentaryProjection;
 import ru.otus.hw.repositories.CommentaryRepository;
+import ru.otus.hw.repositories.validators.CommentaryValidator;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,8 @@ public class CommentaryServiceImpl implements CommentaryService {
     private final CommentaryRepository commentaryRepository;
 
     private final BookService bookService;
+
+    private final CommentaryValidator validator;
 
     @Override
     public Flux<Commentary> findAllByBookId(String bookId) {
@@ -31,7 +34,15 @@ public class CommentaryServiceImpl implements CommentaryService {
 
     @Override
     public Mono<Commentary> saveComment(Commentary commentary) {
-        return commentaryRepository.save(convertToProjection(commentary))
+        if (commentary.getId().isBlank()) {
+            commentary.setId(null);
+        }
+
+        CommentaryProjection proj = convertToProjection(commentary);
+
+        return validator.validate(proj)
+                .then(commentaryRepository.save(proj))
+                .flatMap(savedComment -> commentaryRepository.findById(savedComment.getId()))
                 .flatMap(this::convertToCommentWithBook);
     }
 

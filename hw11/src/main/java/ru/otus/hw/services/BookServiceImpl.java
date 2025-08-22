@@ -62,7 +62,7 @@ public class BookServiceImpl implements BookService {
         }
 
         BookProjection projection = convertToProjection(book);
-        return bookValidator.validateBook(projection)
+        return bookValidator.validate(projection)
                 .then(bookRepository.save(projection))
                 .flatMap(savedBook -> bookRepository.findById(savedBook.getId()))
                 .flatMap(this::convertToFullBook);

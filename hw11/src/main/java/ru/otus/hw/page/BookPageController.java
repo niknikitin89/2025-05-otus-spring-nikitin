@@ -19,13 +19,13 @@ public class BookPageController {
 
     //http://localhost:8080/book/1
     @GetMapping("/book")
-    public String bookPage(@RequestParam("id") long id) {
+    public String bookPage(@RequestParam("id") String id) {
         return "bookPage";
     }
 
     //http://localhost:8080/book/2/edit
     @GetMapping("/book/{id}/edit")
-    public String editBookPage(@PathVariable long id) {
+    public String editBookPage(@PathVariable String id) {
         return "bookEditPage";
     }
 
