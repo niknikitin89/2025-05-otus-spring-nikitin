@@ -44,6 +44,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Mono<Book> findById(String id) {
+        return bookRepository.findById(id)
+                .map(proj -> new Book(proj.getId(), proj.getTitle(), null, null));
+    }
+
+    @Override
     public Mono<Book> findByIdFullBook(String id) {
         return bookRepository.findById(id)
                 .flatMap(this::convertToFullBook);

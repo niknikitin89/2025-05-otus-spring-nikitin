@@ -37,6 +37,10 @@ public class BookController {
 
     @PutMapping("/api/v1/books/{id}")
     public Mono<BookDto> updateBook(@PathVariable("id") String id, @RequestBody BookDto bookDto) {
+        if (id == null || id.isBlank()) {
+            return Mono.error(new IllegalArgumentException("Book id cannot be empty"));
+        }
+
         bookDto.setId(id);
         return bookService.saveBook(bookDto.toDomainObject())
                 .map(BookDto::fromDomainObject);

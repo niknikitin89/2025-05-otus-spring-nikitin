@@ -7,6 +7,8 @@ import ru.otus.hw.models.Book;
 public interface BookService {
     Flux<Book> findAllFullBooks();
 
+    Mono<Book> findById(String id);
+
     Mono<Book> findByIdFullBook(String id);
 
     Mono<Book> saveBook(Book book);

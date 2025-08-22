@@ -12,6 +12,7 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Commentary;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.projections.BookProjection;
+import ru.otus.hw.projections.CommentaryProjection;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentaryRepository;
@@ -66,27 +67,27 @@ public class DataFiller implements ApplicationRunner {
                 DataGenerator.getBook("3", "3", List.of("5", "6"))
         )).publishOn(workerPool).subscribe();
 
-//        Mono.zip(
-//                        bookRepository.findById("1"),
-//                        bookRepository.findById("2"),
-//                        bookRepository.findById("3")
-//                )
-//                .switchIfEmpty(Mono.error(new IllegalStateException("No books in database")))
-//                .flatMap(tuple -> {
-//                    BookProjection book1 = tuple.getT1();
-//                    BookProjection book2 = tuple.getT2();
-//                    BookProjection book3 = tuple.getT3();
-//
-//                    return commentaryRepository.saveAll(Flux.just(
-//                                    DataGenerator.getCommentary("1", book1.getId()),
-//                                    DataGenerator.getCommentary("2", book1),
-//                                    DataGenerator.getCommentary("3", book2),
-//                                    DataGenerator.getCommentary("4", book3),
-//                                    DataGenerator.getCommentary("5", book3),
-//                                    DataGenerator.getCommentary("6", book3)
-//                            ))
-//                            .then();
-//                }).publishOn(workerPool).subscribe();
+        Mono.zip(
+                        bookRepository.findById("1"),
+                        bookRepository.findById("2"),
+                        bookRepository.findById("3")
+                )
+                .switchIfEmpty(Mono.error(new IllegalStateException("No books in database")))
+                .flatMap(tuple -> {
+                    BookProjection book1 = tuple.getT1();
+                    BookProjection book2 = tuple.getT2();
+                    BookProjection book3 = tuple.getT3();
+
+                    return commentaryRepository.saveAll(Flux.just(
+                                    DataGenerator.getCommentary("1", book1.getId()),
+                                    DataGenerator.getCommentary("2", book1.getId()),
+                                    DataGenerator.getCommentary("3", book2.getId()),
+                                    DataGenerator.getCommentary("4", book3.getId()),
+                                    DataGenerator.getCommentary("5", book3.getId()),
+                                    DataGenerator.getCommentary("6", book3.getId())
+                            ))
+                            .then();
+                }).publishOn(workerPool).subscribe();
 
     }
 
@@ -106,9 +107,8 @@ public class DataFiller implements ApplicationRunner {
                     genreId);
         }
 
-        public static Commentary getCommentary(String id, Book book) {
-            long bookId = Long.parseLong(book.getId());
-            return new Commentary(id, "comment" + bookId + id, book);
+        public static CommentaryProjection getCommentary(String id, String bookId) {
+            return new CommentaryProjection(id, "comment" + bookId + id, bookId);
         }
 
     }

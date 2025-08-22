@@ -19,7 +19,7 @@ public interface GenreRepository extends ReactiveMongoRepository<Genre, String> 
 //        WHERE bg.book_id = :bookId
 //        """)
 //    @Nonnull
-//    Flux<Genre> findAllByBookId(@Nonnull String id);
+//    Flux<Genre> findAllByBook(@Nonnull String id);
 
     //
 //    @Query("""

@@ -52,7 +52,7 @@ class CommentaryControllerTest {
 //    @Test
 //    void shouldReturnCommentsForBook() {
 //        // given
-//        when(commentaryRepository.findAllByBookId(1L))
+//        when(commentaryRepository.findAllByBook(1L))
 //                .thenReturn(Flux.just(commentary));
 //
 //        // when & then
@@ -68,7 +68,7 @@ class CommentaryControllerTest {
 //    @Test
 //    void shouldReturnEmptyCommentsForNonExistingBook() {
 //        // given
-//        when(commentaryRepository.findAllByBookId(999L))
+//        when(commentaryRepository.findAllByBook(999L))
 //                .thenReturn(Flux.empty());
 //
 //        // when & then
