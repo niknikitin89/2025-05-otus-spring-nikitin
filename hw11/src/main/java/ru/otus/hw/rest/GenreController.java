@@ -16,7 +16,9 @@ public class GenreController {
     @GetMapping("/api/v1/genres")
     public Flux<GenreDto> getAllGenres() {
 
-        return genreRepository.findAll().map(GenreDto::fromDomainObject);
+        return genreRepository.findAll()
+                .sort((o1, o2) -> o1.getId().compareTo(o2.getId()))
+                .map(GenreDto::fromDomainObject);
     }
 
 }

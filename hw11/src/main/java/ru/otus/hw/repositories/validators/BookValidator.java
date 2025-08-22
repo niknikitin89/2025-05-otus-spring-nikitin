@@ -2,8 +2,9 @@ package ru.otus.hw.repositories.validators;
 
 import reactor.core.publisher.Mono;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.projections.BookProjection;
 
 public interface BookValidator {
 
-    Mono<Void> validateBook(Book book);
+    Mono<Void> validateBook(BookProjection book);
 }

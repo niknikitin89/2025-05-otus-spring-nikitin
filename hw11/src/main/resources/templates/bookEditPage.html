@@ -160,7 +160,7 @@
             const genreSelect = document.getElementById('genres');
             const bookGenreIds = book.genres.map(g => g.id);
             Array.from(genreSelect.options).forEach(option => {
-                option.selected = bookGenreIds.includes(Number(option.value));
+                option.selected = bookGenreIds.includes(String(option.value));
             });
 
         } catch (error) {
