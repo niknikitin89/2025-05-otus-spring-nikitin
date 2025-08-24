@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.otus.hw.dto.BookWithAuthorAndGenresDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -36,10 +38,11 @@ public class BookServiceImpl implements BookService {
     private final BookValidator bookValidator;
 
     @Override
-    public Flux<Book> findAllFullBooks() {
+    public Flux<BookWithAuthorAndGenresDto> findAllFullBooks() {
         return bookRepository.findAll()
                 .collectList()
-                .flatMapMany(this::convertToFullBooks);
+                .flatMapMany(this::convertToFullBooks)
+                .map(BookWithAuthorAndGenresDto::fromDomainObject);
 
     }
 
@@ -50,22 +53,29 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Mono<Book> findByIdFullBook(String id) {
+    public Mono<BookWithAuthorAndGenresDto> findByIdFullBook(String id) {
         return bookRepository.findById(id)
-                .flatMap(this::convertToFullBook);
+                .flatMap(this::convertToFullBook)
+                .map(BookWithAuthorAndGenresDto::fromDomainObject)
+                .switchIfEmpty(Mono.error(
+                        new EntityNotFoundException("Book with id " + id + " not found")
+                ));
     }
 
     @Override
-    public Mono<Book> saveBook(Book book) {
-        if (book.getId().isBlank()) {
-            book.setId(null);
+    public Mono<BookWithAuthorAndGenresDto> saveBook(BookWithAuthorAndGenresDto bookDto) {
+        if (bookDto.getId().isBlank()) {
+            bookDto.setId(null);
         }
 
+        Book book = bookDto.toDomainObject();
         BookProjection projection = convertToProjection(book);
+
         return bookValidator.validate(projection)
                 .then(bookRepository.save(projection))
                 .flatMap(savedBook -> bookRepository.findById(savedBook.getId()))
-                .flatMap(this::convertToFullBook);
+                .flatMap(this::convertToFullBook)
+                .map(BookWithAuthorAndGenresDto::fromDomainObject);
     }
 
     @Override

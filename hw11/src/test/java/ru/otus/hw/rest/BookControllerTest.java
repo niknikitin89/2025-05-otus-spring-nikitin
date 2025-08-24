@@ -9,12 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookWithAuthorAndGenresDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
-import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.services.BookService;
 
 import java.util.List;
@@ -32,8 +31,8 @@ class BookControllerTest {
     private BookService bookService;
 
     private Book book;
-    private BookDto bookDto;
-    private BookDto requestDto;
+    private BookWithAuthorAndGenresDto bookDto;
+    private BookWithAuthorAndGenresDto requestDto;
 
     @BeforeEach
     void setUp() {
@@ -46,22 +45,22 @@ class BookControllerTest {
                 author,
                 List.of(genre));
 
-        bookDto = BookDto.fromDomainObject(book);
-        requestDto = BookDto.fromDomainObject(book);
+        bookDto = BookWithAuthorAndGenresDto.fromDomainObject(book);
+        requestDto = BookWithAuthorAndGenresDto.fromDomainObject(book);
     }
 
     @Test
     void shouldReturnAllBooks() {
         // given
         when(bookService.findAllFullBooks())
-                .thenReturn(Flux.just(book));
+                .thenReturn(Flux.just(bookDto));
 
         // when & then
         webTestClient.get()
                 .uri("/api/v1/books")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(BookDto.class)
+                .expectBodyList(BookWithAuthorAndGenresDto.class)
                 .hasSize(1)
                 .contains(bookDto);
     }
@@ -77,7 +76,7 @@ class BookControllerTest {
                 .uri("/api/v1/books")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(BookDto.class)
+                .expectBodyList(BookWithAuthorAndGenresDto.class)
                 .hasSize(0);
     }
 
@@ -85,14 +84,14 @@ class BookControllerTest {
     void shouldReturnBookById() {
         // given
         when(bookService.findByIdFullBook("1"))
-                .thenReturn(Mono.just(book));
+                .thenReturn(Mono.just(bookDto));
 
         // when & then
         webTestClient.get()
                 .uri("/api/v1/books/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(BookDto.class)
+                .expectBody(BookWithAuthorAndGenresDto.class)
                 .isEqualTo(bookDto);
     }
 
@@ -100,7 +99,9 @@ class BookControllerTest {
     void shouldReturnNotFoundForNonExistingBook() {
         // given
         when(bookService.findByIdFullBook("999"))
-                .thenReturn(Mono.empty());
+                .thenReturn(Mono.error(
+                        new EntityNotFoundException("Book with id 999 not found")
+                ));
 
         // when & then
         webTestClient.get()
@@ -114,8 +115,8 @@ class BookControllerTest {
         // given
         requestDto.setId(null);
 
-        when(bookService.saveBook(any(Book.class)))
-                .thenReturn(Mono.just(book));
+        when(bookService.saveBook(any(BookWithAuthorAndGenresDto.class)))
+                .thenReturn(Mono.just(bookDto));
 
         // when & then
         webTestClient.post()
@@ -124,15 +125,15 @@ class BookControllerTest {
                 .bodyValue(requestDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(BookDto.class)
+                .expectBody(BookWithAuthorAndGenresDto.class)
                 .isEqualTo(bookDto);
     }
 
     @Test
     void shouldUpdateBook() {
 
-        when(bookService.saveBook(any(Book.class)))
-                .thenReturn(Mono.just(book));
+        when(bookService.saveBook(any(BookWithAuthorAndGenresDto.class)))
+                .thenReturn(Mono.just(bookDto));
 
         // when & then
         webTestClient.put()
@@ -141,7 +142,7 @@ class BookControllerTest {
                 .bodyValue(requestDto)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(BookDto.class)
+                .expectBody(BookWithAuthorAndGenresDto.class)
                 .isEqualTo(bookDto);
     }
 
@@ -150,7 +151,7 @@ class BookControllerTest {
         // given
         requestDto.setId("999");
 
-        when(bookService.saveBook(any(Book.class)))
+        when(bookService.saveBook(any(BookWithAuthorAndGenresDto.class)))
                 .thenReturn(Mono.error(new EntityNotFoundException("Book not found")));
 
         // when & then

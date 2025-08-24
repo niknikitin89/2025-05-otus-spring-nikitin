@@ -12,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.CommentaryDto;
 import ru.otus.hw.dto.CommentaryWithBookDto;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.CommentaryService;
 
 @RestController
@@ -23,22 +22,17 @@ public class CommentaryController {
 
     @GetMapping("/api/v1/books/{bookId}/comments")
     public Flux<CommentaryDto> getCommentsForBook(@PathVariable("bookId") String bookId) {
-        return commentaryService.findAllByBookId(bookId)
-                .sort((o1, o2) -> o1.getId().compareTo(o2.getId()))
-                .map(CommentaryDto::fromDomainObject);
+        return commentaryService.findAllByBookId(bookId);
     }
 
     @GetMapping("/api/v1/comments/{id}")
     public Mono<CommentaryWithBookDto> getCommentWithBook(@PathVariable("id") String id) {
-        return commentaryService.findByIdWithBook(id)
-                .map(CommentaryWithBookDto::fromDomainObject)
-                .switchIfEmpty(Mono.error(new EntityNotFoundException("Comment not found")));
+        return commentaryService.findByIdWithBook(id);
     }
 
     @PostMapping("/api/v1/comments")
     public Mono<CommentaryWithBookDto> addComment(@RequestBody CommentaryWithBookDto comment) {
-        return commentaryService.saveComment(comment.toDomainObject())
-                .map(CommentaryWithBookDto::fromDomainObject);
+        return commentaryService.saveComment(comment);
     }
 
     @PutMapping("/api/v1/comments/{id}")
@@ -51,8 +45,7 @@ public class CommentaryController {
         }
 
         comment.setId(id);
-        return commentaryService.saveComment(comment.toDomainObject())
-                .map(CommentaryWithBookDto::fromDomainObject);
+        return commentaryService.saveComment(comment);
     }
 
     @DeleteMapping("/api/v1/comments/{id}")

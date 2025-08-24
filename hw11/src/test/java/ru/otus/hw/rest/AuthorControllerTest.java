@@ -7,8 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import ru.otus.hw.dto.AuthorDto;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.services.AuthorService;
 
 import java.util.List;
 
@@ -21,21 +20,17 @@ class AuthorControllerTest {
     private WebTestClient webTestClient;
 
     @MockBean
-    private AuthorRepository authorRepository;
+    private AuthorService authorService;
 
     @Test
     void getAllAuthorsShouldReturnAllAuthors() {
         // given
-        List<Author> authors = List.of(
-                new Author("1", "Author 1"),
-                new Author("2", "Author 2")
+        List<AuthorDto> expectedAuthorsDto = List.of(
+                new AuthorDto("1", "Author 1"),
+                new AuthorDto("2", "Author 2")
         );
 
-        List<AuthorDto> expectedDtos = authors.stream()
-                .map(AuthorDto::fromDomainObject)
-                .toList();
-
-        when(authorRepository.findAll()).thenReturn(Flux.fromIterable(authors));
+        when(authorService.getAllAuthors()).thenReturn(Flux.fromIterable(expectedAuthorsDto));
 
         // when & then
         webTestClient.get()
@@ -44,13 +39,13 @@ class AuthorControllerTest {
                 .expectStatus().isOk()
                 .expectBodyList(AuthorDto.class)
                 .hasSize(2)
-                .contains(expectedDtos.toArray(new AuthorDto[0]));
+                .contains(expectedAuthorsDto.toArray(new AuthorDto[0]));
     }
 
     @Test
     void getAllAuthorsShouldReturnEmptyListWhenNoAuthors() {
         // given
-        when(authorRepository.findAll()).thenReturn(Flux.empty());
+        when(authorService.getAllAuthors()).thenReturn(Flux.empty());
 
         // when & then
         webTestClient.get()

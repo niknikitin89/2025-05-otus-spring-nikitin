@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.CommentaryDto;
 import ru.otus.hw.dto.CommentaryWithBookDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Commentary;
@@ -26,8 +27,6 @@ class CommentaryControllerTest {
     @MockBean
     private CommentaryService commentaryService;
 
-    private Commentary commentary;
-
     private CommentaryWithBookDto requestDtoWithBook;
 
     private CommentaryDto expectedDto;
@@ -42,7 +41,7 @@ class CommentaryControllerTest {
                 new Author("1", "Author"),
                 null);
 
-        commentary = new Commentary("1", "Comment", book);
+        Commentary commentary = new Commentary("1", "Comment", book);
         requestDtoWithBook = CommentaryWithBookDto.fromDomainObject(commentary);
         expectedDto = CommentaryDto.fromDomainObject(commentary);
         expectedDtoWithBook = CommentaryWithBookDto.fromDomainObject(commentary);
@@ -52,7 +51,7 @@ class CommentaryControllerTest {
     void shouldReturnCommentsForBook() {
         // given
         when(commentaryService.findAllByBookId("1"))
-                .thenReturn(Flux.just(commentary));
+                .thenReturn(Flux.just(expectedDto));
 
         // when & then
         webTestClient.get()
@@ -83,7 +82,7 @@ class CommentaryControllerTest {
     void shouldReturnCommentWithBook() {
         // given
         when(commentaryService.findByIdWithBook("1"))
-                .thenReturn(Mono.just(commentary));
+                .thenReturn(Mono.just(expectedDtoWithBook));
 
         // when & then
         webTestClient.get()
@@ -98,7 +97,7 @@ class CommentaryControllerTest {
     void shouldReturnNotFoundForNonExistingComment() {
         // given
         when(commentaryService.findByIdWithBook("999"))
-                .thenReturn(Mono.empty());
+                .thenReturn(Mono.error(new EntityNotFoundException("Comment not found")));
 
         // when & then
         webTestClient.get()
@@ -110,8 +109,8 @@ class CommentaryControllerTest {
     @Test
     void shouldAddComment() {
         // given
-        when(commentaryService.saveComment(commentary))
-                .thenReturn(Mono.just(commentary));
+        when(commentaryService.saveComment(requestDtoWithBook))
+                .thenReturn(Mono.just(expectedDtoWithBook));
 
         // when & then
         webTestClient.post()
@@ -127,8 +126,8 @@ class CommentaryControllerTest {
     @Test
     void shouldUpdateComment() {
         // given
-        when(commentaryService.saveComment(commentary))
-                .thenReturn(Mono.just(commentary));
+        when(commentaryService.saveComment(requestDtoWithBook))
+                .thenReturn(Mono.just(expectedDtoWithBook));
 
         // when & then
         webTestClient.put()

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.otus.hw.dto.CommentaryDto;
+import ru.otus.hw.dto.CommentaryWithBookDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Commentary;
 import ru.otus.hw.projections.CommentaryProjection;
 import ru.otus.hw.repositories.CommentaryRepository;
@@ -20,30 +23,36 @@ public class CommentaryServiceImpl implements CommentaryService {
     private final CommentaryValidator validator;
 
     @Override
-    public Flux<Commentary> findAllByBookId(String bookId) {
+    public Flux<CommentaryDto> findAllByBookId(String bookId) {
         return commentaryRepository.findAllByBook(bookId)
-                .map(proj -> new Commentary(proj.getId(), proj.getText(), null));
+                .map(proj -> new Commentary(proj.getId(), proj.getText(), null))
+                .sort((o1, o2) -> o1.getId().compareTo(o2.getId()))
+                .map(CommentaryDto::fromDomainObject);
 
     }
 
     @Override
-    public Mono<Commentary> findByIdWithBook(String id) {
+    public Mono<CommentaryWithBookDto> findByIdWithBook(String id) {
         return commentaryRepository.findById(id)
-                .flatMap(this::convertToCommentWithBook);
+                .flatMap(this::convertToCommentWithBook)
+                .map(CommentaryWithBookDto::fromDomainObject)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Comment not found")));
     }
 
     @Override
-    public Mono<Commentary> saveComment(Commentary commentary) {
-        if (commentary.getId().isBlank()) {
-            commentary.setId(null);
+    public Mono<CommentaryWithBookDto> saveComment(CommentaryWithBookDto commentaryDto) {
+        if (commentaryDto.getId().isBlank()) {
+            commentaryDto.setId(null);
         }
 
+        Commentary commentary = commentaryDto.toDomainObject();
         CommentaryProjection proj = convertToProjection(commentary);
 
         return validator.validate(proj)
                 .then(commentaryRepository.save(proj))
                 .flatMap(savedComment -> commentaryRepository.findById(savedComment.getId()))
-                .flatMap(this::convertToCommentWithBook);
+                .flatMap(this::convertToCommentWithBook)
+                .map(CommentaryWithBookDto::fromDomainObject);
     }
 
     @Override

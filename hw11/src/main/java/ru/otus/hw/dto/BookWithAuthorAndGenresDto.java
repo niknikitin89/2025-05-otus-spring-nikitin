@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class BookDto {
+public class BookWithAuthorAndGenresDto {
 
     private String id;
 
@@ -22,18 +22,18 @@ public class BookDto {
 
     private List<GenreDto> genres;
 
-    public BookDto() {
+    public BookWithAuthorAndGenresDto() {
         genres = new ArrayList<>();
     }
 
-    public static BookDto fromDomainObject(@Nonnull Book book) {
-        return new BookDto(book.getId(), book.getTitle(),
+    public static BookWithAuthorAndGenresDto fromDomainObject(@Nonnull Book book) {
+        return new BookWithAuthorAndGenresDto(book.getId(), book.getTitle(),
                 AuthorDto.fromDomainObject(book.getAuthor()),
                 book.getGenres().stream().map(GenreDto::fromDomainObject).toList());
     }
 
-    public static BookDto fromDomainObjectOnlyBook(@Nonnull Book book) {
-        return new BookDto(book.getId(), book.getTitle(), null, null);
+    public static BookWithAuthorAndGenresDto fromDomainObjectOnlyBook(@Nonnull Book book) {
+        return new BookWithAuthorAndGenresDto(book.getId(), book.getTitle(), null, null);
     }
 
 
