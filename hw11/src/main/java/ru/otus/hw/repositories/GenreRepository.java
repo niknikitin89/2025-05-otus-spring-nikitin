@@ -13,19 +13,6 @@ public interface GenreRepository extends ReactiveMongoRepository<Genre, String> 
     @Override
     Flux<Genre> findAll();
 
-    //    @Query("""
-//        SELECT g.* FROM genres g
-//        JOIN books_genres bg ON g.id = bg.genre_id
-//        WHERE bg.book_id = :bookId
-//        """)
-//    @Nonnull
-//    Flux<Genre> findAllByBook(@Nonnull String id);
-
-    //
-//    @Query("""
-//            SELECT g.* FROM genres g
-//            where g.id in (:genreId)
-//            """)
     Flux<Genre> findAllByIdIn(@Nonnull List<String> ids);
 
 }

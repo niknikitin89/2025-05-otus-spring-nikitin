@@ -1,7 +1,6 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,6 +12,7 @@ import ru.otus.hw.models.Genre;
 import ru.otus.hw.projections.BookProjection;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentaryRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.repositories.validators.BookValidator;
 
@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final ReactiveMongoTemplate mongoTemplate;
-
     private final BookRepository bookRepository;
 
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
+
+    private final CommentaryRepository commentaryRepository;
 
     private final BookValidator bookValidator;
 
@@ -80,7 +80,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Mono<Void> deleteById(String id) {
-        return bookRepository.deleteById(id);
+        return Mono.when(
+                commentaryRepository.deleteAllByBook(id),
+                bookRepository.deleteById(id)
+        ).then();
     }
 
     private BookProjection convertToProjection(Book book) {
