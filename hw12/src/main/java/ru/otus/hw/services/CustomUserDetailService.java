@@ -1,4 +1,4 @@
-package ru.otus.hw.security;
+package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
