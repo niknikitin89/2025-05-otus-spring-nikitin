@@ -2,6 +2,9 @@ package ru.otus.hw.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,6 +12,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Genre;
@@ -19,12 +25,17 @@ import ru.otus.hw.services.CommentaryService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class)
@@ -49,112 +60,84 @@ class BookControllerSecurityTest {
     @MockBean
     private CommentaryService commentaryService;
 
-    private BookDto bookDto;
-
     @BeforeEach
     void setUp() {
-        bookDto = new BookDto(1L, "Test Book",
+        BookDto bookDto = new BookDto(1L, "Test Book",
                 new Author(1L, "Author"),
                 List.of(new Genre(1L, "Genre1")));
-    }
 
-    @Test
-    @WithMockUser
-    void allBooksPageWithAuthShouldReturnOk() throws Exception {
+
         when(bookService.findAll()).thenReturn(List.of(bookDto));
-
-        mvc.perform(get("/"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void allBooksPageWithoutAuthShouldRedirect() throws Exception {
-        mvc.perform(get("/"))
-                .andExpect(status().is3xxRedirection());
-    }
-
-    @Test
-    @WithMockUser
-    void bookPageWithAuthShouldReturnOk() throws Exception {
         when(bookService.findById(anyLong())).thenReturn(Optional.of(bookDto));
         when(commentaryService.findByBookId(anyLong())).thenReturn(List.of());
-
-        mvc.perform(get("/book/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void bookPageWithoutAuthShouldRedirect() throws Exception {
-        mvc.perform(get("/book/1"))
-                .andExpect(status().is3xxRedirection());
-    }
-
-    @Test
-    @WithMockUser
-    void editBookPageWithAuthShouldReturnOk() throws Exception {
-        when(bookService.findById(anyLong())).thenReturn(Optional.of(bookDto));
         when(authorService.findAll()).thenReturn(List.of());
         when(genreService.findAll()).thenReturn(List.of());
 
-        mvc.perform(get("/book/1/edit"))
-                .andExpect(status().isOk());
     }
 
-    @Test
-    void editBookPageWithoutAuthShouldRedirect() throws Exception {
-        mvc.perform(get("/book/1/edit"))
-                .andExpect(status().is3xxRedirection());
+    @ParameterizedTest
+    @MethodSource("getTestData")
+    void shouldReturnExpectedStatus(
+            String method, String url, Map<String, String> params,
+            String username, String role,
+            int status, String redirect) throws Exception {
+
+        var request = method2RequestBuilder(method, url);
+        if (params != null) {
+            params.forEach(request::param);
+        }
+        if (username != null) {
+            request.with(user(username).roles(role));
+        }
+
+
+        ResultActions result = mvc.perform(request);
+        if (status > 0) {
+            result.andExpect(status().is(status));
+        }
+        if (redirect != null) {
+            result.andExpect(redirectedUrl(redirect));
+        }
+
     }
 
-    @Test
-    @WithMockUser
-    void saveBookWithAuthShouldRedirect() throws Exception {
-        mvc.perform(post("/book/save")
-                        .param("id", String.valueOf(1L))
-                        .param("title", "Updated Title")
-                        .param("author.id", String.valueOf(1L))
-                        .param("genres[0].id", String.valueOf(1L)))
-                .andExpect(status().is3xxRedirection());
+    private MockHttpServletRequestBuilder method2RequestBuilder(
+            String method, String url) {
+
+        Map<String, Function<String, MockHttpServletRequestBuilder>> methodMap =
+                Map.of("get", MockMvcRequestBuilders::get,
+                        "post", MockMvcRequestBuilders::post);
+
+        return methodMap.get(method).apply(url);
     }
 
-    @Test
-    void saveBookWithoutAuthShouldRedirect() throws Exception {
-        mvc.perform(post("/book/save")
-                        .param("id", String.valueOf(1L))
-                        .param("title", "Updated Title")
-                        .param("author.id", String.valueOf(1L))
-                        .param("genres[0].id", String.valueOf(1L)))
-                .andExpect(status().is3xxRedirection());
-    }
+    public static Stream<Arguments> getTestData() {
+        Map<String, String> deleteParams =
+                Map.of("bookId", "1");
 
-    @Test
-    @WithMockUser
-    void addBookWithAuthShouldReturnOk() throws Exception {
-        when(authorService.findAll()).thenReturn(List.of());
-        when(genreService.findAll()).thenReturn(List.of());
+        Map<String, String> saveParams =
+                Map.of("id", String.valueOf(1L),
+                       "title", "Updated Title",
+                       "author.id", String.valueOf(1L),
+                       "genres[0].id", String.valueOf(1L));
 
-        mvc.perform(get("/add_book"))
-                .andExpect(status().isOk());
-    }
+        return Stream.of(
+                //GET
+                Arguments.of("get", "/", null, "username", "USER", 200, null),
+                Arguments.of("get", "/", null, null, null, 302, null),
+                Arguments.of("get", "/book/1", null, "username", "USER", 200, null),
+                Arguments.of("get", "/book/1", null, null, null, 302, null),
+                Arguments.of("get", "/book/1/edit", null, "username", "USER", 200, null),
+                Arguments.of("get", "/book/1/edit", null, null, null, 302, null),
+                Arguments.of("get", "/add_book", null, "username", "USER", 200, null),
+                Arguments.of("get", "/add_book", null, null, null, 302, null),
 
-    @Test
-    void addBookWithoutAuthShouldRedirect() throws Exception {
-        mvc.perform(get("/add_book"))
-                .andExpect(status().is3xxRedirection());
-    }
+                //POST
+                Arguments.of("post", "/book_delete", deleteParams, "username", "USER", 0, "/"),
+                Arguments.of("post", "/book_delete", deleteParams, null, null, 302, null),
+                Arguments.of("post", "/book/save", saveParams, "username", "USER", 0, "/"),
+                Arguments.of("post", "/book/save", saveParams, null, null, 302, null)
 
-    @Test
-    @WithMockUser
-    void deleteBookWithAuthShouldRedirect() throws Exception {
-        mvc.perform(post("/book_delete")
-                        .param("bookId", "1"))
-                .andExpect(status().is3xxRedirection());
-    }
-
-    @Test
-    void deleteBookWithoutAuthShouldRedirect() throws Exception {
-        mvc.perform(post("/book_delete")
-                        .param("bookId", "1"))
-                .andExpect(status().is3xxRedirection());
+        );
     }
 }

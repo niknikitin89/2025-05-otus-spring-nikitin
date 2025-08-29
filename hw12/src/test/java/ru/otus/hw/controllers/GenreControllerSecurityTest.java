@@ -1,6 +1,9 @@
 package ru.otus.hw.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -8,13 +11,20 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.security.SecurityConfiguration;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,33 +41,53 @@ class GenreControllerSecurityTest {
     @MockBean
     private GenreService genreService;
 
-    private List<GenreDto> expectedGenres;
-
     @BeforeEach
     void setUp() {
         GenreDto genre1 = new GenreDto(1L, "Genre1");
         GenreDto genre2 = new GenreDto(2L, "Genre2");
-        expectedGenres = List.of(genre1, genre2);
+        List<GenreDto> expectedGenres = List.of(genre1, genre2);
+
+        when(genreService.findAll()).thenReturn(expectedGenres);
     }
 
-    @Test
-    @WithMockUser
-    void getAllGenresWithAuthorizationShouldGetAccess() throws Exception {
-        when(genreService.findAll()).thenReturn(expectedGenres);
+    @ParameterizedTest
+    @MethodSource("getTestData")
+    void shouldReturnExpectedStatus(
+            String method, String url, Map<String, String> params,
+            String username, String role,
+            int status, String redirect) throws Exception {
 
-        mvc.perform(get("/all_genres"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("allGenresPage"))
-                .andExpect(model().attributeExists("genres"))
-                .andExpect(model().attribute("genres", expectedGenres));
+        var request = method2RequestBuilder(method, url);
+        if (params != null) {
+            params.forEach(request::param);
+        }
+        if (username != null) {
+            request.with(user(username).roles(role));
+        }
+
+        ResultActions result = mvc.perform(request);
+
+        if (status > 0) {
+            result.andExpect(status().is(status));
+        }
+        if (redirect != null) {
+            result.andExpect(redirectedUrl(redirect));
+        }
     }
 
-    @Test
-    void getAllGenresWithoutAuthorizationShouldRedirectToLogin() throws Exception {
-        when(genreService.findAll()).thenReturn(expectedGenres);
 
-        mvc.perform(get("/all_genres"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("http://localhost/login"));
+
+    private MockHttpServletRequestBuilder method2RequestBuilder(String method, String url) {
+        Map<String, Function<String, MockHttpServletRequestBuilder>> methodMap =
+                Map.of("get", MockMvcRequestBuilders::get);
+
+        return methodMap.get(method).apply(url);
+    }
+
+    public static Stream<Arguments> getTestData() {
+        return Stream.of(
+                Arguments.of("get", "/all_genres", null, "username", "USER", 200, null),
+                Arguments.of("get", "/all_genres", null, null, null, 302, "http://localhost/login")
+        );
     }
 }
