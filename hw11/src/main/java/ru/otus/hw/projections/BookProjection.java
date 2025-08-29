@@ -1,0 +1,37 @@
+package ru.otus.hw.projections;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.List;
+
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(collection = "books")
+public class BookProjection {
+    @Id
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    private String id;
+
+    @Field(name = "title")
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    private String title;
+
+    @Field(name = "author")
+    private String author;
+
+    @Field(name = "genres")
+    private List<String> genres;
+}

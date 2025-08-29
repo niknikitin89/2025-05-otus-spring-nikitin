@@ -1,0 +1,18 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+  thymeleaf:
+    cache: false
+#
+#  datasource:
+#    url: jdbc:h2:mem:maindb
+  data:
+    mongodb:
+      host: localhost
+      database: library_db
+      port: 32768
+
