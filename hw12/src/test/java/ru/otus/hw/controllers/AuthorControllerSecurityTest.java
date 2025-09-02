@@ -52,14 +52,12 @@ class AuthorControllerSecurityTest {
     @ParameterizedTest
     @MethodSource("getTestData")
     void shouldReturnExpectedStatus(
-            String method, String url, Map<String, String> params,
+            String method, String url,
             String username, String role,
             int status, String redirect) throws Exception {
 
         var request = method2RequestBuilder(method, url);
-        if (params != null) {
-            params.forEach(request::param);
-        }
+
         if (username != null) {
             request.with(user(username).roles(role));
         }
@@ -82,8 +80,8 @@ class AuthorControllerSecurityTest {
 
     public static Stream<Arguments> getTestData() {
         return Stream.of(
-                Arguments.of("get", "/all_authors", null, "username", "USER", 200, null),
-                Arguments.of("get", "/all_authors", null, null, null, 302, "http://localhost/login")
+                Arguments.of("get", "/all_authors", "username", "USER", 200, null),
+                Arguments.of("get", "/all_authors", null, null, 302, "http://localhost/login")
         );
     }
 }

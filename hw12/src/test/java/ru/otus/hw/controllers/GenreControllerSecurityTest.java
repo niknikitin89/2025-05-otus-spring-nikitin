@@ -53,14 +53,11 @@ class GenreControllerSecurityTest {
     @ParameterizedTest
     @MethodSource("getTestData")
     void shouldReturnExpectedStatus(
-            String method, String url, Map<String, String> params,
+            String method, String url,
             String username, String role,
             int status, String redirect) throws Exception {
 
         var request = method2RequestBuilder(method, url);
-        if (params != null) {
-            params.forEach(request::param);
-        }
         if (username != null) {
             request.with(user(username).roles(role));
         }
@@ -86,8 +83,8 @@ class GenreControllerSecurityTest {
 
     public static Stream<Arguments> getTestData() {
         return Stream.of(
-                Arguments.of("get", "/all_genres", null, "username", "USER", 200, null),
-                Arguments.of("get", "/all_genres", null, null, null, 302, "http://localhost/login")
+                Arguments.of("get", "/all_genres", "username", "USER", 200, null),
+                Arguments.of("get", "/all_genres", null, null, 302, "http://localhost/login")
         );
     }
 }
