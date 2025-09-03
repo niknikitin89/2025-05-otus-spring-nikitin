@@ -8,7 +8,7 @@ spring:
     cache: false
 
   datasource:
-    url: jdbc:h2:mem:maindb
+    url: jdbc:h2:mem:maindb;MODE=LEGACY;
     username: sa
     driver-class-name: org.h2.Driver
   sql:
