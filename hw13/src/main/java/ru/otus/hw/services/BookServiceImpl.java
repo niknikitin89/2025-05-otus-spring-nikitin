@@ -1,8 +1,10 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
@@ -59,7 +61,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasPermission(#id,T(ru.otus.hw.models.Book),'WRITE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'DELETE')")
     public void deleteById(long id) {
         bookRepository.deleteById(id);
     }
@@ -67,15 +69,31 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void save(BookDto book) {
-        BookDto newBook = this.save(
+
+        if (book.getId()!=0 &&
+                !aclService.hasPermission(book.toDomainObject(), BasePermission.WRITE)){
+            throw new AccessDeniedException("No permission to edit book");
+        }
+
+        BookDto newBookDto = this.save(
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor().getId(),
                 book.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
 
         if (book.getId() == 0) {
-            aclService.createPermission(newBook.toDomainObject(), BasePermission.WRITE);
+            setPermissionsForNewBook(newBookDto);
         }
+    }
+
+    private void setPermissionsForNewBook(BookDto newBookDto) {
+        var newBook = newBookDto.toDomainObject();
+        aclService.createPermissionForUser(newBook, BasePermission.WRITE);
+        aclService.createPermissionForUser(newBook, BasePermission.DELETE);
+        aclService.createPermissionForAuthority("ROLE_USER", newBook, BasePermission.READ);
+        aclService.createPermissionForAuthority("ROLE_ADMIN", newBook, BasePermission.WRITE);
+        aclService.createPermissionForAuthority("ROLE_ADMIN", newBook, BasePermission.READ);
+        aclService.createPermissionForAuthority("ROLE_ADMIN", newBook, BasePermission.DELETE);
     }
 
     private BookDto save(long id, String title, long authorId, Set<Long> genresIds) {

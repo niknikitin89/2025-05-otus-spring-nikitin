@@ -9,6 +9,10 @@ spring:
 
   datasource:
     url: jdbc:h2:mem:maindb;MODE=LEGACY;
+#    MODE=LEGACY используется, так как в новых версиях H2 исчезла функция IDENTITY().
+#    Из-за этого падает JdbcMutableAclService.createOrRetrieveSidPrimaryKey
+#    На команде return (Long)this.jdbcOperations.queryForObject(this.sidIdentityQuery, Long.class);
+#    Как альтернатива - писать кастомный JdbcMutableAclService и обходить вызов IDENTITY
     username: sa
     driver-class-name: org.h2.Driver
   sql:

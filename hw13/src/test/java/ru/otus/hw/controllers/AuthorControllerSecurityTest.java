@@ -80,7 +80,8 @@ class AuthorControllerSecurityTest {
 
     public static Stream<Arguments> getTestData() {
         return Stream.of(
-                Arguments.of("get", "/all_authors", "username", "USER", 200, null),
+                Arguments.of("get", "/all_authors", "username", "USER", 403, null),
+                Arguments.of("get", "/all_authors", "username", "ADMIN", 200, null),
                 Arguments.of("get", "/all_authors", null, null, 302, "http://localhost/login")
         );
     }

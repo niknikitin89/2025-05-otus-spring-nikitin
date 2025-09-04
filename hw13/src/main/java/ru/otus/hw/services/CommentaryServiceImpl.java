@@ -1,10 +1,13 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentaryDto;
 import ru.otus.hw.models.Commentary;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentaryRepository;
 
@@ -18,6 +21,8 @@ public class CommentaryServiceImpl implements CommentaryService {
     private final CommentaryRepository commentaryRepository;
 
     private final BookRepository bookRepository;
+
+    private final AclServiceWrapperService aclService;
 
     @Override
     @Transactional(readOnly = true)
@@ -53,17 +58,31 @@ public class CommentaryServiceImpl implements CommentaryService {
                         "Book %d not found".formatted(bookId)));
 
         Commentary commentary = new Commentary(0, text, book);
-        return CommentaryDto.fromDomainObject(commentaryRepository.save(commentary));
+        commentary = commentaryRepository.save(commentary);
+
+        setPermissionsForNewComment(commentary);
+
+        return CommentaryDto.fromDomainObject(commentary);
+    }
+
+    private void setPermissionsForNewComment(Commentary commentary) {
+        //Юзеры только читают
+        aclService.createPermissionForAuthority("ROLE_USER", commentary, BasePermission.READ);
+        aclService.createPermissionForAuthority("ROLE_ADMIN", commentary, BasePermission.WRITE);
+        aclService.createPermissionForAuthority("ROLE_ADMIN", commentary, BasePermission.READ);
+        aclService.createPermissionForAuthority("ROLE_ADMIN", commentary, BasePermission.DELETE);
     }
 
     @Override
     @Transactional
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'DELETE')")
     public void deleteById(long id) {
         commentaryRepository.deleteById(id);
     }
 
     @Override
     @Transactional
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'DELETE')")
     public void update(long id, String text) {
         if (id == 0) {
             throw new IllegalArgumentException("Commentary id cannot be 0");
