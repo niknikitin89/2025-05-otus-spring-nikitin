@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentaryDto;
 import ru.otus.hw.models.Commentary;
-import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentaryRepository;
 
@@ -28,27 +27,34 @@ public class CommentaryServiceImpl implements CommentaryService {
     @Transactional(readOnly = true)
     public List<CommentaryDto> findByBookId(long id) {
 
-        return commentaryRepository.findAllByBookId(id)
-                .stream().map(CommentaryDto::fromDomainObject).toList();
+        return commentaryRepository.findAllByBookId(id).stream()
+                .filter(comm -> aclService.hasPermission(comm, BasePermission.READ))
+                .map(CommentaryDto::fromDomainObject).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'READ')")
     public Optional<CommentaryDto> findById(long id) {
+
         var comment = commentaryRepository.findById(id);
         return comment.map(CommentaryDto::fromDomainObject);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'READ')")
     public Optional<CommentaryDto> findByIdWithBook(long id) {
+
         var comment = commentaryRepository.findById(id);
         return comment.map(CommentaryDto::fromDomainObjectWithBook);
     }
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public CommentaryDto add(long bookId, String text) {
+
         if (bookId == 0) {
             throw new IllegalArgumentException("Book id cannot be 0");
         }
@@ -77,13 +83,15 @@ public class CommentaryServiceImpl implements CommentaryService {
     @Transactional
     @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'DELETE')")
     public void deleteById(long id) {
+
         commentaryRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'DELETE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Commentary', 'WRITE')")
     public void update(long id, String text) {
+
         if (id == 0) {
             throw new IllegalArgumentException("Commentary id cannot be 0");
         }

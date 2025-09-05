@@ -31,6 +31,7 @@ public class AclConfig {
 
     @Bean
     public SpringCacheBasedAclCache aclCache() {
+
         return new SpringCacheBasedAclCache(
                 cacheManager.getCache("aclCache"),
                 permissionGrantingStrategy(),
@@ -40,16 +41,19 @@ public class AclConfig {
 
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
+
         return new DefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
     @Bean
     public AclAuthorizationStrategy aclAuthorizationStrategy() {
+
         return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     @Bean
     public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler() {
+
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
         AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
         expressionHandler.setPermissionEvaluator(permissionEvaluator);
@@ -59,6 +63,7 @@ public class AclConfig {
 
     @Bean
     public LookupStrategy lookupStrategy() {
+
         return new BasicLookupStrategy(dataSource,
                 aclCache(),
                 aclAuthorizationStrategy(),
@@ -67,6 +72,7 @@ public class AclConfig {
 
     @Bean
     public JdbcMutableAclService aclService() {
+
         return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 }

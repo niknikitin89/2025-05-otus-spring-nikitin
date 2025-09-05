@@ -45,10 +45,12 @@ create table users
 
 create table user_roles
 (
-    user_id bigserial references users (id) on delete cascade ,
+    user_id bigint not null references users (id) on delete cascade ,
     role varchar(20) not null,
     primary key (user_id, role)
 );
+
+-- alter table user_roles add primary key (user_id,role);
 
 -- Security ACL
 CREATE TABLE IF NOT EXISTS acl_sid (
