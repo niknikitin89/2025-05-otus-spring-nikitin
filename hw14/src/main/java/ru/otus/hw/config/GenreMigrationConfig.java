@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.models.GenreMongo;
+import ru.otus.hw.services.IdMappingService;
 
 @Configuration
 public class GenreMigrationConfig {
@@ -34,7 +35,9 @@ public class GenreMigrationConfig {
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
-    ////Жанры
+    @Autowired
+    private IdMappingService idMappingService;
+
     //Reader
     @Bean
     @StepScope//бин создается не при старте приложения, а только когда начинается выполнение конкретного шага
@@ -50,11 +53,16 @@ public class GenreMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Genre, GenreMongo> genreProcessor() {
+    public ItemProcessor<Genre, GenreMongo> genreProcessor(IdMappingService idMappingService) {
 
-        return genre -> {
-            return new GenreMongo(new ObjectId().toString(), genre.getName());
-        };
+        return genre -> getGenreMongo(genre, idMappingService);
+    }
+
+    private GenreMongo getGenreMongo(Genre genre, IdMappingService idMappingService) {
+
+        String mongoId = new ObjectId().toString();
+        idMappingService.addGenreMapItem(genre.getId(), mongoId);
+        return new GenreMongo(mongoId, genre.getName());
     }
 
     //Writer

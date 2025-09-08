@@ -29,13 +29,13 @@ public class BookMongo {
     @ToString.Include
     private String title;
 
-    @DocumentReference(lazy = true)
-    private Author author;
+    @Field(name = "author")
+    private String author;
 
-    @DocumentReference(lazy = true)
-    private List<Genre> genres;
+    @Field(name = "genres")
+    private List<String> genres;
 
-    public BookMongo(String title, Author author, List<Genre> genres) {
+    public BookMongo(String title, String author, List<String> genres) {
         this.title = title;
         this.author = author;
         this.genres = genres;

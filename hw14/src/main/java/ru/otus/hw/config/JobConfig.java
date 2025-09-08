@@ -19,31 +19,34 @@ public class JobConfig {
     private JobRepository jobRepository;
         //Job
     @Bean
-    public Job migrationAuthors(Step authorMigrationStep, Step genreMigrationStep) {
+    public Job migrationAuthors(Step authorMigrationStep,
+                                Step genreMigrationStep,
+                                Step bookMigrationStep) {
 
         return new JobBuilder("migration", jobRepository)
-                .start(authorsAndGenresMigration(authorMigrationStep, genreMigrationStep)).build()
-//                .next(genreMigrationStep)
-                .build();
+                .start(authorsAndGenresMigration(authorMigrationStep, genreMigrationStep))
+                .next(bookMigrationStep)
+                .build() //builds FlowJobBuilder instance
+                .build();//builds Job instance
     }
 
     @Bean
     public Flow authorsAndGenresMigration(Step authorMigrationStep, Step genreMigrationStep) {
         return new FlowBuilder<Flow>("authorsAndGenresMigration")
                 .split(new SimpleAsyncTaskExecutor())
-                .add(flow1(authorMigrationStep), flow2(genreMigrationStep))
+                .add(authroMigrationFlow(authorMigrationStep), genreMigrationFlow(genreMigrationStep))
                 .build();
     }
 
     @Bean
-    public Flow flow1(Step authorMigrationStep){
+    public Flow authroMigrationFlow(Step authorMigrationStep){
         return new FlowBuilder<SimpleFlow>("flow1")
                 .start(authorMigrationStep)
                 .build();
     }
 
     @Bean
-    public Flow flow2(Step genreMigrationStep){
+    public Flow genreMigrationFlow(Step genreMigrationStep){
         return new FlowBuilder<SimpleFlow>("flow1")
                 .start(genreMigrationStep)
                 .build();

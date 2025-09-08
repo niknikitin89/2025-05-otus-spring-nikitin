@@ -2,11 +2,9 @@ package ru.otus.hw.config;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.bson.types.ObjectId;
-import org.springframework.batch.core.ChunkListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
@@ -18,12 +16,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.AuthorMongo;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.BookMongo;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.models.GenreMongo;
 import ru.otus.hw.services.IdMappingService;
 
 @Configuration
-public class AuthorMigrationConfig {
+public class BookMigrationConfig {
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -40,68 +40,62 @@ public class AuthorMigrationConfig {
     @Autowired
     private IdMappingService idMappingService;
 
-    ////Авторы
     //Reader
     @Bean
     @StepScope//бин создается не при старте приложения, а только когда начинается выполнение конкретного шага
-    public JpaCursorItemReader<Author> authorReader() {
+    public JpaCursorItemReader<Book> bookReader() {
 
-        JpaCursorItemReader<Author> reader = new JpaCursorItemReader<>();
-        reader.setName("authorsCursorReader");
+        JpaCursorItemReader<Book> reader = new JpaCursorItemReader<>();
+        reader.setName("bookCursorReader");
         reader.setEntityManagerFactory(entityManagerFactory);
-        reader.setQueryString("select a from Author a");
+        reader.setQueryString("select b from Book b");
         return reader;
     }
 
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Author, AuthorMongo> authorProcessor(IdMappingService idMappingService) {
+    public ItemProcessor<Book, BookMongo> bookProcessor(IdMappingService idMappingService) {
 
-        return author -> getAuthorMongo(author, idMappingService);
+        return book -> getBookMongo(book, idMappingService);
     }
 
-    private AuthorMongo getAuthorMongo(Author author, IdMappingService idMappingService) {
+    private BookMongo getBookMongo(Book book, IdMappingService idMappingService) {
 
         String mongoId = new ObjectId().toString();
-        idMappingService.addAuthorMapItem(author.getId(), mongoId);
-        return new AuthorMongo(mongoId, author.getFullName());
+        idMappingService.addBookMapItem(book.getId(), mongoId);
+        return new BookMongo(
+                mongoId,
+                book.getTitle(),
+                idMappingService.getAuthorId(book.getAuthor().getId()),
+                book.getGenres().stream()
+                        .map(Genre::getId)
+                        .map(idMappingService::getGenreId)
+                        .toList());
     }
 
     //Writer
     @Bean
     @StepScope
-    public MongoItemWriter<AuthorMongo> authorWriter() {
+    public MongoItemWriter<BookMongo> bookWriter() {
 
-        MongoItemWriter<AuthorMongo> writer = new MongoItemWriter<>();
+        MongoItemWriter<BookMongo> writer = new MongoItemWriter<>();
         writer.setTemplate(mongoTemplate);
-        writer.setCollection("authors");
+        writer.setCollection("books");
         writer.setMode(MongoItemWriter.Mode.INSERT);
         return writer;
     }
 
-    //    public ListItemWriter<AuthorMongo> authorWriter() {
-//
-//        return new ListItemWriter<>();
-//    }
-
     //Step
     @Bean
-    public Step authorMigrationStep(ItemReader<Author> reader, ItemProcessor<Author, AuthorMongo> processor,
-                                    ItemWriter<AuthorMongo> writer) {
+    public Step bookMigrationStep(ItemReader<Book> reader, ItemProcessor<Book, BookMongo> processor,
+                                   ItemWriter<BookMongo> writer) {
 
-        return new StepBuilder("authorMigrationStep", jobRepository)
-                .<Author, AuthorMongo>chunk(100, platformTransactionManager)
+        return new StepBuilder("bookMigrationStep", jobRepository)
+                .<Book, BookMongo>chunk(100, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
-                .listener(new ChunkListener() {
-                    public void afterChunk(ChunkContext chunkContext) {
-
-                        chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
-                    }
-                })
                 .build();
     }
-
 }
