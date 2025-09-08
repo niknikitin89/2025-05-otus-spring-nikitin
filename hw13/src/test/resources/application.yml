@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    driver-class-name: org.h2.Driver
+  sql:
+    init:
+      mode: always
+      data-locations: data.sql
+      schema-locations: schema.sql
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+#        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+#logging:
+#  level:
+#    org.springframework.transaction.interceptor: TRACE
+#    org.springframework.orm.jpa: DEBUG
