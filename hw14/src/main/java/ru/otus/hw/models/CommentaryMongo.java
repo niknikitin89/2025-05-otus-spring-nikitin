@@ -27,11 +27,11 @@ public class CommentaryMongo {
     @ToString.Include
     private String text;
 
-    @DocumentReference(lazy = true)
-    private Book book;
+    @Field(name = "book")
+    private String book;
 
-    public CommentaryMongo(String text, Book book) {
-        this.text = text;
-        this.book = book;
-    }
+//    public CommentaryMongo(String text, Book book) {
+//        this.text = text;
+//        this.book = book;
+//    }
 }

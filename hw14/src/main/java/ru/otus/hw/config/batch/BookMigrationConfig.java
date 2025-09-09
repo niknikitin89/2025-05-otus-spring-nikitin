@@ -1,6 +1,7 @@
-package ru.otus.hw.config;
+package ru.otus.hw.config.batch;
 
 import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -18,27 +19,22 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.BookMongo;
-import ru.otus.hw.models.Genre;
-import ru.otus.hw.models.GenreMongo;
-import ru.otus.hw.services.IdMappingService;
+
+import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class BookMigrationConfig {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
-    @Autowired
-    private PlatformTransactionManager platformTransactionManager;
+    private final PlatformTransactionManager platformTransactionManager;
 
-    @Autowired
-    private IdMappingService idMappingService;
+    private final IdMappingCache idMappingCache;
 
     //Reader
     @Bean
@@ -55,23 +51,27 @@ public class BookMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Book, BookMongo> bookProcessor(IdMappingService idMappingService) {
+    public ItemProcessor<Book, BookMongo> bookProcessor(){
 
-        return book -> getBookMongo(book, idMappingService);
+        return this::getBookMongo;
     }
 
-    private BookMongo getBookMongo(Book book, IdMappingService idMappingService) {
+    private BookMongo getBookMongo(Book book){
 
         String mongoId = new ObjectId().toString();
-        idMappingService.addBookMapItem(book.getId(), mongoId);
+        String mongoAuthorId = idMappingCache.getAuthorId(book.getAuthorId());
+
+        var genres = idMappingCache.getBookGenres(book.getId());
+        List<String> mongoGenreIds = genres.stream()
+                .map(idMappingCache::getGenreId)
+                .toList();
+
+        idMappingCache.addBookMapItem(book.getId(), mongoId);
         return new BookMongo(
                 mongoId,
                 book.getTitle(),
-                idMappingService.getAuthorId(book.getAuthor().getId()),
-                book.getGenres().stream()
-                        .map(Genre::getId)
-                        .map(idMappingService::getGenreId)
-                        .toList());
+                mongoAuthorId,
+                mongoGenreIds);
     }
 
     //Writer
@@ -89,7 +89,7 @@ public class BookMigrationConfig {
     //Step
     @Bean
     public Step bookMigrationStep(ItemReader<Book> reader, ItemProcessor<Book, BookMongo> processor,
-                                   ItemWriter<BookMongo> writer) {
+                                  ItemWriter<BookMongo> writer) {
 
         return new StepBuilder("bookMigrationStep", jobRepository)
                 .<Book, BookMongo>chunk(100, platformTransactionManager)

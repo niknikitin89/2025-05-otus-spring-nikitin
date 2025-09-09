@@ -1,12 +1,11 @@
-package ru.otus.hw.config;
+package ru.otus.hw.config.batch;
 
 import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.batch.core.ChunkListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
@@ -20,25 +19,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.AuthorMongo;
-import ru.otus.hw.services.IdMappingService;
 
 @Configuration
+@RequiredArgsConstructor
 public class AuthorMigrationConfig {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
-    @Autowired
-    private PlatformTransactionManager platformTransactionManager;
+    private final PlatformTransactionManager platformTransactionManager;
 
-    @Autowired
-    private IdMappingService idMappingService;
+    private final IdMappingCache idMappingCache;
 
     ////Авторы
     //Reader
@@ -56,15 +50,15 @@ public class AuthorMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Author, AuthorMongo> authorProcessor(IdMappingService idMappingService) {
+    public ItemProcessor<Author, AuthorMongo> authorProcessor(){
 
-        return author -> getAuthorMongo(author, idMappingService);
+        return this::getAuthorMongo;
     }
 
-    private AuthorMongo getAuthorMongo(Author author, IdMappingService idMappingService) {
+    private AuthorMongo getAuthorMongo(Author author){
 
         String mongoId = new ObjectId().toString();
-        idMappingService.addAuthorMapItem(author.getId(), mongoId);
+        idMappingCache.addAuthorMapItem(author.getId(), mongoId);
         return new AuthorMongo(mongoId, author.getFullName());
     }
 
@@ -80,11 +74,6 @@ public class AuthorMigrationConfig {
         return writer;
     }
 
-    //    public ListItemWriter<AuthorMongo> authorWriter() {
-//
-//        return new ListItemWriter<>();
-//    }
-
     //Step
     @Bean
     public Step authorMigrationStep(ItemReader<Author> reader, ItemProcessor<Author, AuthorMongo> processor,
@@ -95,12 +84,6 @@ public class AuthorMigrationConfig {
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
-                .listener(new ChunkListener() {
-                    public void afterChunk(ChunkContext chunkContext) {
-
-                        chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
-                    }
-                })
                 .build();
     }
 

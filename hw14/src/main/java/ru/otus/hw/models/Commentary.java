@@ -34,7 +34,6 @@ public class Commentary {
     @ToString.Include
     private String text;
 
-    @ManyToOne(targetEntity = Book.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    private Book book;
+    @Column(name = "book_id")
+    private long bookId;
 }

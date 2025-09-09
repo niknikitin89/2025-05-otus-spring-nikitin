@@ -18,7 +18,7 @@ public class AuthorMongo {
     @Field(name = "full_name")
     private String fullName;
 
-    public AuthorMongo(String fullName) {
-        this.fullName = fullName;
-    }
+//    public AuthorMongo(String fullName) {
+//        this.fullName = fullName;
+//    }
 }

@@ -35,9 +35,9 @@ public class BookMongo {
     @Field(name = "genres")
     private List<String> genres;
 
-    public BookMongo(String title, String author, List<String> genres) {
-        this.title = title;
-        this.author = author;
-        this.genres = genres;
-    }
+//    public BookMongo(String title, String author, List<String> genres) {
+//        this.title = title;
+//        this.author = author;
+//        this.genres = genres;
+//    }
 }

@@ -1,6 +1,7 @@
-package ru.otus.hw.config;
+package ru.otus.hw.config.batch;
 
 import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -18,25 +19,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.models.GenreMongo;
-import ru.otus.hw.services.IdMappingService;
 
 @Configuration
+@RequiredArgsConstructor
 public class GenreMigrationConfig {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    @Autowired
-    private JobRepository jobRepository;
+    private final JobRepository jobRepository;
 
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
-    @Autowired
-    private PlatformTransactionManager platformTransactionManager;
+    private final PlatformTransactionManager platformTransactionManager;
 
-    @Autowired
-    private IdMappingService idMappingService;
+    private final IdMappingCache idMappingCache;
 
     //Reader
     @Bean
@@ -53,15 +49,15 @@ public class GenreMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Genre, GenreMongo> genreProcessor(IdMappingService idMappingService) {
+    public ItemProcessor<Genre, GenreMongo> genreProcessor(){
 
-        return genre -> getGenreMongo(genre, idMappingService);
+        return this::getGenreMongo;
     }
 
-    private GenreMongo getGenreMongo(Genre genre, IdMappingService idMappingService) {
+    private GenreMongo getGenreMongo(Genre genre){
 
         String mongoId = new ObjectId().toString();
-        idMappingService.addGenreMapItem(genre.getId(), mongoId);
+        idMappingCache.addGenreMapItem(genre.getId(), mongoId);
         return new GenreMongo(mongoId, genre.getName());
     }
 

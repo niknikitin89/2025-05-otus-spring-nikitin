@@ -16,13 +16,13 @@ import org.springframework.shell.standard.ShellMethod;
 @RequiredArgsConstructor
 public class BatchCommands {
 
-    private final Job migrationAuthors;
+    private final Job migrationJob;
 
     private final JobLauncher jobLauncher;
 
     @ShellMethod(value = "startMigration", key = "sm")
     public void startMigration() throws Exception {
-        JobExecution execution = jobLauncher.run(migrationAuthors, new JobParameters());
+        jobLauncher.run(migrationJob, new JobParameters());
     }
 
 }

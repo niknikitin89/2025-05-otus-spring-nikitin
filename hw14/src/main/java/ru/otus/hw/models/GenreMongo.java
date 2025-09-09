@@ -18,7 +18,7 @@ public class GenreMongo {
     @Field(name = "name")
     private String name;
 
-    public GenreMongo(String name) {
-        this.name = name;
-    }
+//    public GenreMongo(String name) {
+//        this.name = name;
+//    }
 }
