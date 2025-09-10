@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "books")
 public class BookMongo {
+
     @Id
     @EqualsAndHashCode.Include
     @ToString.Include
@@ -35,9 +35,4 @@ public class BookMongo {
     @Field(name = "genres")
     private List<String> genres;
 
-//    public BookMongo(String title, String author, List<String> genres) {
-//        this.title = title;
-//        this.author = author;
-//        this.genres = genres;
-//    }
 }

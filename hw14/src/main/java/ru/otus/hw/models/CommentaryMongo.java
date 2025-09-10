@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
@@ -17,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 @Document(collection = "commentaries")
 public class CommentaryMongo {
+
     @Id
     @EqualsAndHashCode.Include
     @ToString.Include
@@ -29,9 +29,4 @@ public class CommentaryMongo {
 
     @Field(name = "book")
     private String book;
-
-//    public CommentaryMongo(String text, Book book) {
-//        this.text = text;
-//        this.book = book;
-//    }
 }

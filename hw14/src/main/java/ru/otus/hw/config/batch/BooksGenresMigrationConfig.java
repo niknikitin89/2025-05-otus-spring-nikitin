@@ -1,6 +1,5 @@
 package ru.otus.hw.config.batch;
 
-import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -9,10 +8,8 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.otus.hw.models.BookGenre;
@@ -20,9 +17,6 @@ import ru.otus.hw.models.BookGenre;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @RequiredArgsConstructor
@@ -60,7 +54,7 @@ public class BooksGenresMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<BookGenre, BookGenre> bookGenreProcessor(){
+    public ItemProcessor<BookGenre, BookGenre> bookGenreProcessor() {
 
         return bookGenre -> {
             idMappingCache.addBookGenreMapItem(bookGenre.bookId(), bookGenre.genreId());
@@ -74,7 +68,7 @@ public class BooksGenresMigrationConfig {
                                          ItemProcessor<BookGenre, BookGenre> processor) {
 
         return new StepBuilder("booksGenresMigrationStep", jobRepository)
-                .<BookGenre, BookGenre>chunk(100, platformTransactionManager)
+                .<BookGenre, BookGenre>chunk(10, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(i -> {

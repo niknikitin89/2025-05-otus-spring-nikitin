@@ -12,7 +12,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.MongoItemWriter;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -34,7 +33,6 @@ public class AuthorMigrationConfig {
 
     private final IdMappingCache idMappingCache;
 
-    ////Авторы
     //Reader
     @Bean
     @StepScope//бин создается не при старте приложения, а только когда начинается выполнение конкретного шага
@@ -50,12 +48,12 @@ public class AuthorMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Author, AuthorMongo> authorProcessor(){
+    public ItemProcessor<Author, AuthorMongo> authorProcessor() {
 
         return this::getAuthorMongo;
     }
 
-    private AuthorMongo getAuthorMongo(Author author){
+    private AuthorMongo getAuthorMongo(Author author) {
 
         String mongoId = new ObjectId().toString();
         idMappingCache.addAuthorMapItem(author.getId(), mongoId);
@@ -80,7 +78,7 @@ public class AuthorMigrationConfig {
                                     ItemWriter<AuthorMongo> writer) {
 
         return new StepBuilder("authorMigrationStep", jobRepository)
-                .<Author, AuthorMongo>chunk(100, platformTransactionManager)
+                .<Author, AuthorMongo>chunk(10, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)

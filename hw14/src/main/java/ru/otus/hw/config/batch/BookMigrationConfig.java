@@ -12,7 +12,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.MongoItemWriter;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -51,12 +50,12 @@ public class BookMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Book, BookMongo> bookProcessor(){
+    public ItemProcessor<Book, BookMongo> bookProcessor() {
 
         return this::getBookMongo;
     }
 
-    private BookMongo getBookMongo(Book book){
+    private BookMongo getBookMongo(Book book) {
 
         String mongoId = new ObjectId().toString();
         String mongoAuthorId = idMappingCache.getAuthorId(book.getAuthorId());
@@ -92,7 +91,7 @@ public class BookMigrationConfig {
                                   ItemWriter<BookMongo> writer) {
 
         return new StepBuilder("bookMigrationStep", jobRepository)
-                .<Book, BookMongo>chunk(100, platformTransactionManager)
+                .<Book, BookMongo>chunk(10, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)

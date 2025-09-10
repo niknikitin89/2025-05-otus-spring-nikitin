@@ -12,7 +12,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.MongoItemWriter;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -49,12 +48,12 @@ public class CommentaryMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Commentary, CommentaryMongo> commentaryProcessor(){
+    public ItemProcessor<Commentary, CommentaryMongo> commentaryProcessor() {
 
         return this::getcommentaryMongo;
     }
 
-    private CommentaryMongo getcommentaryMongo(Commentary commentary){
+    private CommentaryMongo getcommentaryMongo(Commentary commentary) {
 
         String mongoId = new ObjectId().toString();
         String mongoBookId = idMappingCache.getBookId(commentary.getBookId());
@@ -79,11 +78,12 @@ public class CommentaryMigrationConfig {
 
     //Step
     @Bean
-    public Step commentaryMigrationStep(ItemReader<Commentary> reader, ItemProcessor<Commentary, CommentaryMongo> processor,
-                                  ItemWriter<CommentaryMongo> writer) {
+    public Step commentaryMigrationStep(ItemReader<Commentary> reader,
+                                        ItemProcessor<Commentary, CommentaryMongo> processor,
+                                        ItemWriter<CommentaryMongo> writer) {
 
         return new StepBuilder("commentaryMigrationStep", jobRepository)
-                .<Commentary, CommentaryMongo>chunk(100, platformTransactionManager)
+                .<Commentary, CommentaryMongo>chunk(10, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)

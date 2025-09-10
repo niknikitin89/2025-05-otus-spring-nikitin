@@ -12,7 +12,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.MongoItemWriter;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -49,12 +48,12 @@ public class GenreMigrationConfig {
     //Processor
     @Bean
     @StepScope
-    public ItemProcessor<Genre, GenreMongo> genreProcessor(){
+    public ItemProcessor<Genre, GenreMongo> genreProcessor() {
 
         return this::getGenreMongo;
     }
 
-    private GenreMongo getGenreMongo(Genre genre){
+    private GenreMongo getGenreMongo(Genre genre) {
 
         String mongoId = new ObjectId().toString();
         idMappingCache.addGenreMapItem(genre.getId(), mongoId);
@@ -79,7 +78,7 @@ public class GenreMigrationConfig {
                                    ItemWriter<GenreMongo> writer) {
 
         return new StepBuilder("genreMigrationStep", jobRepository)
-                .<Genre, GenreMongo>chunk(100, platformTransactionManager)
+                .<Genre, GenreMongo>chunk(10, platformTransactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)

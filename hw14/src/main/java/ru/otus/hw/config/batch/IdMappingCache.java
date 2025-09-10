@@ -8,11 +8,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class IdMappingCache{
+public class IdMappingCache {
 
     private final Map<Long, String> authorIdMap = new ConcurrentHashMap<>();
+
     private final Map<Long, String> genreIdMap = new ConcurrentHashMap<>();
+
     private final Map<Long, String> bookIdMap = new ConcurrentHashMap<>();
+
     private final Map<Long, List<Long>> booksGenres = new ConcurrentHashMap<>();
 
     public void addAuthorMapItem(Long id, String mongoId) {
@@ -31,6 +34,7 @@ public class IdMappingCache{
     }
 
     public void addBookGenreMapItem(Long bookId, Long genreId) {
+
         booksGenres.computeIfAbsent(bookId, k -> new ArrayList<>()).add(genreId);
     }
 
@@ -50,10 +54,12 @@ public class IdMappingCache{
     }
 
     public List<Long> getBookGenres(Long id) {
+
         return booksGenres.get(id);
     }
 
-    public void clear(){
+    public void clear() {
+
         authorIdMap.clear();
         genreIdMap.clear();
         bookIdMap.clear();
