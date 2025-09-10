@@ -1,0 +1,50 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+  data:
+    mongodb:
+      host: localhost
+      database: library_import_db
+      port: 32768
+
+  datasource:
+    url: jdbc:h2:mem:maindb
+  sql:
+    init:
+      mode: always
+#      data-locations: data.sql
+#      schema-locations: schema.sql
+
+  batch:
+    job:
+      enabled: false #отключает автоматический запуск всех Job при старте приложения
+
+  shell:
+    interactive:
+      enabled: true #После старта приложения открывается командная строка shell
+    noninteractive:
+      enabled: false #Запрещает запуск одиночных команд при старте приложения
+    command:
+      version:
+        enabled: false #Убирает стандартную команду version из доступных команд shell
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
