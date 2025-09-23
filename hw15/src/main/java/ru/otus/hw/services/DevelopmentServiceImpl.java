@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.models.CustomerWish;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DevelopmentServiceImpl implements DevelopmentService {
@@ -13,18 +16,19 @@ public class DevelopmentServiceImpl implements DevelopmentService {
     @Override
     public void startProgramming() {
 
+        List<CustomerWish> spec = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
 
-
-            CustomerWish spec = createCustomerWish(i);
-
-            System.out.println(spec.toString());
-
-            var product = itCompany.create(spec);
-            if (product != null) {
-                System.out.println(product.name());
-            }
+            spec.add(createCustomerWish(i));
         }
+
+//        System.out.println(spec.toString());
+
+        var product = itCompany.create(spec);
+        if (product != null) {
+            System.out.println(product.name());
+        }
+
 
     }
 
