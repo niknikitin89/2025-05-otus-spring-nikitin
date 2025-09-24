@@ -12,6 +12,8 @@ import java.util.List;
 public class Process {
 
     private String productName;
+
     private Development dev;
+
     private List<Test> testList;
 }

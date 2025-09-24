@@ -8,7 +8,9 @@ import lombok.Data;
 public class Test {
 
     private String testerName;
+
     private TestType type;
+
     private WorkStatus status;
 
 }

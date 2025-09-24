@@ -8,6 +8,7 @@ import lombok.Data;
 public class TestProcess {
 
     private String productName;
+
     private Test test;
 
 }
