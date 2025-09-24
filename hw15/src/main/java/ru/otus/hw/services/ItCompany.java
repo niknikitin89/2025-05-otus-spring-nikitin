@@ -13,8 +13,6 @@ public interface ItCompany {
     @Gateway(
             requestChannel = "wishChannel",
             replyChannel = "productChannel"
-//            replyTimeout = 5000,    // 5 секунд на ответ
-//            requestTimeout = 3000   // 3 секунды на отправку
     )
-    Product create(List<CustomerWish> customerWish);
+    List<Product> create(List<CustomerWish> customerWish);
 }

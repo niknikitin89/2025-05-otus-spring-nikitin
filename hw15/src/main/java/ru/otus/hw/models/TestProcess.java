@@ -5,10 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Development {
+public class TestProcess {
 
-    private String developerName;
-
-    private WorkStatus status;
+    private String productName;
+    private Test test;
 
 }

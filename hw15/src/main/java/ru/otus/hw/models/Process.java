@@ -9,9 +9,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DevelopmentProcess {
+public class Process {
 
     private String productName;
     private Development dev;
-    private List<Testing> testingList;
+    private List<Test> testList;
 }

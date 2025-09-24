@@ -1,41 +1,22 @@
 package ru.otus.hw.services;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.models.CustomerWish;
-
-import java.util.ArrayList;
-import java.util.List;
+import ru.otus.hw.models.Process;
+import ru.otus.hw.models.WorkStatus;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 public class DevelopmentServiceImpl implements DevelopmentService {
 
-    private final ItCompany itCompany;
-
     @Override
-    public void startProgramming() {
+    public Process develop(Process process) {
+        //Разработка пройдет в синхронном режиме
+        //Нужно только поменять статус, поэтому отдельный сервис не буду делать
+        process.getDev().setStatus(WorkStatus.DONE);
 
-        List<CustomerWish> spec = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-
-            spec.add(createCustomerWish(i));
-        }
-
-//        System.out.println(spec.toString());
-
-        var product = itCompany.create(spec);
-        if (product != null) {
-            System.out.println(product.name());
-        }
-
-
-    }
-
-    private CustomerWish createCustomerWish(int i) {
-
-        Boolean readyToPay = Math.random() > 0.5 ? true : false;
-
-        return new CustomerWish("Product %d".formatted(i), readyToPay);
+        log.info("======================>>>>> \"%s\" - development completed"
+                .formatted(process.getProductName()));
+        return process;
     }
 }
