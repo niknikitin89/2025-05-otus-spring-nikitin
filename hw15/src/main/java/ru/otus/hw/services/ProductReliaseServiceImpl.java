@@ -21,7 +21,7 @@ public class ProductReliaseServiceImpl implements ProductReliaseService {
 
         WorkStatus testStatus;
         var testList = process.getTestList();
-        if (isTestsComplete(testList)) {
+        if (testList.size() == 3 && isTestsComplete(testList)) {
             testStatus = WorkStatus.DONE;
         } else {
             testStatus = WorkStatus.FAILED;

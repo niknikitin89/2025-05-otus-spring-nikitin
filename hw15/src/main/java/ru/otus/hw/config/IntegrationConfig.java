@@ -84,8 +84,8 @@ public class IntegrationConfig {
                 .split()
                 .<CustomerWish>filter(filterService::readyToPay)//отсеиваем хотелки, за которые платить не хотят
                 .channel(readyToWorkChannel())
-                .gateway(developmentSubFlow())  //Подпоток разработки
-                .gateway(testingSubFlow())      //Подпоток тестирования
+                .gateway(developmentSubFlow(), g -> g.replyTimeout(5000L))  //Подпоток разработки
+                .gateway(testingSubFlow(), g -> g.replyTimeout(5000L))      //Подпоток тестирования
                 .<Process, Product>transform(productReliaseService::createProduct)//конвертим процесс в продукт
                 .aggregate(productAgregator())
                 .channel(productChannel())
@@ -117,7 +117,7 @@ public class IntegrationConfig {
     public Consumer<AggregatorSpec> testAggregator() {
 
         return aggregator -> aggregator
-                .groupTimeout(5000) // 5 секунд таймаут на группу
+                .groupTimeout(1000) // 1 секунда таймаут на группу
                 .expireGroupsUponCompletion(true) // Очищать группы после завершения
                 .expireGroupsUponTimeout(true)    // Очищать группы при таймауте
                 .sendPartialResultOnExpiry(true)// Отправлять частичный результат
@@ -148,7 +148,7 @@ public class IntegrationConfig {
     private static Consumer<AggregatorSpec> productAgregator() {
 
         return aggregator -> aggregator
-                .groupTimeout(5000) // 5 секунд таймаут на группу
+                .groupTimeout(1000) // 1 секунда таймаут на группу
                 .expireGroupsUponCompletion(true) // Очищать группы после завершения
                 .expireGroupsUponTimeout(true)    // Очищать группы при таймауте
                 .sendPartialResultOnExpiry(true);// Отправлять частичный результат
