@@ -118,6 +118,9 @@ public class IntegrationConfig {
 
         return aggregator -> aggregator
                 .groupTimeout(5000) // 5 секунд таймаут на группу
+                .expireGroupsUponCompletion(true) // Очищать группы после завершения
+                .expireGroupsUponTimeout(true)    // Очищать группы при таймауте
+                .sendPartialResultOnExpiry(true)// Отправлять частичный результат
                 .correlationStrategy(message ->
                         message.getHeaders().get("correlationId"))
                 //агрегируем по correlationId,
