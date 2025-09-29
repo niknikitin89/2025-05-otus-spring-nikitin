@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authors List</title>
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Authors List</h1>
+
+    <div class="navigation">
+        <a href="/" id="mainPageLink">Main Page</a>
+    </div>
+
+    <table class="table">
+        <thead class="table-header">
+        <tr>
+            <th>ID</th>
+            <th>Author Name</th>
+        </tr>
+        </thead>
+        <tbody id="authorsTableBody">
+        </tbody>
+    </table>
+
+
+    <div class="warning" id="noAuthorsWarning" style="display: none;">
+        No authors available
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/v1/authors')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load authors');
+                }
+                return response.json();
+            })
+            .then(authors => {
+                const tableBody = document.getElementById('authorsTableBody');
+                const warningDiv = document.getElementById('noAuthorsWarning');
+
+                // Clear existing table rows
+                tableBody.innerHTML = '';
+
+                if (authors.length === 0) {
+                    warningDiv.style.display = 'block';
+                    return;
+                }
+
+                warningDiv.style.display = 'none';
+
+                // Populate table with authors
+                authors.forEach(author => {
+                    const row = document.createElement('tr');
+
+                    // ID cell
+                    const idCell = document.createElement('td');
+                    idCell.textContent = author.id;
+                    row.appendChild(idCell);
+
+                    // Name cell
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = author.fullName;
+                    row.appendChild(nameCell);
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const warningDiv = document.getElementById('noAuthorsWarning');
+                warningDiv.textContent = 'Error loading authors';
+                warningDiv.style.display = 'block';
+            });
+    });
+</script>
+</body>
+</html>
