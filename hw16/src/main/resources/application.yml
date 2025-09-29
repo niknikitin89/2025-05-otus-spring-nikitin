@@ -1,0 +1,62 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+  thymeleaf:
+    cache: false
+
+  datasource:
+    url: jdbc:h2:mem:maindb
+  sql:
+    init:
+      mode: always
+  #      data-locations: data.sql
+  #      schema-locations: schema.sql
+
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+
+#Путь для работы через Spring REST в обход контроллеров
+  data:
+    rest:
+      basePath: /datarest
+
+#Настройки актуатора
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" #определяет, какие endpoints доступны через HTTP
+      base-path: "/actuator" #путь для доступа к актуатору
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true #включает функциональность метрик
+    logfile:
+      enabled: true
+      external-file: "logs/application.log"
+  health:
+    defaults:
+      enabled: true #дополнительная информация для всех индикаторов
+
+
+logging:
+  file:
+    name: logs/application.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    ru.otus.hw: DEBUG
+    org.springframework.web: INFO
