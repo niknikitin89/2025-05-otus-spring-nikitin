@@ -1,0 +1,28 @@
+services:
+  app:
+    container_name: nikitin-dockered-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${SERVER_PORT}:8080"
+    # Эти свойства перегружают соответствующие в application.yml
+    environment:
+      # Используем имя сервиса postgres и внутренний порт 5432
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+
+  postgres:
+    image: "postgres:17"
+    ports:
+      - "${DB_PORT}:5432" # 5433 на хосте -> 5432 в контейнере
+    volumes:
+      - hw17_postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
+volumes:
+  hw17_postgres_data:
