@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.services.AuthorService;
 
-
 import java.util.Collections;
 import java.util.List;
 
@@ -22,12 +21,14 @@ public class AuthorController {
     @Retry(name = "authors-service")
     @CircuitBreaker(name = "authors-service", fallbackMethod = "getAllAuthorsFallback")
     public List<AuthorDto> getAllAuthors() {
+
         return authorService.findAll();
     }
 
 
     // Fallback метод
     private List<AuthorDto> getAllAuthorsFallback(Exception e) {
+
         return Collections.emptyList();
     }
 }
