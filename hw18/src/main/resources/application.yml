@@ -26,3 +26,58 @@ spring:
 #    properties:
 #      hibernate:
 #        format_sql: true
+
+### RESILIENCE4J
+resilience4j:
+  circuitbreaker:
+    instances:
+      authors-service:
+        # Порог процента неудачных вызовов (50%) для переключения в состояние OPEN
+        failure-rate-threshold: 50
+        # Время, в течение которого Circuit Breaker остается OPEN перед переходом в HALF_OPEN
+        wait-duration-in-open-state: 15s
+        # Количество разрешенных вызовов в состоянии HALF_OPEN для тестирования восстановления сервиса
+        permitted-number-of-calls-in-half-open-state: 3
+        # Минимальное количество вызовов в окне для расчета статистики failure rate
+        minimum-number-of-calls: 5
+        # Размер скользящего окна для отслеживания вызовов (в количестве вызовов)
+        sliding-window-size: 10
+        # Типы исключений, которые считаются неудачными вызовами
+        record-exceptions:
+          - "java.lang.Exception"
+        ignore-exceptions: []
+
+      default-service:
+        failure-rate-threshold: 70
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 5
+        minimum-number-of-calls: 10
+        sliding-window-size: 20
+        record-exceptions:
+          - "java.lang.RuntimeException"
+          - "java.io.IOException"
+        ignore-exceptions:
+          - "java.lang.IllegalArgumentException"
+          - "jakarta.validation.ValidationException"
+
+  retry:
+    instances:
+      authors-service:
+        # Максимальное количество попыток вызова (включая первоначальную)
+        max-attempts: 3
+        # Интервал ожидания между повторными попытками
+        wait-duration: 1000ms
+        # Типы исключений, при которых следует выполнять повторные попытк
+        retry-exceptions:
+          - "java.lang.Exception"
+        ignore-exceptions: []
+
+      default-service:
+        max-attempts: 2
+        wait-duration: 500ms
+        retry-exceptions:
+          - "java.io.IOException"
+          - "java.util.concurrent.TimeoutException"
+        ignore-exceptions:
+          - "java.lang.IllegalArgumentException"
+          - "jakarta.validation.ValidationException"

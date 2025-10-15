@@ -1,12 +1,14 @@
 package ru.otus.hw.services;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
@@ -21,6 +23,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
@@ -28,14 +31,20 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public Optional<BookDto> findById(long id) {
+
         var bookOpt = bookRepository.findById(id);
         return bookOpt.map(BookDto::fromDomainObject);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public List<BookDto> findAll() {
+
         return bookRepository.findAll().stream()
                 .map(BookDto::fromDomainObject)
                 .toList();
@@ -43,25 +52,37 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public BookDto insert(String title, long authorId, Set<Long> genresIds) {
+
         return save(0, title, authorId, genresIds);
     }
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public BookDto update(long id, String title, long authorId, Set<Long> genresIds) {
+
         return save(id, title, authorId, genresIds);
     }
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public void deleteById(long id) {
+
         bookRepository.deleteById(id);
     }
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public BookDto save(BookDto book) {
+
         return this.save(
                 book.getId(),
                 book.getTitle(),
@@ -70,6 +91,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private BookDto save(long id, String title, long authorId, Set<Long> genresIds) {
+
         if (isEmpty(genresIds)) {
             throw new IllegalArgumentException("Genres ids must not be null");
         }

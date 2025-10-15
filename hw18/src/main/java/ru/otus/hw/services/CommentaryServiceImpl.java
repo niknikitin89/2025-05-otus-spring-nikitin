@@ -1,5 +1,7 @@
 package ru.otus.hw.services;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ public class CommentaryServiceImpl implements CommentaryService {
 
     @Override
     @Transactional(readOnly = true)
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public List<CommentaryDto> findByBookId(long id) {
 
         return commentaryRepository.findAllByBookId(id)
@@ -29,21 +33,30 @@ public class CommentaryServiceImpl implements CommentaryService {
 
     @Override
     @Transactional(readOnly = true)
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public Optional<CommentaryDto> findById(long id) {
+
         var comment = commentaryRepository.findById(id);
         return comment.map(CommentaryDto::fromDomainObject);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public Optional<CommentaryDto> findByIdWithBook(long id) {
+
         var comment = commentaryRepository.findById(id);
         return comment.map(CommentaryDto::fromDomainObjectWithBook);
     }
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public CommentaryDto add(long bookId, String text) {
+
         if (bookId == 0) {
             throw new IllegalArgumentException("Book id cannot be 0");
         }
@@ -58,13 +71,19 @@ public class CommentaryServiceImpl implements CommentaryService {
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public void deleteById(long id) {
+
         commentaryRepository.deleteById(id);
     }
 
     @Override
     @Transactional
+    @CircuitBreaker(name = "default-service")
+    @Retry(name = "default-service")
     public void update(long id, String text) {
+
         if (id == 0) {
             throw new IllegalArgumentException("Commentary id cannot be 0");
         }
@@ -76,6 +95,4 @@ public class CommentaryServiceImpl implements CommentaryService {
         commentary.setText(text);
         commentaryRepository.save(commentary);
     }
-
-
 }
