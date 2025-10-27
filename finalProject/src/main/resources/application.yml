@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   devtools:
     restart:
@@ -9,14 +12,15 @@ spring:
     cache: false
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/PFM
-    username: postgres
-    password: 2305
-  sql:
-    init:
-      mode: never
-#      data-locations: data.sql
-#      schema-locations: schema.sql
+    url: jdbc:h2:mem:maindb
+  #    url: jdbc:postgresql://localhost:5432/PFM
+  #    username: postgres
+  #    password: 2305
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   jpa:
     open-in-view: false
@@ -25,13 +29,24 @@ spring:
       ddl-auto: none
 
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-#    properties:
-#      hibernate:
-#        format_sql: true
+  #    properties:
+  #      hibernate:
+  #        dialect: org.hibernate.dialect.PostgreSQLDialect
+  #    properties:
+  #      hibernate:
+  #        format_sql: true
+
+  sql:
+    init:
+      mode: always
+      data-locations: data.sql
+  #      schema-locations: schema.sql
 
   shell:
     interactive:
-      enabled: true
+      enabled: true #После старта приложения открывается командная строка shell
+    noninteractive:
+      enabled: false #Запрещает запуск одиночных команд при старте приложения
+    command:
+      version:
+        enabled: false #Убирает стандартную команду version из доступных команд shell
