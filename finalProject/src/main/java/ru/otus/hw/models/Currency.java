@@ -18,14 +18,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "banks")
-public class Bank {
+@Table(name = "currencies")
+public class Currency {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "code", nullable = false, length = 3)
+    private String code;
+
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     @CreationTimestamp
@@ -38,4 +41,5 @@ public class Bank {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
+
 }

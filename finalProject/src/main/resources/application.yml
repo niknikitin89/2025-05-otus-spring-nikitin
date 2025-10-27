@@ -31,3 +31,7 @@ spring:
 #    properties:
 #      hibernate:
 #        format_sql: true
+
+  shell:
+    interactive:
+      enabled: true
