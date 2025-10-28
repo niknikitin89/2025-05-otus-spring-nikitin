@@ -15,8 +15,8 @@ public interface BankRepository extends CrudRepository<Bank, Integer> {
 
     List<Bank> findByIsDeletedFalse();
 
-    Optional<Bank> findById(int id);
+    Optional<Bank> findById(long id);
 
-    Optional<Bank> findByIdAndIsDeletedFalse(int id);
+    Optional<Bank> findByIdAndIsDeletedFalse(long id);
 
 }

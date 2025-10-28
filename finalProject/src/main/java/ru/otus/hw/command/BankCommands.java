@@ -25,7 +25,7 @@ public class BankCommands {
 
     //fbid 4
     @ShellMethod(key = {"find_bank_by_id", "fbid"}, value = "Find bank by id")
-    public String findById(int id) {
+    public String findById(long id) {
 
         return service.findById(id)
                 .map(BankDto::toString)
@@ -34,14 +34,14 @@ public class BankCommands {
 
     //db 4
     @ShellMethod(key = {"delete", "db"}, value = "Delete bank")
-    public void deleteBank(int bankId) {
+    public void deleteBank(long bankId) {
 
         service.deleteById(bankId);
     }
 
     //ub 2 "ВБРР"
     @ShellMethod(key = {"update_bank", "ub"}, value = "Update bank")
-    public String updateBank(int bankId, String bankName) {
+    public String updateBank(long bankId, String bankName) {
 
         BankDto bankDto = new BankDto();
         bankDto.setId(bankId);

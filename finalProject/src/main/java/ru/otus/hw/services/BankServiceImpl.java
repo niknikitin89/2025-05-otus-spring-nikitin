@@ -26,7 +26,7 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public Optional<BankDto> findById(int id) {
+    public Optional<BankDto> findById(long id) {
 
         var bankOpt = repository.findById(id);
         return bankOpt.map(BankDto::fromDomainObject);
@@ -37,13 +37,14 @@ public class BankServiceImpl implements BankService {
     public BankDto save(BankDto bankDto) {
 
         if (bankDto.getId() == 0) {
-            return insertBank(bankDto);
+            return insert(bankDto);
         }
-        return updateBank(bankDto);
+        return update(bankDto);
     }
 
+    @Transactional
     @Override
-    public void deleteById(int id) {
+    public void deleteById(long id) {
         var bankOpt = repository.findById(id);
         if (bankOpt.isEmpty()) {
             throw new IllegalArgumentException("Bank not found");
@@ -56,7 +57,7 @@ public class BankServiceImpl implements BankService {
 
     }
 
-    private BankDto updateBank(BankDto bankDto) {
+    private BankDto update(BankDto bankDto) {
 
         var bankOpt = repository.findById(bankDto.getId());
         if (bankOpt.isEmpty()) {
@@ -72,7 +73,7 @@ public class BankServiceImpl implements BankService {
         return BankDto.fromDomainObject(updatedBank);
     }
 
-    private BankDto insertBank(BankDto bankDto) {
+    private BankDto insert(BankDto bankDto) {
         if (bankDto.getName().isEmpty()) {
             //TODO: перехватить
             throw new IllegalArgumentException("Bank name is empty");

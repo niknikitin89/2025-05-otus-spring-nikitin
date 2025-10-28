@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BankDto {
 
-    private int id;
+    private long id;
     private String name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

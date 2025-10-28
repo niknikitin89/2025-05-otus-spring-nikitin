@@ -42,4 +42,8 @@ public class Currency {
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
 
+    public Currency(long id){
+        this.id = id;
+    }
+
 }

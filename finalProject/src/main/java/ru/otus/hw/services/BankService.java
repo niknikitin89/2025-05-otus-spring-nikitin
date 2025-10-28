@@ -9,9 +9,9 @@ public interface BankService {
 
     List<BankDto> findAll();
 
-    Optional<BankDto> findById(int id);
+    Optional<BankDto> findById(long id);
 
     BankDto save(BankDto bankDto);
 
-    void deleteById(int id);
+    void deleteById(long id);
 }

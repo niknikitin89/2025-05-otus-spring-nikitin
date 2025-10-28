@@ -63,4 +63,8 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
+
+    public Account(long id) {
+        this.id = id;
+    }
 }

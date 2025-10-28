@@ -80,6 +80,7 @@ create table account_balances
 
 -- create index idx_account_balances_account_id on account_balances (account_id);
 -- create index idx_account_balances_balance_date on account_balances (balance_date);
+-- TODO: индекс по счету и дате
 --
 -- comment on table account_balances is 'Таблица для хранения истории балансов счетов';
 -- comment on column account_balances.id is 'Уникальный идентификатор записи';

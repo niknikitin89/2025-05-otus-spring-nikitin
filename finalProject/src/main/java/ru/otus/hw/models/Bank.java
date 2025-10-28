@@ -23,7 +23,7 @@ public class Bank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
@@ -38,4 +38,8 @@ public class Bank {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
+
+    public Bank(long id){
+        this.id = id;
+    }
 }

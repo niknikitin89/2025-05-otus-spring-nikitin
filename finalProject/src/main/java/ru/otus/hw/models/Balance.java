@@ -34,7 +34,7 @@ import java.time.LocalDateTime;
 })
 @Entity
 @Table(name = "account_balances")
-public class AccountBalance {
+public class Balance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
