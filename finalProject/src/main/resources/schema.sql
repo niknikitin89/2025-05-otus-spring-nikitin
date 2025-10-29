@@ -1,5 +1,5 @@
 drop table if exists transactions cascade;
-drop table if exists account_balances cascade;
+drop table if exists balances cascade;
 drop table if exists accounts cascade;
 drop table if exists currencies cascade;
 drop table if exists banks cascade;
@@ -69,7 +69,7 @@ create table accounts
 -- comment on column accounts.is_deleted is 'Флаг удаления';
 
 -- ИСТОРИЯ БАЛАНСА СЧЕТОВ
-create table account_balances
+create table balances
 (
     id           serial primary key,
     account_id   integer        not null references accounts (id),

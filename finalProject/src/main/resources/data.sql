@@ -25,7 +25,7 @@ values ('Основная карта', 1, 1),
        ('Наличные', 5, 1);
 
 -- 4. наполняем таблицу истории балансов
-insert into account_balances (account_id, balance_date, amount)
+insert into balances (account_id, balance_date, amount)
 values (1, '2024-01-01', 45000.00),
        (1, '2024-01-15', 50000.00),
        (1, '2024-02-01', 48000.00),

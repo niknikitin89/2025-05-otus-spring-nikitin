@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
         )
 })
 @Entity
-@Table(name = "account_balances")
+@Table(name = "balances")
 public class Balance {
 
     @Id
