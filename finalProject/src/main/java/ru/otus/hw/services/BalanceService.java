@@ -11,6 +11,10 @@ public interface BalanceService {
 
     List<BalanceDto> findAll();
 
+    Optional<BalanceDto> findById(long id);
+
+    List<BalanceDto> findByAccountId(long accountId);
+
     Optional<BalanceDto> findByAccountAndDate(long accountId, LocalDate balanceDate);
 
     Optional<BalanceDto> findActualBalance(long accountId, LocalDate balanceDate);

@@ -1,12 +1,10 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.criteria.JpaCriteriaInsertValues;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BalanceDto;
 import ru.otus.hw.dto.BalanceForChangeDto;
-import ru.otus.hw.dto.BankDto;
 import ru.otus.hw.models.Account;
 import ru.otus.hw.repositories.BalanceRepository;
 
@@ -23,7 +21,22 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public List<BalanceDto> findAll() {
+
         return repository.findAllByOrderByAccountNameAscBalanceDateDesc().stream()
+                .map(BalanceDto::fromDomainObject)
+                .toList();
+    }
+
+    @Override
+    public Optional<BalanceDto> findById(long id) {
+
+        return repository.findById(id).map(BalanceDto::fromDomainObject);
+    }
+
+    @Override
+    public List<BalanceDto> findByAccountId(long accountId) {
+
+        return repository.findByAccountId(accountId).stream()
                 .map(BalanceDto::fromDomainObject)
                 .toList();
     }
@@ -38,6 +51,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public Optional<BalanceDto> findActualBalance(long accountId, LocalDate balanceDate) {
+
         var balanceOpt = repository.findActualBalanceOnDate(
                 accountId, balanceDate);
         return balanceOpt.map(BalanceDto::fromDomainObject);
@@ -46,6 +60,7 @@ public class BalanceServiceImpl implements BalanceService {
     @Transactional
     @Override
     public BalanceDto save(BalanceForChangeDto balanceDto) {
+
         if (balanceDto.getAccountId() == 0 ||
                 balanceDto.getBalanceDate() == null) {
             //TODO: перехватить

@@ -24,6 +24,9 @@ public interface BalanceRepository extends CrudRepository<Balance, Integer> {
     Optional<Balance> findById(long id);
 
     @EntityGraph("account-balance-with-account")
+    List<Balance> findByAccountId(long id);
+
+    @EntityGraph("account-balance-with-account")
     Optional<Balance> findByAccountAndBalanceDate(Account account, LocalDate date);
 
     @Query(value = """

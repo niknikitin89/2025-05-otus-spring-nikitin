@@ -1,6 +1,3 @@
-server:
-  port: 8080
-
 spring:
   devtools:
     restart:
@@ -39,14 +36,14 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: data.sql
+#      data-locations: data.sql
   #      schema-locations: schema.sql
 
-  shell:
-    interactive:
-      enabled: true #После старта приложения открывается командная строка shell
-    noninteractive:
-      enabled: false #Запрещает запуск одиночных команд при старте приложения
-    command:
-      version:
-        enabled: false #Убирает стандартную команду version из доступных команд shell
+#  shell:
+#    interactive:
+#      enabled: true #После старта приложения открывается командная строка shell
+#    noninteractive:
+#      enabled: false #Запрещает запуск одиночных команд при старте приложения
+#    command:
+#      version:
+#        enabled: false #Убирает стандартную команду version из доступных команд shell

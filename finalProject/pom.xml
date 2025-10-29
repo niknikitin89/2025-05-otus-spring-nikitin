@@ -46,20 +46,20 @@
         <!--            <artifactId>spring-boot-starter-aop</artifactId>-->
         <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; Web&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-web</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-thymeleaf</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.webjars</groupId>-->
-        <!--            <artifactId>jquery</artifactId>-->
-        <!--            <version>3.7.1</version>-->
-        <!--        </dependency>-->
+                <!-- Web-->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
+                    <version>3.7.1</version>
+                </dependency>
 
         <!-- БД-->
         <!-- PostgreSQL-->
@@ -88,12 +88,12 @@
         <!--            <artifactId>spring-boot-starter-validation</artifactId>-->
         <!--        </dependency>-->
 
-        <!-- Консоль-->
-        <dependency>
-            <groupId>org.springframework.shell</groupId>
-            <artifactId>spring-shell-starter</artifactId>
-            <version>${spring.shell.version}</version>
-        </dependency>
+<!--        &lt;!&ndash; Консоль&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.shell</groupId>-->
+<!--            <artifactId>spring-shell-starter</artifactId>-->
+<!--            <version>${spring.shell.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Инструменты разработки-->
         <dependency>
