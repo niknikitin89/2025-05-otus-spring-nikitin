@@ -45,6 +45,7 @@ public class BankServiceImpl implements BankService {
     @Transactional
     @Override
     public void deleteById(long id) {
+
         var bankOpt = repository.findById(id);
         if (bankOpt.isEmpty()) {
             throw new IllegalArgumentException("Bank not found");
@@ -74,6 +75,7 @@ public class BankServiceImpl implements BankService {
     }
 
     private BankDto insert(BankDto bankDto) {
+
         if (bankDto.getName().isEmpty()) {
             //TODO: перехватить
             throw new IllegalArgumentException("Bank name is empty");
@@ -90,7 +92,7 @@ public class BankServiceImpl implements BankService {
         try {
             var savedBank = repository.save(bank);
             return BankDto.fromDomainObject(savedBank);
-        }catch (Exception e) {
+        } catch (Exception e) {
             //TODO: перехватить
             throw new IllegalArgumentException("Error while saving");
         }

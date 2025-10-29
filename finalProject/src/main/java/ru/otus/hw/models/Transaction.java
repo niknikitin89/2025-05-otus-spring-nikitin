@@ -50,7 +50,7 @@ import java.time.LocalDateTime;
         )
 })
 @Entity
-@Table(name="transactions")
+@Table(name = "transactions")
 public class Transaction {
 
     @Id
