@@ -3,9 +3,9 @@ package ru.otus.hw.repositories;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import ru.otus.hw.models.Account;
 import ru.otus.hw.models.Balance;
-import ru.otus.hw.models.Bank;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,10 +28,12 @@ public interface BalanceRepository extends CrudRepository<Balance, Integer> {
 
     @Query(value = """
             select b from Balance b
-            where b.account=?1
-            and b.balanceDate<=?2
+            where b.account.id=:accountId
+            and b.balanceDate<=:date
             order by b.balanceDate desc
             limit 1""")
     @EntityGraph("account-balance-with-account")
-    Optional<Balance> findActualBalanceOnDate(Account account, LocalDate date);
+    Optional<Balance> findActualBalanceOnDate(
+            @Param("accountId") long accountId,
+            @Param("date") LocalDate date);
 }

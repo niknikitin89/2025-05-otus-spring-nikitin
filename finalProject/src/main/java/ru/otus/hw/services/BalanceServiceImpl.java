@@ -3,6 +3,7 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.criteria.JpaCriteriaInsertValues;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BalanceDto;
 import ru.otus.hw.dto.BalanceForChangeDto;
 import ru.otus.hw.dto.BankDto;
@@ -38,10 +39,11 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     public Optional<BalanceDto> findActualBalance(long accountId, LocalDate balanceDate) {
         var balanceOpt = repository.findActualBalanceOnDate(
-                new Account(accountId), balanceDate);
+                accountId, balanceDate);
         return balanceOpt.map(BalanceDto::fromDomainObject);
     }
 
+    @Transactional
     @Override
     public BalanceDto save(BalanceForChangeDto balanceDto) {
         if (balanceDto.getAccountId() == 0 ||
