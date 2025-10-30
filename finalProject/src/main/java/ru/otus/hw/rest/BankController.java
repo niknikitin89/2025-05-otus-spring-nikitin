@@ -42,6 +42,12 @@ public class BankController {
         return service.save(bankDto);
     }
 
+    @PutMapping("/api/v1/banks/{id}/restore")
+    public void restoreBank(@PathVariable long id) {
+
+        service.restoreById(id);
+    }
+
     @PostMapping("/api/v1/banks")
     public BankDto createBank(@RequestBody BankDto bankDto) {
 

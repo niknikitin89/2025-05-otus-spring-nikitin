@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.otus.hw.dto.BankDto;
 import ru.otus.hw.dto.TransactionDto;
 import ru.otus.hw.dto.TransactionForChangeDto;
 import ru.otus.hw.models.Transaction;
-import ru.otus.hw.services.BankService;
 import ru.otus.hw.services.TransactionService;
 
 import java.time.LocalDate;
@@ -29,17 +27,20 @@ public class TransactionController {
 
     @GetMapping("/api/v1/transactions")
     public List<TransactionDto> getAllTransactions() {
+
         return service.findAll();
     }
 
     @GetMapping("/api/v1/transactions/{id}")
     public TransactionDto getTransactionById(@PathVariable long id) {
+
         return service.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction with id " + id + " not found"));
     }
 
     @GetMapping("/api/v1/accounts/{accountId}/transactions")
     public List<TransactionDto> getTransactionsByAccount(@PathVariable long accountId) {
+
         return null;//service.findByAccountId(accountId);
     }
 
@@ -55,17 +56,20 @@ public class TransactionController {
 
     @PutMapping("/api/v1/transactions/{id}")
     public TransactionDto updateTransaction(@PathVariable long id, @RequestBody TransactionForChangeDto transactionDto) {
+
         transactionDto.setId(id);
         return service.save(transactionDto);
     }
 
     @PostMapping("/api/v1/transactions")
     public TransactionDto createTransaction(@RequestBody TransactionForChangeDto transactionDto) {
+
         return service.save(transactionDto);
     }
 
     @DeleteMapping("/api/v1/transactions/{id}")
     public void deleteTransaction(@PathVariable long id) {
+
         service.deleteById(id);
     }
 

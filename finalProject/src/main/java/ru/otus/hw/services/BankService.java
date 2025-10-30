@@ -14,4 +14,6 @@ public interface BankService {
     BankDto save(BankDto bankDto);
 
     void deleteById(long id);
+
+    void restoreById(long id);
 }

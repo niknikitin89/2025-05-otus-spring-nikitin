@@ -58,6 +58,19 @@ public class BankServiceImpl implements BankService {
 
     }
 
+    @Override
+    public void restoreById(long id) {
+        var bankOpt = repository.findById(id);
+        if (bankOpt.isEmpty()) {
+            throw new IllegalArgumentException("Bank not found");
+        }
+
+        Bank bank = bankOpt.get();
+        bank.setIsDeleted(false);
+
+        repository.save(bank);
+    }
+
     private BankDto update(BankDto bankDto) {
 
         var bankOpt = repository.findById(bankDto.getId());
