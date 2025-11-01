@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Управление валютами - Финансовый менеджер</title>
+    <link href="../static/css/styles.css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="../static/css/currencies.css" rel="stylesheet" th:href="@{/css/currencies.css}">
+</head>
+<body>
+<!-- Плавающие элементы фона -->
+<div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+</div>
+
+<div class="app-container">
+    <!-- Вертикальное меню -->
+    <nav class="sidebar">
+        <div class="logo">
+            <h2>💰 Финансы</h2>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <span class="nav-icon">📊</span>
+                    Дашборд
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/banks">
+                    <span class="nav-icon">🏦</span>
+                    Банки
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/accounts">
+                    <span class="nav-icon">💳</span>
+                    Счета
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/transactions">
+                    <span class="nav-icon">🔄</span>
+                    Транзакции
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/currencies">
+                    <span class="nav-icon">💰</span>
+                    Валюты
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/analytics">
+                    <span class="nav-icon">📈</span>
+                    Аналитика
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="header">
+            <h1>💰 Управление валютами</h1>
+            <p>Добавляйте и настраивайте валюты для мультивалютного учета</p>
+        </div>
+
+        <!-- Кнопка добавления -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="openCurrencyModal()">
+                ➕ Добавить валюту
+            </button>
+        </div>
+
+        <!-- Список валют -->
+        <div class="content-card">
+            <div class="content-header">
+                <div class="content-header-top">
+                    <h3>Список валют</h3>
+                    <div class="filter-options">
+                        <label class="checkbox-label active-only-checkbox">
+                            <input checked class="checkbox-input" id="activeOnly" type="checkbox">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Только активные</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input class="search-input" id="searchInput" placeholder="Поиск валют..." type="text">
+                </div>
+            </div>
+            <div class="content-list" id="currenciesList">
+                <!-- Валюты будут загружаться здесь -->
+                <div class="loading">Загрузка валют...</div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Модальное окно для добавления/редактирования валюты -->
+<div class="modal" id="currencyModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Добавить валюту</h3>
+            <span class="close" onclick="closeCurrencyModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="currencyForm">
+                <input id="currencyId" type="hidden">
+                <div class="form-group">
+                    <label for="currencyCode">Код валюты *</label>
+                    <input class="form-input" id="currencyCode" placeholder="Например: USD, EUR, RUB" required
+                           type="text" maxlength="3" style="text-transform: uppercase;">
+                    <div class="form-hint">3-буквенный код валюты (ISO 4217)</div>
+                </div>
+                <div class="form-group">
+                    <label for="currencyName">Название валюты *</label>
+                    <input class="form-input" id="currencyName" placeholder="Например: Доллар США, Евро" required
+                           type="text">
+                </div>
+                <div class="form-group">
+                    <label for="currencySymbol">Символ валюты</label>
+                    <input class="form-input" id="currencySymbol" placeholder="Например: $, €, ₽"
+                           type="text">
+                </div>
+                <div class="form-group">
+                    <label for="exchangeRate">Курс обмена</label>
+                    <input class="form-input" id="exchangeRate" placeholder="Например: 1.0"
+                           type="number" step="0.0001" min="0">
+                    <div class="form-hint">Курс относительно базовой валюты</div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-danger" onclick="closeCurrencyModal()" type="button">
+                        Отмена
+                    </button>
+                    <button class="btn btn-success" type="submit">
+                        Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="../static/js/currencies.js" th:src="@{/js/currencies.js}"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+/* Стили для страницы валют */
+.currency-symbol {
+    font-size: 1.2em;
+    margin-right: 8px;
+}
+
+.currency-code {
+    background: rgba(42, 82, 152, 0.1);
+    color: #2a5298;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.currency-details {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.currency-rate {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.rate-label {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.rate-value {
+    color: #2a5298;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
+.currency-dates {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.date-label {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.date-value {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.currency-status {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+}
+
+.status-active {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.status-deleted {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.form-hint {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Адаптивность для валют */
+@media (max-width: 768px) {
+    .currency-details {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+
+    .currency-code {
+        display: block;
+        margin: 5px 0;
+        width: fit-content;
+    }
+}
