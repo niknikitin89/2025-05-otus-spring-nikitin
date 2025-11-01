@@ -354,93 +354,6 @@
     }
 }
 
-/*!* Стили для Choices.js *!*/
-/*.choices {*/
-/*    margin-bottom: 0;*/
-/*    font-size: 0.95em;*/
-/*}*/
-
-/*.choices__inner {*/
-/*    background: white;*/
-/*    border: 2px solid #eef2ff;*/
-/*    border-radius: 12px;*/
-/*    padding: 10px 12px;*/
-/*    min-height: 46px;*/
-/*    transition: all 0.3s ease;*/
-/*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);*/
-/*}*/
-
-/*.choices__inner:hover {*/
-/*    border-color: #a8b8e0;*/
-/*}*/
-
-/*.choices__list--single {*/
-/*    padding: 0;*/
-/*}*/
-
-/*.choices__list--dropdown {*/
-/*    border: 2px solid #eef2ff;*/
-/*    border-radius: 12px;*/
-/*    margin-top: 8px;*/
-/*    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);*/
-/*    z-index: 1000;*/
-/*}*/
-
-/*.choices__list--dropdown .choices__item--selectable {*/
-/*    padding: 10px 16px;*/
-/*    border-bottom: 1px solid #f0f0f0;*/
-/*}*/
-
-/*.choices__list--dropdown .choices__item--selectable:hover {*/
-/*    background: rgba(42, 82, 152, 0.1);*/
-/*    color: #2a5298;*/
-/*}*/
-
-/*.choices__list--multiple {*/
-/*    display: flex;*/
-/*    flex-wrap: wrap;*/
-/*    gap: 6px;*/
-/*}*/
-
-/*.choices__item {*/
-/*    background: linear-gradient(135deg, #2a5298, #1e3c72);*/
-/*    border: none;*/
-/*    border-radius: 6px;*/
-/*    color: white;*/
-/*    font-size: 0.85em;*/
-/*    padding: 4px 8px;*/
-/*    margin: 0;*/
-/*}*/
-
-/*.choices__item .choices__button {*/
-/*    border-left: 1px solid rgba(255, 255, 255, 0.3);*/
-/*    margin-left: 8px;*/
-/*    padding-left: 8px;*/
-/*    background: transparent;*/
-/*}*/
-
-/*.choices__input {*/
-/*    background: transparent;*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*    font-size: 0.95em;*/
-/*}*/
-
-/*.choices__input::placeholder {*/
-/*    color: #666;*/
-/*    opacity: 0.8;*/
-/*}*/
-
-/*.choices[data-type*="select-multiple"] .choices__input {*/
-/*    border: none;*/
-/*    padding: 4px 0;*/
-/*}*/
-
-/*.choices__placeholder {*/
-/*    opacity: 0.8;*/
-/*    color: #666;*/
-/*}*/
-
 /* Специальные стили для Choices с абсолютным позиционированием */
 .choices {
     margin-bottom: 0;
@@ -490,4 +403,194 @@
 .choices__list--dropdown {
     max-height: 300px !important; /* Увеличиваем максимальную высоту */
     overflow-y: auto;
+}
+
+/* Стили для фильтра счетов в стиле даты */
+.filter-group.account-filter {
+    position: relative;
+    overflow: visible;
+}
+
+.account-filter .choices__inner {
+    background: white;
+    border: 2px solid #eef2ff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    min-height: 46px;
+    transition: all 0.3s ease;
+    font-size: 0.95em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.account-filter .choices__inner:hover {
+    border-color: #a8b8e0;
+    transform: translateY(-1px);
+}
+
+.account-filter .choices__inner:focus,
+.account-filter .choices__inner.is-focused {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Выпадающий список */
+.account-filter .choices__list--dropdown {
+    border: 2px solid #eef2ff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    margin-top: 8px;
+    z-index: 9999;
+    background: white;
+}
+
+.account-filter .choices__list--dropdown .choices__item--selectable {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.account-filter .choices__list--dropdown .choices__item--selectable:hover {
+    background: rgba(42, 82, 152, 0.1);
+    color: #2a5298;
+}
+
+.account-filter .choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background: rgba(42, 82, 152, 0.15);
+}
+
+/* Выбранные элементы */
+.account-filter .choices__list--multiple {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.account-filter .choices__item {
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.85em;
+    padding: 6px 10px;
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: space-between !important; /* Распределяем пространство */
+    flex-wrap: nowrap !important; /* Запрещаем перенос */
+    min-width: 0 !important; /* Позволяем тексту обрезаться */
+    position: relative !important;
+    padding-right: 30px !important; /* Место для крестика */
+}
+
+/* Текст может переноситься и занимать доступное пространство */
+.account-filter .choices__item > *:not(.choices__button) {
+    flex: 1 !important;
+    min-width: 0 !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    margin-right: 8px !important;
+}
+
+.account-filter .choices__item .choices__button {
+    border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+    margin-left: 8px !important;
+    padding-left: 8px !important;
+    background: transparent !important;
+    position: absolute !important; /* Абсолютное позиционирование */
+    right: 8px !important; /* Прижимаем к правому краю */
+    top: 50% !important; /* Центрируем по вертикали */
+    transform: translateY(-50%) !important; /* Смещаем на половину высоты */
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important; /* Запрещаем сжатие */
+}
+
+/* Скрываем стандартный текст */
+.account-filter .choices__item .choices__button {
+    color: transparent !important;
+    font-size: 0 !important;
+    text-indent: -9999px !important;
+}
+
+/* Создаем наш крестик */
+.account-filter .choices__item .choices__button::before {
+    content: '×' !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: white !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    line-height: 1 !important;
+    text-indent: 0 !important;
+}
+
+.account-filter .choices__item .choices__button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Плейсхолдер и инпут */
+.account-filter .choices__input {
+    background: transparent;
+    margin: 0;
+    padding: 4px 0;
+    font-size: 0.95em;
+    border: none;
+    min-width: 120px;
+}
+
+.account-filter .choices__input::placeholder {
+    color: #666;
+    opacity: 0.8;
+}
+
+.account-filter .choices__placeholder {
+    opacity: 0.8;
+    color: #666;
+    font-size: 0.95em;
+}
+
+/* Иконка стрелки */
+.account-filter .choices:after {
+    border-color: #2a5298 transparent transparent;
+    transition: transform 0.3s ease;
+}
+
+.account-filter .choices.is-open:after {
+    border-color: transparent transparent #2a5298;
+    margin-top: -6px;
+}
+
+/* Анимация при фокусе */
+.account-filter .choices__inner {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .account-filter .choices__list--multiple {
+        gap: 4px;
+    }
+
+    .account-filter .choices__item {
+        font-size: 0.8em;
+        padding: 4px 8px;
+    }
+}
+
+.filter-icon {
+    margin-right: 6px;
+    font-size: 1em;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }

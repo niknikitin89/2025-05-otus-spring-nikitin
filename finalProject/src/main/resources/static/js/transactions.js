@@ -44,7 +44,22 @@ function initChoices() {
         noChoicesText: 'Все счета выбраны',
         itemSelectText: 'Нажмите для выбора',
         shouldSort: false,
-        position: 'bottom'
+        position: 'bottom',
+        renderSelectedChoices: 'always',
+        loadingText: 'Загрузка...',
+        classNames: {
+            containerInner: 'choices__inner',
+            input: 'choices__input',
+            list: 'choices__list',
+            listItems: 'choices__list--multiple',
+            listSingle: 'choices__list--single',
+            listDropdown: 'choices__list--dropdown',
+            item: 'choices__item',
+            itemSelectable: 'choices__item--selectable',
+            itemDisabled: 'choices__item--disabled',
+            itemChoice: 'choices__item--choice',
+            placeholder: 'choices__placeholder'
+        }
     });
 
     // Синхронизируем при изменении выбора
@@ -206,7 +221,7 @@ function renderTransactions(filteredTransactions = null) {
                     <div class="transaction-details">
                         <div class="transaction-info-item">
                             <span class="transaction-info-label">Счет:</span>
-                            <span class="account-bank">${transaction.account?.name || 'Не указан'} (${transaction.account?.bank?.name || '—'})</span>
+                            <span class="account-bank">${transaction.account?.name || 'Не указан'}</span>
                         </div>
                         <div class="transaction-info-item">
                             <span class="transaction-info-label">Дата:</span>

@@ -50,7 +50,8 @@ public class TransactionController {
             @RequestParam(required = false) Transaction.TransactionType type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
-//TODO: Фильтр по типу транзакции???
+        //TODO: Фильтр по типу транзакции???
+        //TODO: Нужно сортировать транзакции по дате
         return service.findByAccountsAndDates(accountIds, dateFrom, dateTo);
     }
 
@@ -63,6 +64,7 @@ public class TransactionController {
 
     @PutMapping("/api/v1/transactions/{id}/restore")
     public void restoreTransaction(@PathVariable long id) {
+
         service.restoreById(id);
     }
 
