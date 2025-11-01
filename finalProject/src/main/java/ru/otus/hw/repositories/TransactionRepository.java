@@ -23,4 +23,13 @@ public interface TransactionRepository extends CrudRepository<Transaction, Integ
     @EntityGraph(value = "transaction-with-account-basic")
     List<Transaction> findByIsDeletedFalse();
 
+    @EntityGraph(value = "transaction-with-account-basic")
+    List<Transaction> findByAccountIdIn(Long[] accountId);
+
+    @EntityGraph(value = "transaction-with-account-basic")
+    List<Transaction> findByTransactionDateBetween(LocalDate dateFrom, LocalDate dateTo);
+
+    @EntityGraph(value = "transaction-with-account-basic")
+    List<Transaction> findByAccountIdInAndTransactionDateBetween(Long[] accountIds, LocalDate dateFrom, LocalDate dateTo);
+
 }

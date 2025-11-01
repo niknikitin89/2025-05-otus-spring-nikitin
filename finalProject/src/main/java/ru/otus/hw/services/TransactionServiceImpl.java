@@ -10,6 +10,7 @@ import ru.otus.hw.models.Transaction;
 import ru.otus.hw.repositories.TransactionRepository;
 import ru.otus.hw.validators.TransactionValidator;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,29 @@ public class TransactionServiceImpl implements TransactionService {
 
         var transactOpt = repository.findById(id);
         return transactOpt.map(TransactionDto::fromDomainObject);
+    }
+
+    @Override
+    public List<TransactionDto> findByAccountsAndDates(Long[] accountIds, LocalDate dateFrom, LocalDate dateTo) {
+
+        List<Transaction> transactions;
+
+        if ((accountIds == null || accountIds.length == 0) &&
+                (dateFrom == null || dateTo == null)) {
+            transactions = repository.findAll();
+        } else if ((accountIds != null && accountIds.length > 0) &&
+                (dateFrom == null || dateTo == null)) {
+            transactions = repository.findByAccountIdIn(accountIds);
+        } else if ((accountIds == null || accountIds.length == 0) &&
+                (dateFrom != null && dateTo != null)) {
+            transactions = repository.findByTransactionDateBetween(dateFrom, dateTo);
+        }else {
+            transactions = repository.findByAccountIdInAndTransactionDateBetween(accountIds, dateFrom, dateTo);
+        }
+
+        return transactions.stream()
+                .map(TransactionDto::fromDomainObject)
+                .toList();
     }
 
     @Transactional

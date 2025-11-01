@@ -1,0 +1,569 @@
+/* Стили для страницы транзакций */
+.transaction-amount {
+    font-weight: 800;
+    font-size: 1.2em;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.transaction-amount.income {
+    color: #27ae60;
+    background: rgba(39, 174, 96, 0.1);
+}
+
+.transaction-amount.expense {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.transaction-amount.transfer {
+    color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.transaction-type {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.type-income {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.type-expense {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.type-transfer {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.transaction-details {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.transaction-info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.transaction-info-label {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.transaction-info-value {
+    color: #2a5298;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+/* Фильтры */
+.filters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+    margin-bottom: 20px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border-radius: 16px;
+    border: 1px solid #eef2ff;
+    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.filters-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2a5298, #1e3c72, #2a5298);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-label {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #2a5298;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-label::before {
+    content: '↳';
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+.filter-select {
+    padding: 12px 16px;
+    border: 2px solid #eef2ff;
+    border-radius: 12px;
+    font-size: 0.95em;
+    background: white;
+    min-height: 46px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+    transform: translateY(-1px);
+}
+
+.filter-select:hover {
+    border-color: #a8b8e0;
+}
+
+.filter-select[multiple] {
+    min-height: 100px;
+    max-height: 140px;
+    padding: 12px;
+}
+
+.filter-select[multiple] option {
+    padding: 8px 12px;
+    margin: 2px 0;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.filter-select[multiple] option:hover {
+    background: rgba(42, 82, 152, 0.1);
+}
+
+.filter-select[multiple] option:checked {
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    color: white;
+}
+
+.date-range {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.date-input {
+    padding: 12px 16px;
+    border: 2px solid #eef2ff;
+    border-radius: 12px;
+    font-size: 0.95em;
+    background: white;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex: 1;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+    transform: translateY(-1px);
+}
+
+.date-input:hover {
+    border-color: #a8b8e0;
+}
+
+.date-separator {
+    color: #666;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin: 0 2px;
+}
+
+.filter-hint {
+    font-size: 0.75em;
+    color: #666;
+    font-style: italic;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+.btn-icon {
+    margin-right: 6px;
+    font-size: 0.9em;
+}
+
+/* Стили для выбранных опций в множественном выборе */
+.filter-select option:checked {
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    color: white;
+    position: relative;
+}
+
+.filter-select option:checked::after {
+    content: ' ✓';
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+/* Кнопки фильтров */
+.filters-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+    flex: 1;
+    min-width: 120px;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #2a5298;
+    border: 2px solid #2a5298;
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+}
+
+.btn-outline:hover {
+    background: rgba(42, 82, 152, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.2);
+}
+
+.btn-outline:active {
+    transform: translateY(0);
+}
+
+/* Адаптивность для фильтров */
+@media (max-width: 1024px) {
+    .filters-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .filters-actions {
+        grid-column: 1 / -1;
+        justify-content: center;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filters-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .date-range {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .date-separator {
+        display: none;
+    }
+
+    .filters-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-secondary,
+    .btn-outline {
+        min-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .filters-container {
+        padding: 15px;
+        gap: 12px;
+    }
+
+    .filter-select,
+    .date-input {
+        padding: 10px 14px;
+        font-size: 0.9em;
+    }
+}
+
+/* Анимация появления фильтров */
+.filters-container {
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/*!* Стили для Choices.js *!*/
+/*.choices {*/
+/*    margin-bottom: 0;*/
+/*    font-size: 0.95em;*/
+/*}*/
+
+/*.choices__inner {*/
+/*    background: white;*/
+/*    border: 2px solid #eef2ff;*/
+/*    border-radius: 12px;*/
+/*    padding: 10px 12px;*/
+/*    min-height: 46px;*/
+/*    transition: all 0.3s ease;*/
+/*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);*/
+/*}*/
+
+/*.choices__inner:hover {*/
+/*    border-color: #a8b8e0;*/
+/*}*/
+
+/*.choices__list--single {*/
+/*    padding: 0;*/
+/*}*/
+
+/*.choices__list--dropdown {*/
+/*    border: 2px solid #eef2ff;*/
+/*    border-radius: 12px;*/
+/*    margin-top: 8px;*/
+/*    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);*/
+/*    z-index: 1000;*/
+/*}*/
+
+/*.choices__list--dropdown .choices__item--selectable {*/
+/*    padding: 10px 16px;*/
+/*    border-bottom: 1px solid #f0f0f0;*/
+/*}*/
+
+/*.choices__list--dropdown .choices__item--selectable:hover {*/
+/*    background: rgba(42, 82, 152, 0.1);*/
+/*    color: #2a5298;*/
+/*}*/
+
+/*.choices__list--multiple {*/
+/*    display: flex;*/
+/*    flex-wrap: wrap;*/
+/*    gap: 6px;*/
+/*}*/
+
+/*.choices__item {*/
+/*    background: linear-gradient(135deg, #2a5298, #1e3c72);*/
+/*    border: none;*/
+/*    border-radius: 6px;*/
+/*    color: white;*/
+/*    font-size: 0.85em;*/
+/*    padding: 4px 8px;*/
+/*    margin: 0;*/
+/*}*/
+
+/*.choices__item .choices__button {*/
+/*    border-left: 1px solid rgba(255, 255, 255, 0.3);*/
+/*    margin-left: 8px;*/
+/*    padding-left: 8px;*/
+/*    background: transparent;*/
+/*}*/
+
+/*.choices__input {*/
+/*    background: transparent;*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    font-size: 0.95em;*/
+/*}*/
+
+/*.choices__input::placeholder {*/
+/*    color: #666;*/
+/*    opacity: 0.8;*/
+/*}*/
+
+/*.choices[data-type*="select-multiple"] .choices__input {*/
+/*    border: none;*/
+/*    padding: 4px 0;*/
+/*}*/
+
+/*.choices__placeholder {*/
+/*    opacity: 0.8;*/
+/*    color: #666;*/
+/*}*/
+
+/* Стили для Choices.js с исправлением z-index */
+.choices {
+    margin-bottom: 0;
+    font-size: 0.95em;
+    position: relative;
+    z-index: 1000; /* Добавляем z-index для контейнера */
+}
+
+.choices__inner {
+    background: white;
+    border: 2px solid #eef2ff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    min-height: 46px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1001;
+}
+
+.choices__inner:hover {
+    border-color: #a8b8e0;
+}
+
+.choices__list--single {
+    padding: 0;
+}
+
+.choices__list--dropdown {
+    border: 2px solid #eef2ff;
+    border-radius: 12px;
+    margin-top: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 9999 !important; /* Высокий z-index для выпадающего списка */
+    position: absolute;
+    width: 100%;
+    background: white;
+}
+
+.choices__list--dropdown.is-active {
+    z-index: 9999 !important;
+}
+
+.choices__list--dropdown .choices__item--selectable {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.choices__list--dropdown .choices__item--selectable:hover {
+    background: rgba(42, 82, 152, 0.1);
+    color: #2a5298;
+}
+
+.choices__list--multiple {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.choices__item {
+    background: linear-gradient(135deg, #2a5298, #1e3c72);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.85em;
+    padding: 4px 8px;
+    margin: 0;
+}
+
+.choices__item .choices__button {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    margin-left: 8px;
+    padding-left: 8px;
+    background: transparent;
+}
+
+.choices__input {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    font-size: 0.95em;
+}
+
+.choices__input::placeholder {
+    color: #666;
+    opacity: 0.8;
+}
+
+.choices[data-type*="select-multiple"] .choices__input {
+    border: none;
+    padding: 4px 0;
+}
+
+.choices__placeholder {
+    opacity: 0.8;
+    color: #666;
+}
+
+/* Исправляем z-index для контейнера фильтров */
+.filters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+    margin-bottom: 20px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border-radius: 16px;
+    border: 1px solid #eef2ff;
+    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.08);
+    position: relative;
+    z-index: 1; /* Нормальный z-index для контейнера */
+}
+
+/* Убедимся, что другие элементы имеют нормальный z-index */
+.content-card {
+    position: relative;
+    z-index: 1;
+}
+
+.modal {
+    z-index: 10000; /* Модальные окна должны быть выше всего */
+}
+
+.modal-content {
+    z-index: 10001;
+}
