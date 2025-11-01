@@ -18,4 +18,6 @@ public interface TransactionService {
     TransactionDto save(TransactionForChangeDto transactionDto);
 
     void deleteById(long id);
+
+    void restoreById(long id);
 }

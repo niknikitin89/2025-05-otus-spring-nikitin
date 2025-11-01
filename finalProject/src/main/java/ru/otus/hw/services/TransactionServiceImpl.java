@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.TransactionDto;
 import ru.otus.hw.dto.TransactionForChangeDto;
 import ru.otus.hw.models.Account;
+import ru.otus.hw.models.Bank;
 import ru.otus.hw.models.Transaction;
 import ru.otus.hw.repositories.TransactionRepository;
 import ru.otus.hw.validators.TransactionValidator;
@@ -81,6 +82,19 @@ public class TransactionServiceImpl implements TransactionService {
 
         Transaction transaction = transactOpt.get();
         transaction.setIsDeleted(true);
+
+        repository.save(transaction);
+    }
+
+    @Override
+    public void restoreById(long id) {
+        var transactionOpt = repository.findById(id);
+        if (transactionOpt.isEmpty()) {
+            throw new IllegalArgumentException("Transaction not found");
+        }
+
+        Transaction transaction = transactionOpt.get();
+        transaction.setIsDeleted(false);
 
         repository.save(transaction);
     }

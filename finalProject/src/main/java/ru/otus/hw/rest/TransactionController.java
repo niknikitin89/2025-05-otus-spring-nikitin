@@ -17,7 +17,6 @@ import ru.otus.hw.models.Transaction;
 import ru.otus.hw.services.TransactionService;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -51,8 +50,8 @@ public class TransactionController {
             @RequestParam(required = false) Transaction.TransactionType type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
-
-        return service.findByAccountsAndDates(accountIds, dateFrom, dateTo);//service.findByCriteria(accountId, type, startDate, endDate);
+//TODO: Фильтр по типу транзакции???
+        return service.findByAccountsAndDates(accountIds, dateFrom, dateTo);
     }
 
     @PutMapping("/api/v1/transactions/{id}")
@@ -60,6 +59,11 @@ public class TransactionController {
 
         transactionDto.setId(id);
         return service.save(transactionDto);
+    }
+
+    @PutMapping("/api/v1/transactions/{id}/restore")
+    public void restoreTransaction(@PathVariable long id) {
+        service.restoreById(id);
     }
 
     @PostMapping("/api/v1/transactions")
