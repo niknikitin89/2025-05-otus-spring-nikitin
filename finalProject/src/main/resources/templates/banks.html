@@ -75,9 +75,9 @@
         </div>
 
         <!-- Список банков -->
-        <div class="transactions">
-            <div class="transactions-header">
-                <div class="transactions-header-top">
+        <div class="content-card">
+            <div class="content-header">
+                <div class="content-header-top">
                     <h3>Список банков</h3>
                     <div class="filter-options">
                         <label class="checkbox-label active-only-checkbox">
@@ -91,7 +91,7 @@
                     <input class="search-input" id="searchInput" placeholder="Поиск банков..." type="text">
                 </div>
             </div>
-            <div class="transaction-list" id="banksList">
+            <div class="content-list" id="banksList">
                 <!-- Банки будут загружаться здесь -->
                 <div class="loading">Загрузка банков...</div>
             </div>
@@ -179,13 +179,13 @@
         }
 
         banksList.innerHTML = dataToRender.map(bank => `
-        <div class="transaction-item bank-item ${bank.isDeleted ? 'deleted' : ''}" data-bank-id="${bank.id}">
-            <div class="transaction-info">
-                <div class="transaction-description">
+        <div class="list-item entity-item ${bank.isDeleted ? 'deleted' : ''}" data-bank-id="${bank.id}">
+            <div class="item-info">
+                <div class="item-title">
                     ${bank.name}
                     ${bank.isDeleted ? '<span class="bank-status status-deleted">🗑️ Удален</span>' : '<span class="bank-status status-active">✅ Активен</span>'}
                 </div>
-                <div class="transaction-category">
+                <div class="item-subtitle">
                     <div class="bank-dates">
                         <div class="date-item">
                             <span class="date-label">Создан:</span>
@@ -200,7 +200,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bank-actions">
+            <div class="item-actions">
                 <button class="btn-action edit" onclick="editBank(${bank.id})" title="Редактировать">
                     ✏️
                 </button>
@@ -378,7 +378,7 @@
 
     // Анимации
     function initAnimations() {
-        const cards = document.querySelectorAll('.transactions');
+        const cards = document.querySelectorAll('.content-card');
         cards.forEach((card, index) => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(30px) scale(0.95)';
