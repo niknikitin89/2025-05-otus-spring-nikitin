@@ -1,7 +1,6 @@
-// banks.js - обновленная версия с чекбоксом удаления
 const API_URL = '/api/v1/banks';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initBanksPage();
 });
 
@@ -17,7 +16,6 @@ async function initBanksPage() {
 async function loadBanks() {
     try {
         showLoading();
-        breakpoint;
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error('Ошибка загрузки банков');
 
@@ -31,7 +29,13 @@ async function loadBanks() {
 
 function renderBanks(filteredBanks = null) {
     const banksList = document.getElementById('banksList');
-    const dataToRender = filteredBanks || banks;
+    const activeOnly = document.getElementById('activeOnly').checked;
+    let dataToRender = filteredBanks || banks;
+
+    // Фильтрация по активности
+    if (activeOnly) {
+        dataToRender = dataToRender.filter(bank => !bank.isDeleted);
+    }
 
     if (dataToRender.length === 0) {
         banksList.innerHTML = `
@@ -45,13 +49,13 @@ function renderBanks(filteredBanks = null) {
     }
 
     banksList.innerHTML = dataToRender.map(bank => `
-        <div class="transaction-item bank-item ${bank.isDeleted ? 'deleted' : ''}" data-bank-id="${bank.id}">
-            <div class="transaction-info">
-                <div class="transaction-description">
+        <div class="list-item entity-item ${bank.isDeleted ? 'deleted' : ''}" data-bank-id="${bank.id}">
+            <div class="item-info">
+                <div class="item-title">
                     ${bank.name}
                     ${bank.isDeleted ? '<span class="bank-status status-deleted">🗑️ Удален</span>' : '<span class="bank-status status-active">✅ Активен</span>'}
                 </div>
-                <div class="transaction-category">
+                <div class="item-subtitle">
                     <div class="bank-dates">
                         <div class="date-item">
                             <span class="date-label">Создан:</span>
@@ -66,7 +70,7 @@ function renderBanks(filteredBanks = null) {
                     </div>
                 </div>
             </div>
-            <div class="bank-actions">
+            <div class="item-actions">
                 <button class="btn-action edit" onclick="editBank(${bank.id})" title="Редактировать">
                     ✏️
                 </button>
@@ -86,7 +90,7 @@ function renderBanks(filteredBanks = null) {
 
 function setupEventListeners() {
     // Поиск
-    document.getElementById('searchInput').addEventListener('input', function(e) {
+    document.getElementById('searchInput').addEventListener('input', function (e) {
         const searchTerm = e.target.value.toLowerCase();
         const filteredBanks = banks.filter(bank =>
             bank.name.toLowerCase().includes(searchTerm)
@@ -94,8 +98,13 @@ function setupEventListeners() {
         renderBanks(filteredBanks);
     });
 
+    //Чекбокс "Только активные банки"
+    document.getElementById('activeOnly').addEventListener('change', function () {
+        renderBanks();
+    });
+
     // Форма банка
-    document.getElementById('bankForm').addEventListener('submit', function(e) {
+    document.getElementById('bankForm').addEventListener('submit', function (e) {
         e.preventDefault();
         saveBank();
     });
@@ -104,21 +113,16 @@ function setupEventListeners() {
 // Модальные окна
 function openBankModal(bankId = null) {
     const modal = document.getElementById('bankModal');
-    const title = document.getElementById('modalTitle');
-    const isDeletedGroup = document.getElementById('isDeletedGroup');
+    const title = document.getElementById('modalTitle')
 
     if (bankId) {
         title.textContent = 'Редактировать банк';
         const bank = banks.find(b => b.id === bankId);
         document.getElementById('bankId').value = bank.id;
         document.getElementById('bankName').value = bank.name;
-        document.getElementById('isDeleted').checked = bank.isDeleted;
-        isDeletedGroup.style.display = 'block';
     } else {
         title.textContent = 'Добавить банк';
         document.getElementById('bankForm').reset();
-        document.getElementById('isDeleted').checked = false;
-        isDeletedGroup.style.display = 'none';
     }
 
     modal.style.display = 'block';
@@ -132,7 +136,6 @@ function closeBankModal() {
 async function saveBank() {
     const bankId = document.getElementById('bankId').value;
     const bankName = document.getElementById('bankName').value.trim();
-    const isDeleted = document.getElementById('isDeleted').checked;
 
     if (!bankName) {
         showError('Пожалуйста, введите название банка');
@@ -142,7 +145,6 @@ async function saveBank() {
     try {
         const bankData = {
             name: bankName,
-            isDeleted: isDeleted
         };
         let response;
 
@@ -150,19 +152,22 @@ async function saveBank() {
             // Редактирование
             response = await fetch(`${API_URL}/${bankId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(bankData)
             });
         } else {
             // Создание
             response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(bankData)
             });
         }
 
         if (!response.ok) throw new Error('Ошибка сохранения');
+
+        // ОЧИСТКА bankId после успешного сохранения
+        document.getElementById('bankId').value = '';
 
         await loadBanks();
         closeBankModal();
@@ -180,10 +185,10 @@ function editBank(bankId) {
 
 async function deleteBank(bankId) {
     try {
-        const bankData = { isDeleted: true };
+        const bankData = {isDeleted: true};
         const response = await fetch(`${API_URL}/${bankId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(bankData)
         });
 
@@ -200,11 +205,9 @@ async function deleteBank(bankId) {
 
 async function restoreBank(bankId) {
     try {
-        const bankData = { isDeleted: false };
-        const response = await fetch(`${API_URL}/${bankId}`, {
+        const response = await fetch(`${API_URL}/${bankId}/restore`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bankData)
+            headers: {'Content-Type': 'application/json'},
         });
 
         if (!response.ok) throw new Error('Ошибка восстановления');
@@ -245,7 +248,7 @@ function showError(message) {
 
 // Анимации
 function initAnimations() {
-    const cards = document.querySelectorAll('.transactions');
+    const cards = document.querySelectorAll('.content-card');
     cards.forEach((card, index) => {
         card.style.opacity = '0';
         card.style.transform = 'translateY(30px) scale(0.95)';
@@ -258,7 +261,7 @@ function initAnimations() {
 }
 
 // Закрытие модальных окон при клике вне их
-window.onclick = function(event) {
+window.onclick = function (event) {
     const modal = document.getElementById('bankModal');
     if (event.target === modal) {
         closeBankModal();

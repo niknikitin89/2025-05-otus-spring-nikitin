@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация всех анимаций
     initAnimations();
-
+debugger;
     function initAnimations() {
         animateCards();
         animateHeader();
@@ -38,16 +38,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Эффекты для кнопок с ripple
     function setupButtonEffects() {
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                createRippleEffect(this, e);
-
-                setTimeout(() => {
-                    alert('Функция "' + this.textContent + '" в разработке!');
-                }, 300);
-            });
-        });
+        // const buttons = document.querySelectorAll('.btn');
+        // buttons.forEach(button => {
+        //     button.addEventListener('click', function(e) {
+        //         createRippleEffect(this, e);
+        //
+        //         setTimeout(() => {
+        //             alert('Функция "' + this.textContent + '" в разработке!');
+        //         }, 300);
+        //     });
+        // });
     }
 
     // Создание ripple эффекта
@@ -82,6 +82,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
+                // Проверяем, ведет ли ссылка куда-то
+                if (this.getAttribute('href') && this.getAttribute('href') !== '#') {
+                    // Это реальная ссылка - разрешаем переход
+                    return;
+                }
+
+                // Это псевдо-ссылка - блокируем и обрабатываем
                 e.preventDefault();
                 setActiveMenu(this);
                 animateContentTransition();
