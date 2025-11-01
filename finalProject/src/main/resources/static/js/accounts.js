@@ -217,8 +217,8 @@ async function saveAccount() {
     try {
         const accountData = {
             name: accountName,
-            bank: {id: parseInt(bankId)},
-            currency: {id: parseInt(currencyId)}
+            bankId: parseInt(bankId),
+            currencyId: parseInt(currencyId)
         };
         let response;
 
