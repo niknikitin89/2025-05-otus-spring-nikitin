@@ -1,0 +1,60 @@
+/* Стили для страницы счетов */
+.account-bank {
+    background: rgba(42, 82, 152, 0.1);
+    color: #2a5298;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.account-currency {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.account-details {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.account-info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.account-info-label {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.account-info-value {
+    color: #2a5298;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+/* Адаптивность для счетов */
+@media (max-width: 768px) {
+    .account-details {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+
+    .account-bank,
+    .account-currency {
+        display: block;
+        margin: 3px 0;
+        width: fit-content;
+    }
+}
