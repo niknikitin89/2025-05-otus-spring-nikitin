@@ -29,6 +29,11 @@ async function initTransactionsPage() {
 
 function initChoices() {
     const element = document.getElementById('accountFilter');
+
+    if (choicesInstance) {
+        choicesInstance.destroy();
+    }
+
     choicesInstance = new Choices(element, {
         removeItemButton: true,
         searchEnabled: true,
@@ -40,6 +45,16 @@ function initChoices() {
         itemSelectText: 'Нажмите для выбора',
         shouldSort: false,
         position: 'bottom'
+    });
+
+    // Синхронизируем при изменении выбора
+    element.addEventListener('change', function () {
+        const selectedValues = choicesInstance.getValue(true);
+        const selectedAccounts = selectedValues
+            .map(item => item.value)
+            .filter(value => value !== '' && value !== null);
+
+        currentFilters.accounts = selectedAccounts;
     });
 }
 
@@ -77,11 +92,6 @@ function populateAccountsFilter() {
         choicesInstance.clearStore();
     }
 
-    // Добавляем опцию "Все счета"
-    choicesInstance.setChoices([
-        { value: '', label: 'Все счета', selected: true }
-    ], 'value', 'label', false);
-
     // Добавляем активные счета
     const accountOptions = accounts
         .filter(account => !account.isDeleted)
@@ -91,17 +101,7 @@ function populateAccountsFilter() {
         }));
 
     choicesInstance.setChoices(accountOptions, 'value', 'label', true);
-
-    // const accountFilter = document.getElementById('accountFilter');
-    // accountFilter.innerHTML = '<option value="">Все счета</option>';
-    //
-    // accounts.filter(account => !account.isDeleted).forEach(account => {
-    //     const option = document.createElement('option');
-    //     option.value = account.id;
-    //     option.textContent = `${account.name} (${account.bank?.name})`;
-    //     accountFilter.appendChild(option);
-    // });
-}
+    }
 
 function setupFilters() {
     // Устанавливаем текущую дату как дату "по умолчанию" для поля даты
@@ -112,14 +112,26 @@ function setupFilters() {
 async function loadTransactions() {
     try {
         showLoading();
-debugger;
+        debugger;
         // Строим URL с параметрами фильтрации
         const url = new URL(API_URL, window.location.origin);
 
-        if (currentFilters.accounts.length > 0) {
-            currentFilters.accounts.forEach(accountId => {
-                url.searchParams.append('accountIds', accountId);
-            });
+        // Получаем выбранные счета из Choices instance
+        if (choicesInstance) {
+            const selectedValues = choicesInstance.getValue();
+            const selectedAccounts = selectedValues
+                .map(item => item.value)
+                .filter(value => value !== '' && value !== null); // Исключаем пустые значения
+
+            if (selectedAccounts.length > 0) {
+                selectedAccounts.forEach(accountId => {
+                    url.searchParams.append('accountIds', accountId);
+                });
+                // Обновляем currentFilters для синхронизации
+                currentFilters.accounts = selectedAccounts;
+            } else {
+                currentFilters.accounts = [];
+            }
         }
 
         if (currentFilters.dateFrom) {
@@ -254,7 +266,7 @@ function setupEventListeners() {
     });
 
     // Закрытие Choices при клике вне области
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         const choices = document.querySelector('.choices');
         if (choices && !choices.contains(event.target)) {
             const dropdown = choices.querySelector('.choices__list--dropdown');
@@ -268,17 +280,17 @@ function setupEventListeners() {
 // Функции фильтрации
 function applyFilters() {
     // Получаем выбранные значения из Choices
-    const selectedValues = choicesInstance.getValue(true);
-    const selectedAccounts = selectedValues
-        .map(item => item.value)
-        .filter(value => value !== ''); // Исключаем "Все счета"
+    if (choicesInstance) {
+        const selectedValues = choicesInstance.getValue(true);
+        currentFilters.accounts = selectedValues
+            .map(item => item.value)
+            .filter(value => value !== '' && value !== null);
+    }
 
-    const accountFilter = document.getElementById('accountFilter');
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
     const typeFilter = document.getElementById('typeFilter').value;
 
-    currentFilters.accounts = selectedAccounts;// Array.from(accountFilter.selectedOptions).map(option => option.value).filter(Boolean);
     currentFilters.dateFrom = dateFrom;
     currentFilters.dateTo = dateTo;
     currentFilters.type = typeFilter;
@@ -291,9 +303,10 @@ function resetFilters() {
     if (choicesInstance) {
         choicesInstance.removeActiveItems();
         choicesInstance.setChoiceByValue('');
+        currentFilters.accounts = [];
     }
 
-    document.getElementById('accountFilter').selectedIndex = -1;
+    // document.getElementById('accountFilter').selectedIndex = -1;
     document.getElementById('dateFrom').value = '';
     document.getElementById('dateTo').value = '';
     document.getElementById('typeFilter').value = '';
@@ -445,28 +458,40 @@ async function restoreTransaction(transactionId) {
 // Вспомогательные функции
 function getAmountClass(type) {
     switch (type) {
-        case 'INCOME': return 'income';
-        case 'EXPENSE': return 'expense';
-        case 'TRANSFER': return 'transfer';
-        default: return '';
+        case 'INCOME':
+            return 'income';
+        case 'EXPENSE':
+            return 'expense';
+        case 'TRANSFER':
+            return 'transfer';
+        default:
+            return '';
     }
 }
 
 function getTypeClass(type) {
     switch (type) {
-        case 'INCOME': return 'type-income';
-        case 'EXPENSE': return 'type-expense';
-        case 'TRANSFER': return 'type-transfer';
-        default: return '';
+        case 'INCOME':
+            return 'type-income';
+        case 'EXPENSE':
+            return 'type-expense';
+        case 'TRANSFER':
+            return 'type-transfer';
+        default:
+            return '';
     }
 }
 
 function getTypeText(type) {
     switch (type) {
-        case 'INCOME': return 'Доход';
-        case 'EXPENSE': return 'Расход';
-        case 'TRANSFER': return 'Перевод';
-        default: return type;
+        case 'INCOME':
+            return 'Доход';
+        case 'EXPENSE':
+            return 'Расход';
+        case 'TRANSFER':
+            return 'Перевод';
+        default:
+            return type;
     }
 }
 

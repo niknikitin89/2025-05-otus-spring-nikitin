@@ -82,7 +82,8 @@
     border: 1px solid #eef2ff;
     box-shadow: 0 4px 15px rgba(42, 82, 152, 0.08);
     position: relative;
-    overflow: hidden;
+    /* УБИРАЕМ overflow: hidden */
+    overflow: visible; /* Меняем на visible */
 }
 
 .filters-container::before {
@@ -440,12 +441,11 @@
 /*    color: #666;*/
 /*}*/
 
-/* Стили для Choices.js с исправлением z-index */
+/* Специальные стили для Choices с абсолютным позиционированием */
 .choices {
     margin-bottom: 0;
     font-size: 0.95em;
     position: relative;
-    z-index: 1000; /* Добавляем z-index для контейнера */
 }
 
 .choices__inner {
@@ -457,113 +457,37 @@
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     position: relative;
-    z-index: 1001;
-}
-
-.choices__inner:hover {
-    border-color: #a8b8e0;
-}
-
-.choices__list--single {
-    padding: 0;
 }
 
 .choices__list--dropdown {
     border: 2px solid #eef2ff;
     border-radius: 12px;
-    margin-top: 8px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    z-index: 9999 !important; /* Высокий z-index для выпадающего списка */
+    z-index: 9999;
     position: absolute;
     width: 100%;
     background: white;
+    /* Гарантируем, что выпадающий список выходит за границы */
+    margin-top: 8px;
 }
 
 .choices__list--dropdown.is-active {
-    z-index: 9999 !important;
+    z-index: 9999;
 }
 
-.choices__list--dropdown .choices__item--selectable {
-    padding: 10px 16px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.choices__list--dropdown .choices__item--selectable:hover {
-    background: rgba(42, 82, 152, 0.1);
-    color: #2a5298;
-}
-
-.choices__list--multiple {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.choices__item {
-    background: linear-gradient(135deg, #2a5298, #1e3c72);
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-size: 0.85em;
-    padding: 4px 8px;
-    margin: 0;
-}
-
-.choices__item .choices__button {
-    border-left: 1px solid rgba(255, 255, 255, 0.3);
-    margin-left: 8px;
-    padding-left: 8px;
-    background: transparent;
-}
-
-.choices__input {
-    background: transparent;
-    margin: 0;
-    padding: 0;
-    font-size: 0.95em;
-}
-
-.choices__input::placeholder {
-    color: #666;
-    opacity: 0.8;
-}
-
-.choices[data-type*="select-multiple"] .choices__input {
-    border: none;
-    padding: 4px 0;
-}
-
-.choices__placeholder {
-    opacity: 0.8;
-    color: #666;
-}
-
-/* Исправляем z-index для контейнера фильтров */
-.filters-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    align-items: end;
-    margin-bottom: 20px;
-    padding: 25px;
-    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-    border-radius: 16px;
-    border: 1px solid #eef2ff;
-    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.08);
+/* Убедимся, что родительские элементы не обрезают контент */
+.filter-group {
     position: relative;
-    z-index: 1; /* Нормальный z-index для контейнера */
+    overflow: visible; /* Важно! */
 }
 
-/* Убедимся, что другие элементы имеют нормальный z-index */
-.content-card {
+.custom-multiselect {
     position: relative;
-    z-index: 1;
+    overflow: visible; /* Важно! */
 }
 
-.modal {
-    z-index: 10000; /* Модальные окна должны быть выше всего */
-}
-
-.modal-content {
-    z-index: 10001;
+/* Если нужно, можно принудительно увеличить высоту выпадающего списка */
+.choices__list--dropdown {
+    max-height: 300px !important; /* Увеличиваем максимальную высоту */
+    overflow-y: auto;
 }

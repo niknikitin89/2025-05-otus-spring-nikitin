@@ -353,10 +353,11 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
+    /*overflow: hidden;*/
     border-top: 4px solid #2a5298;
     transition: all 0.4s ease;
     min-height: 400px;
+    overflow: visible; /* Меняем на visible */
 }
 
 .content-card:hover {
@@ -370,6 +371,8 @@ body {
     border-bottom: 1px solid #eef2ff;
     position: relative;
     flex-shrink: 0;
+    /* УБИРАЕМ overflow: hidden если есть */
+    overflow: visible; /* Меняем на visible */
 }
 
 .content-header h3 {
