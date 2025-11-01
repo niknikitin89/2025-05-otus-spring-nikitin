@@ -74,7 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void deleteById(long id) {
-
+        //TODO: должно влиять на баланс счета
         var transactOpt = repository.findById(id);
         if (transactOpt.isEmpty()) {
             throw new IllegalArgumentException("Transaction not found");
@@ -88,6 +88,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void restoreById(long id) {
+
+        //TODO: должно влиять на баланс счета
         var transactionOpt = repository.findById(id);
         if (transactionOpt.isEmpty()) {
             throw new IllegalArgumentException("Transaction not found");
@@ -101,6 +103,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private TransactionDto update(TransactionForChangeDto transactionDto) {
 
+        //TODO: должно влиять на баланс счета
         var transactionOpt = repository.findById(transactionDto.getId());
         if (transactionOpt.isEmpty()) {
             throw new IllegalArgumentException("Transaction not found");
@@ -125,6 +128,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private TransactionDto insert(TransactionForChangeDto transactionDto) {
 
+        //TODO: должно влиять на баланс счета
         if (!validator.isValid(transactionDto)) {
             //TODO: перехватить
             throw new IllegalArgumentException("Incorrect transaction data");
