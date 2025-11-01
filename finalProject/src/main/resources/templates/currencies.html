@@ -23,7 +23,7 @@
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a class="nav-link" href="/dashboard">
+                <a class="nav-link" href="/">
                     <span class="nav-icon">📊</span>
                     Дашборд
                 </a>
@@ -32,6 +32,12 @@
                 <a class="nav-link" href="/banks">
                     <span class="nav-icon">🏦</span>
                     Банки
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/currencies">
+                    <span class="nav-icon">💰</span>
+                    Валюты
                 </a>
             </li>
             <li class="nav-item">
@@ -44,12 +50,6 @@
                 <a class="nav-link" href="/transactions">
                     <span class="nav-icon">🔄</span>
                     Транзакции
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="/currencies">
-                    <span class="nav-icon">💰</span>
-                    Валюты
                 </a>
             </li>
             <li class="nav-item">
@@ -126,12 +126,6 @@
                     <input class="form-input" id="currencySymbol" placeholder="Например: $, €, ₽"
                            type="text">
                 </div>
-                <div class="form-group">
-                    <label for="exchangeRate">Курс обмена</label>
-                    <input class="form-input" id="exchangeRate" placeholder="Например: 1.0"
-                           type="number" step="0.0001" min="0">
-                    <div class="form-hint">Курс относительно базовой валюты</div>
-                </div>
                 <div class="form-actions">
                     <button class="btn btn-danger" onclick="closeCurrencyModal()" type="button">
                         Отмена
@@ -145,6 +139,7 @@
     </div>
 </div>
 
+<script src="../static/js/utils.js" th:src="@{/js/utils.js}"></script>
 <script src="../static/js/currencies.js" th:src="@{/js/currencies.js}"></script>
 </body>
 </html>

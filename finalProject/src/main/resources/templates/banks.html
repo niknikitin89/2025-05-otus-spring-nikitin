@@ -22,7 +22,7 @@
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a class="nav-link" href="/dashboard">
+                <a class="nav-link" href="/">
                     <span class="nav-icon">📊</span>
                     Дашборд
                 </a>
@@ -31,6 +31,12 @@
                 <a class="nav-link active" href="/banks">
                     <span class="nav-icon">🏦</span>
                     Банки
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/currencies">
+                    <span class="nav-icon">💰</span>
+                    Валюты
                 </a>
             </li>
             <li class="nav-item">
@@ -43,12 +49,6 @@
                 <a class="nav-link" href="/transactions">
                     <span class="nav-icon">🔄</span>
                     Транзакции
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/currencies">
-                    <span class="nav-icon">💰</span>
-                    Валюты
                 </a>
             </li>
             <li class="nav-item">
@@ -127,6 +127,8 @@
     </div>
 </div>
 
+
+<script src="../static/js/utils.js" th:src="@{/js/utils.js}"></script>
 <script src="../static/js/banks.js" th:src="@{/js/banks.js}"></script>
 </body>
 </html>

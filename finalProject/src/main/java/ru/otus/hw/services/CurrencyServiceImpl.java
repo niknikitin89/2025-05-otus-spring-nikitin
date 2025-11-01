@@ -55,6 +55,19 @@ public class CurrencyServiceImpl implements CurrencyService {
         repository.save(currency);
     }
 
+    @Override
+    public void restoreById(long id) {
+        var currencyOpt = repository.findById(id);
+        if (currencyOpt.isEmpty()) {
+            throw new IllegalArgumentException("Currency not found");
+        }
+
+        Currency currency = currencyOpt.get();
+        currency.setIsDeleted(false);
+
+        repository.save(currency);
+    }
+
     private CurrencyDto update(CurrencyDto currencyDto) {
 
         var currencyOpt = repository.findById(currencyDto.getId());

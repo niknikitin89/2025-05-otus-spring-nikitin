@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequiredArgsConstructor
-public class DashboardPageController {
+public class CurrensyPageController {
 
-    //http://localhost:8080/
-    @GetMapping("/")
-    public String dashboard(Model model) {
-        return "dashboard";
+    //http://localhost:8080/currencies
+    @GetMapping("/currencies")
+    public String currencies(Model model) {
+        return "currencies";
     }
 
 }

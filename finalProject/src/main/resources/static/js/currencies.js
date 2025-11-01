@@ -22,7 +22,7 @@ async function loadCurrencies() {
         currencies = await response.json();
         renderCurrencies();
     } catch (error) {
-        showError('Не удалось загрузить список валют');
+        window.Utils.showError('Не удалось загрузить список валют');
         console.error('Error loading currencies:', error);
     }
 }
@@ -52,21 +52,25 @@ function renderCurrencies(filteredCurrencies = null) {
         <div class="list-item entity-item ${currency.isDeleted ? 'deleted' : ''}" data-currency-id="${currency.id}">
             <div class="item-info">
                 <div class="item-title">
-                    <span class="currency-symbol">${currency.symbol || '💵'}</span>
+                    <span class="currency-symbol">💵</span>
                     ${currency.name}
                     <span class="currency-code">(${currency.code})</span>
-                    ${currency.isDeleted ? '<span class="currency-status status-deleted">🗑️ Удалена</span>' : '<span class="currency-status status-active">✅ Активна</span>'}
+                    ${currency.isDeleted ?
+                        '<span class="item-status status-deleted">🗑️ Удалена</span>'
+                        : '<span class="item-status status-active">✅ Активна</span>'}
                 </div>
                 <div class="item-subtitle">
-                    <div class="currency-details">
-                        <div class="currency-rate">
-                            <span class="rate-label">Курс:</span>
-                            <span class="rate-value">${formatExchangeRate(currency.exchangeRate)}</span>
-                        </div>
-                        <div class="currency-dates">
+                    <div class="item-details">
+                        <div class="item-dates">
                             <span class="date-label">Создана:</span>
-                            <span class="date-value">${formatDate(currency.createdAt)}</span>
+                            <span class="date-value">${window.Utils.formatDate(currency.createdAt)}</span>
                         </div>
+                        ${currency.updatedAt ? `
+                        <div class="item-dates">
+                            <span class="date-label">Обновлена:</span>
+                            <span class="date-value">${window.Utils.formatDate(currency.updatedAt)}</span>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -127,12 +131,9 @@ function openCurrencyModal(currencyId = null) {
         document.getElementById('currencyId').value = currency.id;
         document.getElementById('currencyCode').value = currency.code;
         document.getElementById('currencyName').value = currency.name;
-        document.getElementById('currencySymbol').value = currency.symbol || '';
-        document.getElementById('exchangeRate').value = currency.exchangeRate || '1.0';
     } else {
         title.textContent = 'Добавить валюту';
         document.getElementById('currencyForm').reset();
-        document.getElementById('exchangeRate').value = '1.0';
     }
 
     modal.style.display = 'block';
@@ -147,16 +148,14 @@ async function saveCurrency() {
     const currencyId = document.getElementById('currencyId').value;
     const currencyCode = document.getElementById('currencyCode').value.trim().toUpperCase();
     const currencyName = document.getElementById('currencyName').value.trim();
-    const currencySymbol = document.getElementById('currencySymbol').value.trim();
-    const exchangeRate = parseFloat(document.getElementById('exchangeRate').value) || 1.0;
 
     if (!currencyCode || !currencyName) {
-        showError('Пожалуйста, заполните обязательные поля');
+        window.Utils.showError('Пожалуйста, заполните обязательные поля');
         return;
     }
 
     if (currencyCode.length !== 3) {
-        showError('Код валюты должен состоять из 3 букв');
+        window.Utils.showError('Код валюты должен состоять из 3 букв');
         return;
     }
 
@@ -164,8 +163,6 @@ async function saveCurrency() {
         const currencyData = {
             code: currencyCode,
             name: currencyName,
-            symbol: currencySymbol,
-            exchangeRate: exchangeRate
         };
         let response;
 
@@ -192,10 +189,10 @@ async function saveCurrency() {
 
         await loadCurrencies();
         closeCurrencyModal();
-        showNotification(currencyId ? 'Валюта успешно обновлена' : 'Валюта успешно создана');
+        // showNotification(currencyId ? 'Валюта успешно обновлена' : 'Валюта успешно создана');
 
     } catch (error) {
-        showError('Ошибка при сохранении валюты');
+        window.Utils.showError('Ошибка при сохранении валюты');
         console.error('Error saving currency:', error);
     }
 }
@@ -220,10 +217,10 @@ async function deleteCurrency(currencyId) {
         if (!response.ok) throw new Error('Ошибка удаления');
 
         await loadCurrencies();
-        showNotification('Валюта помечена как удаленная');
+        // window.Utils.showNotification('Валюта помечена как удаленная');
 
     } catch (error) {
-        showError('Ошибка при удалении валюты');
+        window.Utils.showError('Ошибка при удалении валюты');
         console.error('Error deleting currency:', error);
     }
 }
@@ -238,42 +235,18 @@ async function restoreCurrency(currencyId) {
         if (!response.ok) throw new Error('Ошибка восстановления');
 
         await loadCurrencies();
-        showNotification('Валюта восстановлена');
+        // showNotification('Валюта восстановлена');
 
     } catch (error) {
-        showError('Ошибка при восстановлении валюты');
+        window.Utils.showError('Ошибка при восстановлении валюты');
         console.error('Error restoring currency:', error);
     }
 }
 
 // Вспомогательные функции
-function formatExchangeRate(rate) {
-    if (!rate) return '1.0000';
-    return parseFloat(rate).toFixed(4);
-}
-
-function formatDate(dateString) {
-    if (!dateString) return '—';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU') + ' ' + date.toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
 function showLoading() {
     const currenciesList = document.getElementById('currenciesList');
     currenciesList.innerHTML = '<div class="loading">Загрузка валют...</div>';
-}
-
-function showNotification(message) {
-    console.log('Notification:', message);
-    alert(message);
-}
-
-function showError(message) {
-    console.error('Error:', message);
-    alert('Ошибка: ' + message);
 }
 
 // Анимации

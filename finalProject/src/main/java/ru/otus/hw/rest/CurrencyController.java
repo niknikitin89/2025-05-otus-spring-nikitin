@@ -37,6 +37,12 @@ public class CurrencyController {
         return service.save(currencyDto);
     }
 
+    @PutMapping("/api/v1/currencies/{id}/restore")
+    public void restoreCurrency(@PathVariable long id) {
+
+        service.restoreById(id);
+    }
+
     @PostMapping("/api/v1/currencies")
     public CurrencyDto createCurrency(@RequestBody CurrencyDto currencyDto) {
         return service.save(currencyDto);

@@ -22,7 +22,7 @@ async function loadBanks() {
         banks = await response.json();
         renderBanks();
     } catch (error) {
-        showError('Не удалось загрузить список банков');
+        window.Utils.showError('Не удалось загрузить список банков');
         console.error('Error loading banks:', error);
     }
 }
@@ -53,18 +53,19 @@ function renderBanks(filteredBanks = null) {
             <div class="item-info">
                 <div class="item-title">
                     ${bank.name}
-                    ${bank.isDeleted ? '<span class="bank-status status-deleted">🗑️ Удален</span>' : '<span class="bank-status status-active">✅ Активен</span>'}
+                    ${bank.isDeleted ? '<span class="item-status status-deleted">🗑️ Удален</span>' 
+                    : '<span class="item-status status-active">✅ Активен</span>'}
                 </div>
                 <div class="item-subtitle">
-                    <div class="bank-dates">
-                        <div class="date-item">
+                    <div class="item-details">
+                        <div class="item-dates">
                             <span class="date-label">Создан:</span>
-                            <span class="date-value">${formatDate(bank.createdAt)}</span>
+                            <span class="date-value">${window.Utils.formatDate(bank.createdAt)}</span>
                         </div>
                         ${bank.updatedAt ? `
-                        <div class="date-item">
+                        <div class="item-dates">
                             <span class="date-label">Обновлен:</span>
-                            <span class="date-value">${formatDate(bank.updatedAt)}</span>
+                            <span class="date-value">${window.Utils.formatDate(bank.updatedAt)}</span>
                         </div>
                         ` : ''}
                     </div>
@@ -138,7 +139,7 @@ async function saveBank() {
     const bankName = document.getElementById('bankName').value.trim();
 
     if (!bankName) {
-        showError('Пожалуйста, введите название банка');
+        window.Utils.showError('Пожалуйста, введите название банка');
         return;
     }
 
@@ -171,10 +172,10 @@ async function saveBank() {
 
         await loadBanks();
         closeBankModal();
-        showNotification(bankId ? 'Банк успешно обновлен' : 'Банк успешно создан');
+        // showNotification(bankId ? 'Банк успешно обновлен' : 'Банк успешно создан');
 
     } catch (error) {
-        showError('Ошибка при сохранении банка');
+        window.Utils.showError('Ошибка при сохранении банка');
         console.error('Error saving bank:', error);
     }
 }
@@ -184,6 +185,10 @@ function editBank(bankId) {
 }
 
 async function deleteBank(bankId) {
+    if (!confirm('Вы уверены, что хотите удалить этот банк?')) {
+        return;
+    }
+
     try {
         const bankData = {isDeleted: true};
         const response = await fetch(`${API_URL}/${bankId}`, {
@@ -195,10 +200,10 @@ async function deleteBank(bankId) {
         if (!response.ok) throw new Error('Ошибка удаления');
 
         await loadBanks();
-        showNotification('Банк помечен как удаленный');
+        // showNotification('Банк помечен как удаленный');
 
     } catch (error) {
-        showError('Ошибка при удалении банка');
+        window.Utils.showError('Ошибка при удалении банка');
         console.error('Error deleting bank:', error);
     }
 }
@@ -213,24 +218,15 @@ async function restoreBank(bankId) {
         if (!response.ok) throw new Error('Ошибка восстановления');
 
         await loadBanks();
-        showNotification('Банк восстановлен');
+        // showNotification('Банк восстановлен');
 
     } catch (error) {
-        showError('Ошибка при восстановлении банка');
+        window.Utils.showError('Ошибка при восстановлении банка');
         console.error('Error restoring bank:', error);
     }
 }
 
 // Вспомогательные функции
-function formatDate(dateString) {
-    if (!dateString) return '—';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU') + ' ' + date.toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
 function showLoading() {
     const banksList = document.getElementById('banksList');
     banksList.innerHTML = '<div class="loading">Загрузка банков...</div>';
@@ -239,11 +235,6 @@ function showLoading() {
 function showNotification(message) {
     console.log('Notification:', message);
     alert(message);
-}
-
-function showError(message) {
-    console.error('Error:', message);
-    alert('Ошибка: ' + message);
 }
 
 // Анимации

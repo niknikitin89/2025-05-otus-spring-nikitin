@@ -548,6 +548,45 @@ body {
     transform: scale(1.1);
 }
 
+.item-status {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+}
+
+.status-active {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.status-deleted {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.item-details {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.item-dates {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.date-label {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.date-value {
+    color: #666;
+    font-size: 0.85em;
+}
+
 .controls {
     display: flex;
     gap: 20px;
